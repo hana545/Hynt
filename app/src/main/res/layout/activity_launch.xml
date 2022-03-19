@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_dark"
+    tools:context=".LaunchActivity">
+
+
+    <TextView
+        android:id="@+id/main_img_logo"
+        android:layout_marginTop="90dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hynt"
+        android:textColor="@color/white"
+        android:fontFamily="@font/auttera"
+        android:textAlignment="center"
+        android:textSize="100dp"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/main_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Are you bored?"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/main_img_logo"
+        android:textAlignment="center"
+        android:textSize="40dp"
+        android:textColor="@color/text_light"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/main_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Find interesting places around you"
+        android:layout_below="@+id/main_title"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textColor="@color/text_light"
+        android:gravity="center_horizontal" />
+
+    <ImageView
+        android:id="@+id/main_img_map"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/main_subtitle"
+        app:srcCompat="@drawable/ic_main_location_map_foreground"
+
+        tools:layout_editor_absoluteY="290dp"
+        tools:ignore="VectorDrawableCompat" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/authorization_box"
+        android:layout_below="@+id/main_img_map">
+
+        <TextView
+            android:id="@+id/dummyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/dummyView"
+            android:backgroundTint="@color/blue_light"
+            android:text="Login" />
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/dummyView"
+            android:backgroundTint="@color/blue_light"
+            android:text="Register" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="or"
+        android:layout_below="@+id/authorization_box"
+        android:textColor="@color/text_light"
+        android:layout_centerHorizontal="true" />
+
+
+    <Button
+        android:id="@+id/btn_guest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"
+        android:textAllCaps="false"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/text"
+        android:text="Continue as guest" />
+</RelativeLayout>
