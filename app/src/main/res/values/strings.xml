@@ -7,4 +7,13 @@
     <string name="main_launch_title">Are you bored?</string>
     <string name="main_launch_subtitle">Find interesting places around you</string>
 
+    <string name="btn_hint">Give me a hint</string>
+
+    <string name="filter_categories">Categories</string>
+    <string name="filter_tags">Tags</string>
+    <string name="filter_range">Range</string>
+    <string name="filter_random">Pick one random place with this settings</string>
+    <string name="filter_search">Search</string>
+    <string name="filter_clear">Clear filter</string>
+
 </resources>

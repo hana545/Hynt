@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/filter_category_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_categories" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filter_category_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/filter_category_label">
+
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/filter_tag_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/filter_category_chips"
+                android:text="@string/filter_tags" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filter_tag_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/filter_tag_label">
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <LinearLayout
+                android:id="@+id/filter_range_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/filter_tag_chips">
+                <TextView
+                    android:id="@+id/filter_range_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_range" />
+                <SeekBar
+                    android:id="@+id/filter_range_seek_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:paddingHorizontal="50dp"
+                    android:layout_below="@+id/filter_range_label"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/filter_btn_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/filter_btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black_blue"
+            android:textColor="@color/text_light"
+            android:text="@string/filter_search"
+            android:layout_weight="0.8"/>
+        <Button
+            android:id="@+id/filter_btn_clear_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_light"
+            android:textColor="@color/text_light"
+            android:text="@string/filter_clear"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_weight="0.2"
+            />
+    </LinearLayout>
+
+
+
+
+
+</RelativeLayout>

@@ -1,6 +1,7 @@
 package hr.project.hynt
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -9,6 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -32,11 +36,19 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.access_token))
 
         setContentView(R.layout.activity_main_map)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+
+
+        findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener { // load First Fragment
+            drawerLayout.openDrawer(GravityCompat.END)
+        })
         mapView = findViewById(R.id.mapView) as MapView
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
@@ -93,7 +105,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
             // Add the camera tracking listener. Fires if the map camera is manually moved.
             locationComponent!!.addOnCameraTrackingChangedListener(this)
-            findViewById<View>(R.id.back_to_camera_tracking_mode).setOnClickListener {
+            findViewById<View>(R.id.float_btn_back_to_camera_tracking_mode).setOnClickListener {
                 if (!isInTrackingMode) {
                     isInTrackingMode = true
                     val position = CameraPosition.Builder()
