@@ -2,17 +2,30 @@ package hr.project.hynt
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -34,6 +47,9 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     private var locationComponent: LocationComponent? = null
     private var isInTrackingMode = false
 
+    val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+    val authUser = FirebaseAuth.getInstance().currentUser
+
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
     @SuppressLint("WrongViewCast")
@@ -43,23 +59,93 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
         setContentView(R.layout.activity_main_map)
 
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-
-
-        findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener { // load First Fragment
-            drawerLayout.openDrawer(GravityCompat.END)
-        })
+        setContentView(R.layout.activity_main_map)
+        ////set action bar
+        setCustomActionBar()
+        ////drawer for filter
+        addDrawerFilter()
+        ////bottom sheet - show locations
+        addBottomSheet()
+        ////map
+        askLocationPermission()
         mapView = findViewById(R.id.mapView) as MapView
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
 
+    }
+    private fun setCustomActionBar() {
+        this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        val customView: View = LayoutInflater.from(this).inflate(
+            R.layout.action_bar, LinearLayout(
+                this
+            ), false
+        )
+        supportActionBar!!.customView = customView
+        supportActionBar?.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    this,
+                    R.color.black_blue
+                )
+            )
+        )
+
+        val btn_user : LinearLayout = customView.findViewById<View>(R.id.btn_user_profile) as LinearLayout
+        if (authUser != null) {
+            val username : TextView = btn_user.findViewById(R.id.user_username) as TextView
+            username.setText(authUser.displayName)
+            val sh = this.getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE)
+            btn_user.setOnClickListener(View.OnClickListener {
+
+            })
+        } else {
+            btn_user.visibility = View.GONE
+        }
+    }
+    private fun addDrawerFilter() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        })
+        drawerLayout.setDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(view: View, v: Float) {}
+            override fun onDrawerOpened(view: View) {
+                supportActionBar!!.hide()
+            }
+
+            override fun onDrawerClosed(view: View) {
+                supportActionBar!!.show()
+            }
+
+            override fun onDrawerStateChanged(i: Int) {}
+        })
+    }
+    private fun addBottomSheet() {
+        val mBottomSheetLayout : ConstraintLayout = findViewById(R.id.bottomSheet);
+        val sheetBehavior = BottomSheetBehavior.from(mBottomSheetLayout);
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        val btn_toggle_locations: ImageButton = findViewById<ImageButton>(R.id.bottom_sheet_header)
+        btn_toggle_locations.setOnClickListener(View.OnClickListener {
+            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
+                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                btn_toggle_locations.setImageResource(R.drawable.ic_expand_more)
+            } else {
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                btn_toggle_locations.setImageResource(R.drawable.ic_expand_less)
+            }
+        })
+    }
+
+    private fun askLocationPermission() {
         //ask for location permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSION_REQUEST_CODE_LOCATION)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSION_REQUEST_CODE_LOCATION
+            )
         }
-
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -106,17 +192,17 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             // Add the camera tracking listener. Fires if the map camera is manually moved.
             locationComponent!!.addOnCameraTrackingChangedListener(this)
             findViewById<View>(R.id.float_btn_back_to_camera_tracking_mode).setOnClickListener {
-                if (!isInTrackingMode) {
-                    isInTrackingMode = true
-                    val position = CameraPosition.Builder()
-                            .zoom(16.0) // Sets the zoom
-                            .build()
-                    mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
+                var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+                var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+                val position = CameraPosition.Builder()
+                    .target(LatLng(mylat, mylng))
+                    .zoom(16.0) // Sets the zoom
+                    .build()
+                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 2000)
 
-                    locationComponent!!.cameraMode = CameraMode.TRACKING
-                    locationComponent!!.zoomWhileTracking(16.0)
-                }
+                isInTrackingMode = true
             }
+
         } else {
             val position = CameraPosition.Builder()
                     .zoom(5.0) // Sets the zoom

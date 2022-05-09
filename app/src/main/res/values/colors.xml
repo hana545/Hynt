@@ -8,6 +8,11 @@
 
     <color name="text_light">#DAEDFF</color>
 
+    <color name="transparent">#00FFFFFF</color>
 
     <color name="black_blue">#0A1C30</color>
+    <color name="black_blue_low_opacity">#360A1C30</color>
+
+
+    <color name="error_red">#F33A40</color>
 </resources>

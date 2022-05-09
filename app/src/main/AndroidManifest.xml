@@ -19,7 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMapActivity"></activity>
+        <activity
+            android:name=".MainMapActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize" />
+        <activity android:name=".AuthorizationActivity" android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

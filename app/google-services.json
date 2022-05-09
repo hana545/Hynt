@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "76945513032",
+    "project_id": "hynt-cb624",
+    "storage_bucket": "hynt-cb624.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76945513032:android:de9ff9d319b63243c6d67d",
+        "android_client_info": {
+          "package_name": "hr.project.hynt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76945513032-s9tcsjkaperlobricte01cs8cq2ve3bu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8VjeUXt28OHBIbLGcBYMWYc5i-MoadJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76945513032-s9tcsjkaperlobricte01cs8cq2ve3bu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

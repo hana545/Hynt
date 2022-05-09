@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_dark"
+    tools:context=".AuthorizationActivity"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/authorization_img_logo"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:fontFamily="@font/auttera"
+        android:textAlignment="center"
+        android:textSize="60dp"
+        android:gravity="center_horizontal"
+        android:layout_weight="0"/>
+
+        <FrameLayout
+            android:layout_marginTop="10dp"
+            android:id="@+id/fragment_main"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0"
+        android:paddingHorizontal="50dp"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        >
+        <TextView
+            android:id="@+id/text_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="@string/auth_txt_not_account"
+            android:textColor="@color/text_light"/>
+
+
+        <Button
+            android:id="@+id/btn_auth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/blue_light"
+            android:text="@string/btn_register" />
+    </LinearLayout>
+
+
+</LinearLayout>
