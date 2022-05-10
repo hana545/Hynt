@@ -8,13 +8,13 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -258,33 +258,27 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
             // Add the camera tracking listener. Fires if the map camera is manually moved.
             locationComponent!!.addOnCameraTrackingChangedListener(this)
-            findViewById<View>(R.id.float_btn_back_to_camera_tracking_mode).setOnClickListener {
+
+
+            //button to move back to location
+            findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
                 var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
                 var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
                 val position = CameraPosition.Builder()
-                    .target(LatLng(mylat, mylng))
-                    .zoom(16.0) // Sets the zoom
-                    .build()
-
+                        .target(LatLng(mylat, mylng))
+                        .zoom(16.0) // Sets the zoom
+                        .build()
+                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1500)
+                //delay tracking so it can zoom in location
+                Handler(Looper.getMainLooper()).postDelayed({
+                    locationComponent!!.cameraMode = CameraMode.TRACKING
+                }, 2000)
                 isInTrackingMode = true
-                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 2000)
-                locationComponent!!.cameraMode = CameraMode.TRACKING
             }
-
-        } else {
-            val position = CameraPosition.Builder()
-                    .zoom(5.0) // Sets the zoom
-                    .build()
-
-            mapboxMap!!.animateCamera(CameraUpdateFactory
-                    .newCameraPosition(position), 7000)
         }
     }
 
-
     override fun onCameraTrackingDismissed() {
-
-        Log.i("MAPTrack", "dissmised")
         isInTrackingMode = false
     }
 
@@ -296,12 +290,13 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         when (requestCode) {
             PERMISSION_REQUEST_CODE_LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission Granted
+                enableLocationComponent(mapboxMap!!.style!!)
             } else {
                 // Permission Denied
                 Toast.makeText(this@MainMapActivity, "Location services denied!", Toast.LENGTH_SHORT)
                         .show()
             }
-            else -> super.onRequestPermissionsResult(requestCode, permissions!!, grantResults)
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
 
@@ -348,4 +343,5 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         super.onLowMemory()
         mapView!!.onLowMemory()
     }
+
 }

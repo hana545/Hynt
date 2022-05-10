@@ -16,18 +16,16 @@
         android:layout_marginTop="0dp"
         app:mapbox_cameraTargetLat="45.830"
         app:mapbox_cameraTargetLng= "16.1345"
-        app:mapbox_cameraZoom="16" >
+        app:mapbox_cameraZoom="5" >
     </com.mapbox.mapboxsdk.maps.MapView>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/locations"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
+        android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/float_btn_back_to_camera_tracking_mode"
+            android:id="@+id/float_btn_back_to_location"
             android:layout_width="wrap_content"
             android:layout_height="129dp"
             app:fabSize="mini"
