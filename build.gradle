@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+
 allprojects {
     repositories {
         google()
@@ -29,7 +33,7 @@ allprojects {
                 // This should always be `mapbox` (not your username).
                 username = "mapbox"
                 // Use the secret token you stored in gradle.properties as the password
-                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
+                password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
             }
         }
     }

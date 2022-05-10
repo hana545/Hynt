@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Hynt</string>
-    <string name="access_token">pk.eyJ1IjoiaGFuYTU0IiwiYSI6ImNrY3FmNTRwaDAzaDQycWp2ejQ4bWE1OXIifQ.KNWx5QQBb2grpw7pD5IdHw</string>
-    <string name="btn_register">Register</string>
+    
+	<string name="btn_register">Register</string>
     <string name="btn_login">Login</string>
     <string name="btn_guest">Continue as guest</string>
     <string name="main_launch_title">Are you bored?</string>

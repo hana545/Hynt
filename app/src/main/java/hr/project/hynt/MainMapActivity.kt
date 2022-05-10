@@ -3,6 +3,7 @@ package hr.project.hynt
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -22,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
@@ -97,7 +99,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             username.setText(authUser.displayName)
             val sh = this.getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE)
             btn_user.setOnClickListener(View.OnClickListener {
-
+                showBottomSheetDialogOptions(sh.getString("Role", "").toString())
             })
         } else {
             btn_user.visibility = View.GONE
@@ -135,6 +137,71 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 btn_toggle_locations.setImageResource(R.drawable.ic_expand_less)
             }
         })
+    }
+    fun showBottomSheetDialogOptions(role : String) {
+
+        val bottomSheetDialog = BottomSheetDialog(this)
+        if(role == "admin") {
+            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_admin_options)
+            val manage_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.manage_places)
+            manage_places!!.setOnClickListener(View.OnClickListener {
+               // val intent = Intent(this, AdminOptionsActivity::class.java)
+               // intent.putExtra("fragment", "places")
+                bottomSheetDialog.dismiss()
+               // startActivity(intent)
+            })
+            val tags = bottomSheetDialog.findViewById<LinearLayout>(R.id.tags)
+            tags!!.setOnClickListener(View.OnClickListener {
+               // val intent = Intent(this, AdminOptionsActivity::class.java)
+               // intent.putExtra("fragment", "tags")
+                bottomSheetDialog.dismiss()
+               // startActivity(intent)
+            })
+            val categories = bottomSheetDialog.findViewById<LinearLayout>(R.id.categories)
+            categories!!.setOnClickListener(View.OnClickListener {
+               // val intent = Intent(this, AdminOptionsActivity::class.java)
+               // intent.putExtra("fragment", "categories")
+                bottomSheetDialog.dismiss()
+                //startActivity(intent)
+            })
+        } else {
+            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_users_options)
+        }
+        val add_place = bottomSheetDialog.findViewById<LinearLayout>(R.id.add_place)
+        add_place!!.setOnClickListener(View.OnClickListener {
+            //goToAddPlace()
+            bottomSheetDialog.dismiss();
+        })
+        val my_addresses = bottomSheetDialog.findViewById<LinearLayout>(R.id.myAddresses)
+        my_addresses!!.setOnClickListener(View.OnClickListener {
+            bottomSheetDialog.dismiss();
+        })
+        val my_reviews = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_reviews)
+        my_reviews!!.setOnClickListener(View.OnClickListener {
+            bottomSheetDialog.dismiss();
+        })
+        val my_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_places)
+        my_places!!.setOnClickListener(View.OnClickListener {
+            bottomSheetDialog.dismiss();
+        })
+        val settings = bottomSheetDialog.findViewById<LinearLayout>(R.id.settings)
+        settings!!.setOnClickListener(View.OnClickListener {
+            bottomSheetDialog.dismiss();
+        })
+        val signout = bottomSheetDialog.findViewById<LinearLayout>(R.id.signOut)
+        signout!!.setOnClickListener(View.OnClickListener {
+            logOut()
+            bottomSheetDialog.dismiss();
+        })
+        bottomSheetDialog.show()
+    }
+    private fun logOut(){
+        FirebaseAuth.getInstance().signOut()
+        getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE).edit().remove("Role").apply()
+        val intent = Intent(applicationContext, LaunchActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent)
+        finish()
     }
 
     private fun askLocationPermission() {
@@ -198,9 +265,10 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                     .target(LatLng(mylat, mylng))
                     .zoom(16.0) // Sets the zoom
                     .build()
-                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 2000)
 
                 isInTrackingMode = true
+                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 2000)
+                locationComponent!!.cameraMode = CameraMode.TRACKING
             }
 
         } else {
@@ -215,6 +283,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
 
     override fun onCameraTrackingDismissed() {
+
+        Log.i("MAPTrack", "dissmised")
         isInTrackingMode = false
     }
 
