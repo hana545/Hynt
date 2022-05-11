@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My addresses"
+                android:text="@string/bs_options_menu_address"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -59,7 +59,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My reviews"
+                android:text="@string/bs_options_menu_reviews"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -86,7 +86,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My places"
+                android:text="@string/bs_options_menu_places"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -131,7 +131,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Places"
+                android:text="@string/bs_options_menu_adminPlaces"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -160,7 +160,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tags"
+                android:text="@string/bs_options_menu_adminTags"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -186,7 +186,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Categories"
+                android:text="@string/bs_options_menu_adminCategories"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -234,7 +234,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add place"
+                android:text="@string/bs_options_menu_addPlace"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:padding="3dp"
@@ -262,7 +262,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Settings"
+                android:text="@string/bs_options_menu_settings"
                 android:layout_gravity="center"
                 android:padding="3dp"
                 android:textColor="@color/white"/>

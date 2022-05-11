@@ -14,9 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="0dp"
-        app:mapbox_cameraTargetLat="45.830"
-        app:mapbox_cameraTargetLng= "16.1345"
-        app:mapbox_cameraZoom="5" >
+        app:mapbox_cameraZoom="13" >
     </com.mapbox.mapboxsdk.maps.MapView>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

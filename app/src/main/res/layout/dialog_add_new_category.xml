@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+   >
+    <LinearLayout
+        android:id="@+id/add_category_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="10dp"
+        android:background="@color/blue_light"
+        android:weightSum="1">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_category"
+            android:layout_weight="0.1"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_add_category_title"
+            android:textColor="@color/text_light"
+            android:textSize="20sp"
+            android:fontFamily="@font/auttera"
+            android:layout_weight="0.8"/>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_category_title"
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/add_category_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:hint="@string/dialog_add_category_name"
+            android:ems="10" />
+
+        <Button
+            android:id="@+id/btn_add_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black_blue"
+            android:textColor="@color/text_light"
+            android:text="@string/dialog_add_category_button"
+            android:letterSpacing="0.1"
+            android:textAllCaps="false"
+            android:fontFamily="@font/auttera"
+            android:layout_weight="0.8"
+            android:layout_below="@+id/add_category_data"/>
+
+    </RelativeLayout>
+</RelativeLayout>

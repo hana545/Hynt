@@ -37,7 +37,7 @@
         android:id="@+id/main_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/main_launch_title"
+        android:text="@string/main_launch_subtitle"
         android:layout_below="@+id/main_title"
         android:textAlignment="center"
         android:textSize="20dp"

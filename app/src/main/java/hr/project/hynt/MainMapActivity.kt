@@ -2,7 +2,9 @@ package hr.project.hynt
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -145,24 +147,24 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_admin_options)
             val manage_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.manage_places)
             manage_places!!.setOnClickListener(View.OnClickListener {
-               // val intent = Intent(this, AdminOptionsActivity::class.java)
-               // intent.putExtra("fragment", "places")
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "places")
                 bottomSheetDialog.dismiss()
-               // startActivity(intent)
+                startActivity(intent)
             })
             val tags = bottomSheetDialog.findViewById<LinearLayout>(R.id.tags)
             tags!!.setOnClickListener(View.OnClickListener {
-               // val intent = Intent(this, AdminOptionsActivity::class.java)
-               // intent.putExtra("fragment", "tags")
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "tags")
                 bottomSheetDialog.dismiss()
-               // startActivity(intent)
+                startActivity(intent)
             })
             val categories = bottomSheetDialog.findViewById<LinearLayout>(R.id.categories)
             categories!!.setOnClickListener(View.OnClickListener {
-               // val intent = Intent(this, AdminOptionsActivity::class.java)
-               // intent.putExtra("fragment", "categories")
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "categories")
                 bottomSheetDialog.dismiss()
-                //startActivity(intent)
+                startActivity(intent)
             })
         } else {
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_users_options)
@@ -221,6 +223,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 Style.MAPBOX_STREETS
         ) { style -> enableLocationComponent(style) }
 
+
     }
 
     private fun enableLocationComponent(loadedMapStyle: Style) {
@@ -259,14 +262,35 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             // Add the camera tracking listener. Fires if the map camera is manually moved.
             locationComponent!!.addOnCameraTrackingChangedListener(this)
 
+            if (mapboxMap!!.locationComponent.lastKnownLocation == null){
 
+                noLocation(false)
+                AlertDialog.Builder(this)
+                        .setTitle("Can't access your location")
+                        .setMessage("Please turn on your device location and refresh app")
+                        .setPositiveButton("Refresh", DialogInterface.OnClickListener { dialog, which ->
+                            finish()
+                            overridePendingTransition(0,0)
+                            startActivity(intent)
+                            overridePendingTransition(0,0)
+                            })
+                        .setNegativeButton("Exit", DialogInterface.OnClickListener { dialog, which ->
+                            finish()
+                        })
+                        .setIcon(R.drawable.ic_map_alert)
+                        .setCancelable(false)
+                        .show()
+
+            } else {
+                noLocation(true)
+            }
             //button to move back to location
             findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
                 var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
                 var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
                 val position = CameraPosition.Builder()
                         .target(LatLng(mylat, mylng))
-                        .zoom(16.0) // Sets the zoom
+                        .zoom(15.0) // Sets the zoom
                         .build()
                 mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1500)
                 //delay tracking so it can zoom in location
@@ -275,6 +299,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 }, 2000)
                 isInTrackingMode = true
             }
+        } else {
+            noLocation(false)
         }
     }
 
@@ -293,10 +319,36 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 enableLocationComponent(mapboxMap!!.style!!)
             } else {
                 // Permission Denied
-                Toast.makeText(this@MainMapActivity, "Location services denied!", Toast.LENGTH_SHORT)
+                AlertDialog.Builder(this)
+                        .setTitle("Denied location")
+                        .setMessage("You have not granted permission to access your location! You need to change that in settings before using this app. ")
+                        .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
+                            finish()
+                        })
+                        .setIcon(R.drawable.ic_map_alert)
+                        .setCancelable(false)
                         .show()
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+    fun noLocation(access : Boolean){
+        if (access){
+            findViewById<View>(R.id.float_btn_back_to_location).visibility = View.VISIBLE
+            findViewById<View>(R.id.float_btn_search_filter_locations).visibility = View.VISIBLE
+            findViewById<View>(R.id.float_btn_hint).visibility = View.VISIBLE
+            findViewById<View>(R.id.bottomSheet).visibility = View.VISIBLE
+        } else {
+            //sets camera on the center of the world
+            val position = CameraPosition.Builder()
+                    .target(LatLng(40.52, 34.34))
+                    .zoom(1.5) // Sets the zoom
+                    .build()
+            mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 200)
+            findViewById<View>(R.id.float_btn_back_to_location).visibility = View.GONE
+            findViewById<View>(R.id.float_btn_search_filter_locations).visibility = View.GONE
+            findViewById<View>(R.id.float_btn_hint).visibility = View.GONE
+            findViewById<View>(R.id.bottomSheet).visibility = View.GONE
         }
     }
 

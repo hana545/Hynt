@@ -28,5 +28,25 @@
     <string name="filter_search">Search</string>
     <string name="filter_clear">Clear filter</string>
 
+    <string name="bs_options_menu_address">My addresses</string>
+    <string name="bs_options_menu_reviews">My reviews</string>
+    <string name="bs_options_menu_places">My places</string>
+    <string name="bs_options_menu_adminPlaces">Places</string>
+    <string name="bs_options_menu_adminTags">Tags</string>
+    <string name="bs_options_menu_adminCategories">Categories</string>
+    <string name="bs_options_menu_addPlace">Add place</string>
+    <string name="bs_options_menu_settings">Settings</string>
+
+    <string name="tags_title">Tags</string>
+    <string name="tag_title">Tag</string>
+    <string name="dialog_add_tag_title">Add new Tag</string>
+    <string name="dialog_add_tag_name">Tag name</string>
+    <string name="dialog_add_tag_button">Add Tag</string>
+
+    <string name="categories_title">Categories</string>
+    <string name="category_title">Category</string>
+    <string name="dialog_add_category_title">Add new Category</string>
+    <string name="dialog_add_category_name">Category name</string>
+    <string name="dialog_add_category_button">Add Category</string>
 
 </resources>
