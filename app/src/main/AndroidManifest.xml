@@ -24,6 +24,8 @@
             android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity android:name=".AuthorizationActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".AdminOptionsActivity"/>
+        <activity android:name=".AddNewPlaceActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".LocationPickerActivity"/>
     </application>
 
 </manifest>

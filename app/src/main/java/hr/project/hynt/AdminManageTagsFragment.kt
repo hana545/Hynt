@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import hr.project.hynt.Adapters.TagCategoryAdapter
 import hr.project.hynt.FirebaseDatabase.TagCategory
 import java.util.*
 
@@ -40,24 +41,20 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_manage_tags, container, false)
-    }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val btn_addTag = requireActivity().findViewById<FloatingActionButton>(R.id.btn_add_new_tag)
+        val view = inflater.inflate(R.layout.fragment_admin_manage_tags, container, false)
+        val btn_addTag = view.findViewById<FloatingActionButton>(R.id.btn_add_new_tag)
         btn_addTag.setOnClickListener(View.OnClickListener {
             showAddTagDialog()
         })
 
-        val recyclerview = requireActivity().findViewById<RecyclerView>(R.id.tag_recyclerView)
+        val recyclerview = view.findViewById<RecyclerView>(R.id.tag_recyclerView)
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(context)
 
-        val adapter = TagCategoryAdapter(allTags, allTags_id, "tags", this)
+        val adapter = TagCategoryAdapter(allTags, allTags_id, this)
         recyclerview.adapter = adapter
         getAllTags(adapter)
-
+        return view
     }
 
     private fun getAllTags(adapter: TagCategoryAdapter) {

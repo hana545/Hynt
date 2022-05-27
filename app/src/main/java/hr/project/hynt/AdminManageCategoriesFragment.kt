@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -22,6 +21,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import hr.project.hynt.Adapters.TagCategoryAdapter
 import hr.project.hynt.FirebaseDatabase.TagCategory
 import java.util.*
 
@@ -40,28 +40,22 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_manage_categories, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-
-        val btn_addCategory = requireActivity().findViewById<FloatingActionButton>(R.id.btn_add_new_category)
+        val view = inflater.inflate(R.layout.fragment_admin_manage_categories, container, false)
+        val btn_addCategory = view.findViewById<FloatingActionButton>(R.id.btn_add_new_category)
         btn_addCategory.setOnClickListener(View.OnClickListener {
             showAddCategoryDialog()
         })
-        val recyclerview = requireActivity().findViewById<RecyclerView>(R.id.category_recyclerView)
+        val recyclerview = view.findViewById<RecyclerView>(R.id.category_recyclerView)
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(context)
 
-        val adapter = TagCategoryAdapter(allCategories, allCategories_id, "categories", this)
+        val adapter = TagCategoryAdapter(allCategories, allCategories_id, this)
         // Setting the Adapter with the recyclerview
-
-
         recyclerview.adapter = adapter
         getallCategories(adapter)
+        return view
     }
+
 
     private fun getallCategories(adapter: TagCategoryAdapter) {
         var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
@@ -107,7 +101,7 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
         btn_add_category.setOnClickListener {
             val category_name_text = category_name.text.toString()
             if (category_name_text.isEmpty()) {
-                category_name!!.requestFocus()
+                category_name.requestFocus()
                 category_name.error = "Name cannot be empty"
 
             } else {
@@ -123,7 +117,7 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
         AlertDialog.Builder(activity)
                 .setTitle("Delete category")
                 .setMessage("Are you sure you want to delete this category?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app").getReference("categories").child(id).removeValue()
                 })
                 .setNegativeButton(android.R.string.no, null)

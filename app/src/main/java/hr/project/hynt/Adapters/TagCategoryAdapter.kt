@@ -1,4 +1,4 @@
-package hr.project.hynt
+package hr.project.hynt.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import hr.project.hynt.FirebaseDatabase.TagCategory
+import hr.project.hynt.R
 
-class TagCategoryAdapter (private val mList: List<String>, private val mList_id: List<String>, private val type: String, val mItemClickListener:ItemClickListener) : RecyclerView.Adapter<TagCategoryAdapter.ViewHolder>() {
+class TagCategoryAdapter (private val mList: List<String>, private val mList_id: List<String>, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<TagCategoryAdapter.ViewHolder>() {
 
     interface ItemClickListener{
         fun onItemClick(id: String)

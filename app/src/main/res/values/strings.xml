@@ -8,7 +8,13 @@
     <string name="main_launch_subtitle">Find interesting places around you</string>
 
 
+    <!-- Basic -->
     <string name="email">Email</string>
+    <string name="btn_save">Save</string>
+    <string name="closed">Closed</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="name">Name</string>
 
     <string name="auth_txt_not_account">Don\'t have account?</string>
     <string name="auth_txt_already_account">Already have account?</string>
@@ -48,5 +54,37 @@
     <string name="dialog_add_category_title">Add new Category</string>
     <string name="dialog_add_category_name">Category name</string>
     <string name="dialog_add_category_button">Add Category</string>
+	
+	
+    <string name="places_title">Places</string>
+    <string name="place_title">Place</string>
+
+    <string name="add_place_title">Add place</string>
+    <string name="place_gBasicInf">Basic informations</string>
+    <string name="place_gContact">Contact</string>
+    <string name="place_gWorkhours">Workhours</string>
+    <string name="place_gImages">Images</string>
+    <string name="place_name">@string/name</string>
+    <string name="place_address">@string/address</string>
+    <string name="place_description">Description</string>
+    <string name="place_phone">@string/phone</string>
+    <string name="place_email">@string/email</string>
+    <string name="place_website">Website URL</string>
+
+    <!--Workhours-->
+
+    <string name="workhours_title">Workhours</string>
+    <string name="start_hour">Start</string>
+    <string name="end_hour">End</string>
+
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="add_place_city">City-Country</string>
 
 </resources>

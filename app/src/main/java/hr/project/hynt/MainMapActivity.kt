@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,14 +23,21 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -42,9 +48,12 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import hr.project.hynt.Adapters.PlacesAdapter
+import hr.project.hynt.FirebaseDatabase.Place
+import java.util.*
 
 
-class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener {
+class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener {
 
     private var mapView: MapView? = null
     private var mapboxMap: MapboxMap? = null
@@ -53,6 +62,9 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
+
+    var allPlaces = ArrayList<Place>()
+    var allPlacesId = ArrayList<String>()
 
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
@@ -63,7 +75,13 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
         setContentView(R.layout.activity_main_map)
 
-        setContentView(R.layout.activity_main_map)
+        val recyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
+        // this creates a horizontal linear layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        val adapter = PlacesAdapter(allPlaces, allPlacesId, this)
+        recyclerview.adapter = adapter
+        getAllPlaces(adapter)
         ////set action bar
         setCustomActionBar()
         ////drawer for filter
@@ -77,22 +95,23 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapView!!.getMapAsync(this)
 
     }
+
     private fun setCustomActionBar() {
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         val customView: View = LayoutInflater.from(this).inflate(
-            R.layout.action_bar, LinearLayout(
+                R.layout.action_bar, LinearLayout(
                 this
-            ), false
+        ), false
         )
         supportActionBar!!.customView = customView
         supportActionBar?.setBackgroundDrawable(
-            ColorDrawable(
-                ContextCompat.getColor(
-                    this,
-                    R.color.black_blue
+                ColorDrawable(
+                        ContextCompat.getColor(
+                                this,
+                                R.color.black_blue
+                        )
                 )
-            )
         )
 
         val btn_user : LinearLayout = customView.findViewById<View>(R.id.btn_user_profile) as LinearLayout
@@ -106,24 +125,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         } else {
             btn_user.visibility = View.GONE
         }
-    }
-    private fun addDrawerFilter() {
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener {
-            drawerLayout.openDrawer(GravityCompat.END)
-        })
-        drawerLayout.setDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(view: View, v: Float) {}
-            override fun onDrawerOpened(view: View) {
-                supportActionBar!!.hide()
-            }
-
-            override fun onDrawerClosed(view: View) {
-                supportActionBar!!.show()
-            }
-
-            override fun onDrawerStateChanged(i: Int) {}
-        })
     }
     private fun addBottomSheet() {
         val mBottomSheetLayout : ConstraintLayout = findViewById(R.id.bottomSheet);
@@ -171,8 +172,9 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         }
         val add_place = bottomSheetDialog.findViewById<LinearLayout>(R.id.add_place)
         add_place!!.setOnClickListener(View.OnClickListener {
-            //goToAddPlace()
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, AddNewPlaceActivity::class.java)
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_addresses = bottomSheetDialog.findViewById<LinearLayout>(R.id.myAddresses)
         my_addresses!!.setOnClickListener(View.OnClickListener {
@@ -200,11 +202,60 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     private fun logOut(){
         FirebaseAuth.getInstance().signOut()
         getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE).edit().remove("Role").apply()
-        val intent = Intent(applicationContext, LaunchActivity::class.java)
+        val intent = Intent(this, LaunchActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent)
         finish()
     }
+
+    private fun addDrawerFilter() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        })
+        drawerLayout.setDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(view: View, v: Float) {}
+            override fun onDrawerOpened(view: View) {
+                supportActionBar!!.hide()
+            }
+
+            override fun onDrawerClosed(view: View) {
+                supportActionBar!!.show()
+            }
+
+            override fun onDrawerStateChanged(i: Int) {}
+        })
+    }
+
+    fun getAllPlaces(adapter: PlacesAdapter) {
+        val places_query = db.getReference("places")
+        places_query.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                allPlaces.clear()
+                allPlacesId.clear()
+                if (snapshot.exists()) {
+                    for (places : DataSnapshot in snapshot.children) {
+                        val place : Place? = places.getValue<Place>()
+                        if (place != null) {
+                            allPlaces.add(place)
+                            allPlacesId.add(places.key.toString())
+                            mapboxMap?.addMarker(
+                                    MarkerOptions()
+                                            .position(LatLng(place.lat, place.lng))
+                                            .title(place.title))
+                        }
+                    }
+                    adapter.notifyDataSetChanged()
+
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Database Error", "Failed to read value.", error.toException())
+            }
+
+        })
+    }
+
 
     private fun askLocationPermission() {
         //ask for location permission
@@ -268,13 +319,13 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 AlertDialog.Builder(this)
                         .setTitle("Can't access your location")
                         .setMessage("Please turn on your device location and refresh app")
-                        .setPositiveButton("Refresh", DialogInterface.OnClickListener { dialog, which ->
+                        .setPositiveButton("Refresh", DialogInterface.OnClickListener { _, _ ->
                             finish()
                             overridePendingTransition(0,0)
                             startActivity(intent)
                             overridePendingTransition(0,0)
                             })
-                        .setNegativeButton("Exit", DialogInterface.OnClickListener { dialog, which ->
+                        .setNegativeButton("Exit", DialogInterface.OnClickListener { _, _ ->
                             finish()
                         })
                         .setIcon(R.drawable.ic_map_alert)
@@ -322,7 +373,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 AlertDialog.Builder(this)
                         .setTitle("Denied location")
                         .setMessage("You have not granted permission to access your location! You need to change that in settings before using this app. ")
-                        .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which ->
+                        .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { _, _ ->
                             finish()
                         })
                         .setIcon(R.drawable.ic_map_alert)
@@ -394,6 +445,10 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     override fun onLowMemory() {
         super.onLowMemory()
         mapView!!.onLowMemory()
+    }
+
+    override fun onItemClick(id: String) {
+        Toast.makeText(this, "clicked place no:$id", Toast.LENGTH_SHORT).show()
     }
 
 }

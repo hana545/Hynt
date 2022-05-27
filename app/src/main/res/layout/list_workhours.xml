@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+   >
+
+    <RelativeLayout
+        android:id="@+id/add_workhours_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="5dp">
+
+
+        <LinearLayout
+            android:id="@+id/monday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/monday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/monday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/monday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_monday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/monday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/monday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/tuesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/monday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/tuesday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/tuesday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/tuesday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_tuesday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/tuesday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/tuesday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/wednesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/tuesday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/wednesday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/wednesday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/wednesday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_wednesday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/wednesday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/wednesday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/thursday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/wednesday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/thursday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/thursday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/thursday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_thursday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/thursday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/thursday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/friday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/thursday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/friday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/friday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/friday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_friday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/friday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/friday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/saturday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/friday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/saturday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 android:text="@string/saturday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/saturday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_saturday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/saturday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/saturday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/sunday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/saturday"
+            android:weightSum="1">
+            <TextView
+                android:id="@+id/sunday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sunday"
+                android:letterSpacing="0.15"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black_blue"
+                android:fontFamily="@font/auttera"
+                android:textStyle="bold"
+                android:layout_weight="0.7"
+                />
+            <TextView
+                android:id="@+id/sunday_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="--:--  –  --:--"
+
+                android:layout_weight="0.2"
+                android:textAlignment="center" />
+            <ImageButton
+                android:id="@+id/btn_edit_sunday_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_edit"/>
+
+            <TextView
+                android:id="@+id/sunday1_hour_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/sunday1_hour_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+<!---
+            <LinearLayout
+                android:id="@+id/monday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="5dp"
+                android:background="@drawable/bg_rounded_border"
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/monday_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Monday"
+                    android:letterSpacing="0.15"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:textColor="@color/black_blue"
+                    android:fontFamily="@font/auttera"
+                    android:textStyle="bold"
+                    />
+                <LinearLayout
+                    android:id="@+id/monday1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/monday1_hour_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="Start"
+
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageView
+                        android:layout_width="23dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_minus" />
+                    <TextView
+                        android:id="@+id/monday1_hour_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="End"
+
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+
+                </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_add_monday2_hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:padding="10dp"
+                    android:backgroundTint="@color/blue_light"
+                    android:background="@drawable/bg_rounded_border"
+                    android:src="@drawable/ic_plus"/>
+                <LinearLayout
+                    android:id="@+id/monday2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:weightSum="1"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/monday2_hour_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="Start"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageView
+                        android:layout_width="23dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_minus" />
+                    <TextView
+                        android:id="@+id/monday2_hour_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="End"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageButton
+                        android:id="@+id/btn_remove_monday_hour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:backgroundTint="@color/transparent"
+                        android:src="@drawable/ic_remove"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tuesday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="5dp"
+                android:background="@drawable/bg_rounded_border"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_below="@id/monday"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tuesday_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tuesday"
+                    android:letterSpacing="0.15"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:textColor="@color/black_blue"
+                    android:fontFamily="@font/auttera"
+                    android:textStyle="bold"
+                    />
+                <LinearLayout
+                    android:id="@+id/tuesday1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tuesday1_hour_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="Start"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageView
+                        android:layout_width="23dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_minus" />
+                    <TextView
+                        android:id="@+id/tuesday1_hour_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="End"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+
+                </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_add_tuesday2_hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:padding="10dp"
+                    android:backgroundTint="@color/blue_light"
+                    android:background="@drawable/bg_rounded_border"
+                    android:src="@drawable/ic_plus"/>
+                <LinearLayout
+                    android:id="@+id/tuesday2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="5dp"
+                    android:weightSum="1"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tuesday2_hour_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="Start"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageView
+                        android:layout_width="23dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_minus" />
+                    <TextView
+                        android:id="@+id/tuesday2_hour_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:hint="End"
+                        style="@style/Widget.AppCompat.EditText"
+                        android:padding="15dp"
+                        android:layout_weight="0.4"
+                        android:ems="10" />
+
+                    <ImageButton
+                        android:id="@+id/btn_remove_tuesday_hour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:backgroundTint="@color/transparent"
+                        android:src="@drawable/ic_remove"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+-->
+        </RelativeLayout>
+</RelativeLayout>
