@@ -3,6 +3,7 @@ package hr.project.hynt
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -12,9 +13,11 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.ArrayMap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -23,11 +26,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -49,8 +53,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import hr.project.hynt.Adapters.PlacesAdapter
+import hr.project.hynt.Adapters.ReviewsAdapter
 import hr.project.hynt.FirebaseDatabase.Place
+import hr.project.hynt.FirebaseDatabase.Review
 import java.util.*
+import java.text.SimpleDateFormat
 
 
 class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener {
@@ -65,6 +72,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
+    var allPlacesRevScore = ArrayMap<String, HashMap<String, Int>>()
 
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
@@ -100,7 +108,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         val customView: View = LayoutInflater.from(this).inflate(
-                R.layout.action_bar, LinearLayout(
+                R.layout.layout_action_bar, LinearLayout(
                 this
         ), false
         )
@@ -233,10 +241,11 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
                 allPlacesId.clear()
+                allPlacesRevScore.clear()
                 if (snapshot.exists()) {
                     for (places : DataSnapshot in snapshot.children) {
                         val place : Place? = places.getValue<Place>()
-                        if (place != null) {
+                        if (place != null && place.approved) {
                             allPlaces.add(place)
                             allPlacesId.add(places.key.toString())
                             mapboxMap?.addMarker(
@@ -447,8 +456,231 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapView!!.onLowMemory()
     }
 
-    override fun onItemClick(id: String) {
-        Toast.makeText(this, "clicked place no:$id", Toast.LENGTH_SHORT).show()
+    override fun onItemClick(place: Place, id: String, score: Int, hasRev: Boolean, reviewID : String, review : Review, allReview : List<Review>){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setContentView(R.layout.dialog_show_place)
+
+        val place_title : TextView = dialog.findViewById<TextView>(R.id.show_place_title_data)
+        place_title.text = place.title
+        val place_description : TextView = dialog.findViewById<TextView>(R.id.show_place_description)
+        place_description.text = place.desc
+        dialog.findViewById<ImageView>(R.id.close_dialog).setOnClickListener { dialog.dismiss() }
+
+        //for reviewing
+        if (authUser != null) {
+            val myReview: LinearLayout = dialog.findViewById<LinearLayout>(R.id.myReview_layout)
+            val btn_leaveReview : Button = dialog.findViewById<Button>(R.id.btn_review)
+            val btn_saveReview: Button = dialog.findViewById<Button>(R.id.btn_save_review)
+            val btn_cancelReview: Button = dialog.findViewById<Button>(R.id.btn_cancel_review)
+            btn_leaveReview.visibility = View.VISIBLE
+
+            val review_text: EditText = dialog.findViewById<EditText>(R.id.show_place_myReviewText)
+            val review_score: TextView = dialog.findViewById<TextView>(R.id.show_place_myReviewScore_summary)
+            val list_stars = ArrayList<ImageView>()
+            val myStar1: ImageView = dialog.findViewById<ImageView>(R.id.my_star1)
+            val myStar2: ImageView = dialog.findViewById<ImageView>(R.id.my_star2)
+            val myStar3: ImageView = dialog.findViewById<ImageView>(R.id.my_star3)
+            val myStar4: ImageView = dialog.findViewById<ImageView>(R.id.my_star4)
+            val myStar5: ImageView = dialog.findViewById<ImageView>(R.id.my_star5)
+            list_stars.add(myStar1)
+            list_stars.add(myStar2)
+            list_stars.add(myStar3)
+            list_stars.add(myStar4)
+            list_stars.add(myStar5)
+            var checked_stars: Int = 0
+
+            if (hasRev){
+                btn_leaveReview.text = "Edit your review"
+                review_text.setText(review.txt)
+                checked_stars = review.stars
+                review_score.text = "You rated this place with "+checked_stars
+                review_score.text = review_score.text.toString() + if (checked_stars > 1)  " stars" else " star"
+                check_stars(review.stars-1, list_stars)
+                btn_saveReview.text = "Update review"
+            }
+
+            myStar1.setOnClickListener {
+                checked_stars = 1
+                check_stars(0, list_stars)
+                review_score.text  = "Thanks you are rating this with 1 star"
+            }
+            myStar2.setOnClickListener {
+                checked_stars = 2
+                check_stars(1, list_stars)
+                review_score.text  = "Thanks you are rating this with 2 stars"
+            }
+            myStar3.setOnClickListener {
+                checked_stars = 3
+                check_stars(2, list_stars)
+                review_score.text  = "Thanks you are rating this with 3 stars"
+            }
+            myStar4.setOnClickListener {
+                checked_stars = 4
+                check_stars(3, list_stars)
+                review_score.text  = "Thanks you are rating this with 4 stars"
+            }
+            myStar5.setOnClickListener {
+                checked_stars = 5
+                check_stars(4, list_stars)
+                review_score.text  = "Thanks you are rating this with 5 stars"
+            }
+            btn_leaveReview.setOnClickListener {
+                myReview.visibility = View.VISIBLE
+                btn_leaveReview.visibility = View.GONE
+
+            }
+            btn_cancelReview.setOnClickListener {
+                myReview.visibility = View.GONE
+                btn_leaveReview.visibility = View.VISIBLE
+                if (hasRev){
+                    btn_leaveReview.text = "Edit your review"
+                    review_text.setText(review.txt)
+                    checked_stars = review.stars
+                    review_score.text = "You rated this place with "+checked_stars
+                    review_score.text = review_score.text.toString() + if (checked_stars > 1)  " stars" else " star"
+                    check_stars(review.stars-1, list_stars)
+                    btn_saveReview.text = "Update review"
+                } else {
+                    btn_leaveReview.text = "Leave a review"
+                    check_stars(-1, list_stars)
+                    review_score.text  = ""
+                    review_text.setText("")
+                    btn_saveReview.text = "Send review"
+                }
+            }
+
+
+            btn_saveReview.setOnClickListener {
+                if (checked_stars > 0 && checked_stars < 6) {
+                    val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, place.title, id)
+                    val reviewP = Review( Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, authUser.displayName!!, authUser.uid)
+                    if (hasRev){
+                        db.getReference("places").child(id).child("reviews").child(reviewID).setValue(reviewP)
+                        db.getReference("users").child(authUser.uid).child("reviews").child(reviewID).setValue(reviewU)
+                    } else {
+                        val key = db.getReference("reviews").push().key.toString()
+                        db.getReference("places").child(id).child("reviews").child(key).setValue(reviewP)
+                        db.getReference("users").child(authUser.uid).child("reviews").child(key).setValue(reviewU)
+                    }
+                    dialog.dismiss()
+                    show_info_dialog("Thank you for reviewing "+place.title+"!")
+
+
+                }
+            }
+        }
+
+        //for Review
+        val list_stars = ArrayList<ImageView>()
+        val star1: ImageView = dialog.findViewById<ImageView>(R.id.star1)
+        val star2: ImageView = dialog.findViewById<ImageView>(R.id.star2)
+        val star3: ImageView = dialog.findViewById<ImageView>(R.id.star3)
+        val star4: ImageView = dialog.findViewById<ImageView>(R.id.star4)
+        val star5: ImageView = dialog.findViewById<ImageView>(R.id.star5)
+        list_stars.add(star1)
+        list_stars.add(star2)
+        list_stars.add(star3)
+        list_stars.add(star4)
+        list_stars.add(star5)
+        Log.d("PlacesAdapter", "Check stars in dialog - score: "+score)
+        check_stars(score-1, list_stars)
+
+        //for Addres and Category
+        val place_address : TextView = dialog.findViewById<TextView>(R.id.show_place_address_data)
+        val place_category : TextView = dialog.findViewById<TextView>(R.id.show_place_category)
+        place_address.text = place.address
+        place_category.text = place.category
+
+        // for Tags
+        for (tag in place.tags){
+            val chip = this.layoutInflater.inflate(R.layout.view_chips_buttons, null, false) as Chip
+            chip.text = tag
+            chip.isEnabled = false
+            dialog.findViewById<FlexboxLayout>(R.id.show_place_tags_chip_group).addView(chip)
+        }
+        //for Contacts
+        val place_phone : TextView = dialog.findViewById<TextView>(R.id.show_place_phone)
+        val place_email : TextView = dialog.findViewById<TextView>(R.id.show_place_email)
+        val place_web : TextView = dialog.findViewById<TextView>(R.id.show_place_web)
+
+        val phone_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        if (!place.phone1.isEmpty() && !place.phone2.isEmpty()) {
+            place_phone.text = place.phone1 + '\n' + place.phone2
+            phone_layout.visibility = View.VISIBLE
+        } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()){
+            place_phone.text = place.phone1 + place.phone2
+            phone_layout.visibility = View.VISIBLE
+        }
+        val email_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        if (!place.email1.isEmpty() && !place.email2.isEmpty()) {
+            place_email.text = place.email1 + '\n' + place.email2
+            email_layout.visibility = View.VISIBLE
+        } else if (!place.email1.isEmpty() || !place.email2.isEmpty()) {
+            place_email.text = place.email1 + place.email2
+            email_layout.visibility = View.VISIBLE
+        }
+        val web_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        if (!place.website1.isEmpty() && !place.website2.isEmpty()) {
+            place_web.text = place.website1 + '\n' + place.website2
+            web_layout.visibility = View.VISIBLE
+        } else  if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
+            place_web.text = place.website1 + place.website2
+            web_layout.visibility = View.VISIBLE
+        }
+        if (phone_layout.visibility.equals(View.VISIBLE) || email_layout.visibility.equals(View.VISIBLE) || web_layout.visibility.equals(View.VISIBLE)){
+            dialog.findViewById<LinearLayout>(R.id.show_place_contacts).visibility = View.VISIBLE
+        } else {
+            dialog.findViewById<LinearLayout>(R.id.show_place_contacts).visibility = View.GONE
+        }
+
+        //for Workhours
+        var any = false
+        for(i in 1..7){
+            if (!place.workhours[i].isEmpty()) any = true
+        }
+        if (!any){
+            dialog.findViewById<LinearLayout>(R.id.show_place_workhours).visibility = View.GONE
+        } else {
+            dialog.findViewById<TextView>(R.id.monday_hours).text = place.workhours.monday
+            dialog.findViewById<TextView>(R.id.tuesday_hours).text = place.workhours.tuesday
+            dialog.findViewById<TextView>(R.id.wednesday_hours).text = place.workhours.wednesday
+            dialog.findViewById<TextView>(R.id.thursday_hours).text = place.workhours.thursday
+            dialog.findViewById<TextView>(R.id.friday_hours).text = place.workhours.friday
+            dialog.findViewById<TextView>(R.id.saturday_hours).text = place.workhours.saturday
+            dialog.findViewById<TextView>(R.id.sunday_hours).text = place.workhours.sunday
+        }
+
+        ///for Reviews
+        val review_container = dialog.findViewById<RecyclerView>(R.id.show_place_review_list)
+        review_container.layoutManager = LinearLayoutManager(baseContext)
+
+        val adapter = ReviewsAdapter(allReview)
+        review_container.adapter = adapter
+
+        dialog.show()
+    }
+    private fun show_info_dialog(text : String){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setContentView(R.layout.dialog_info)
+        dialog.findViewById<TextView>(R.id.info_text).text = text
+        dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
+        dialog.show()
+    }
+
+    private fun check_stars(n: Int, list_stars : ArrayList<ImageView>) {
+        for (i in 0..4) {
+            if (i > n) {
+                list_stars[i].setImageResource(R.drawable.ic_star_review_off)
+                continue
+            }
+            list_stars[i].setImageResource(R.drawable.ic_star_review_on)
+        }
     }
 
 }

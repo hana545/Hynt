@@ -405,7 +405,7 @@
                 android:visibility="gone"
                 android:layout_below="@+id/btn_add_place_workhours_label"
                 android:orientation="horizontal">
-                <include layout="@layout/list_workhours" />
+                <include layout="@layout/layout_list_workhours" />
             </LinearLayout>
 
             <Button

@@ -1,6 +1,7 @@
 package hr.project.hynt.FirebaseDatabase
 
-data class User(val username: String, val email: String) {
+import java.util.*
+data class User(val username: String, val email: String, val reviews : ArrayList<Review> = ArrayList<Review>()) {
 
 
 }

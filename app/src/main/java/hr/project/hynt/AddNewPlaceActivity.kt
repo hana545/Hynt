@@ -39,6 +39,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions
 import hr.project.hynt.FirebaseDatabase.Place
+import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.Workhour
 import retrofit2.Call
 import retrofit2.Callback
@@ -259,9 +260,11 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         val btn_remove_firstH = dialog.findViewById<ImageButton>(R.id.btn_remove_hour)
         val btn_remove_secondH = dialog.findViewById<ImageButton>(R.id.btn_remove_hour2)
         val checkbox_closed = dialog.findViewById<CheckBox>(R.id.checkbox_closed)
+        val checkbox_open24 = dialog.findViewById<CheckBox>(R.id.checkbox_open24)
 
         btn_add_hour.setOnClickListener {
             checkbox_closed.isChecked = false
+            checkbox_open24.isChecked = false
             if (secondH_view.visibility == View.VISIBLE){
                 firstH_view.visibility = View.VISIBLE
             } else if ( firstH_view.visibility == View.VISIBLE){
@@ -278,6 +281,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             btn_add_hour.visibility = View.VISIBLE
             if (secondH_view.visibility != View.VISIBLE){
                 checkbox_closed.isChecked = true
+                checkbox_open24.isChecked = false
             }
         }
         btn_remove_secondH.setOnClickListener {
@@ -285,6 +289,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             btn_add_hour.visibility = View.VISIBLE
             if (firstH_view.visibility != View.VISIBLE){
                 checkbox_closed.isChecked = true
+                checkbox_open24.isChecked = false
             }
         }
         checkbox_closed.setOnClickListener {
@@ -292,6 +297,18 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 firstH_view.visibility = View.GONE
                 secondH_view.visibility = View.GONE
                 btn_add_hour.visibility = View.VISIBLE
+                checkbox_open24.isChecked = false
+            } else {
+                firstH_view.visibility = View.VISIBLE
+                btn_add_hour.visibility = View.VISIBLE
+            }
+        }
+        checkbox_open24.setOnClickListener {
+            if (checkbox_open24.isChecked){
+                firstH_view.visibility = View.GONE
+                secondH_view.visibility = View.GONE
+                btn_add_hour.visibility = View.VISIBLE
+                checkbox_closed.isChecked = false
             } else {
                 firstH_view.visibility = View.VISIBLE
                 btn_add_hour.visibility = View.VISIBLE
@@ -316,6 +333,9 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             if(hours == "Closed"){
                 firstH_view.visibility = View.GONE
                 checkbox_closed.isChecked = true
+            } else if(hours == "Open 24h"){
+                firstH_view.visibility = View.GONE
+                checkbox_open24.isChecked = true
             } else {
                 //17 : 40 - 17 : 40
                 hStart1 = Integer.parseInt(hours.substring(0, 2))
@@ -393,8 +413,10 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             val dayId : List<Int> = chipgroup.checkedChipIds
             var chipID: String
             var targetID: String
-            if ((( (start1.text.isEmpty() || end1.text.isEmpty()) && firstH_view.visibility == View.VISIBLE ) || ((start2.text.isEmpty() && end2.text.isEmpty()) && secondH_view.visibility == View.VISIBLE)) && !checkbox_closed.isChecked) {
+            if ((( (start1.text.isEmpty() || end1.text.isEmpty()) && firstH_view.visibility == View.VISIBLE ) || ((start2.text.isEmpty() && end2.text.isEmpty()) && secondH_view.visibility == View.VISIBLE)) && !checkbox_closed.isChecked && !checkbox_open24.isChecked) {
                 Toast.makeText(this, "Both, start and end hours, are needed!", Toast.LENGTH_SHORT).show()
+            } else if ((start1.text == end1.text && firstH_view.visibility == View.VISIBLE ) || ((start2.text == end2.text && secondH_view.visibility == View.VISIBLE)) && !checkbox_closed.isChecked) {
+                Toast.makeText(this, "Workhour can't start and end on the same hour, check Open 24h instead", Toast.LENGTH_SHORT).show()
             } else {
                for (id in dayId){
                     val chip = chipgroup.findViewById(id) as Chip
@@ -402,7 +424,9 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                     targetID = chipID.drop("chipDay_".length) + "_hours" //tuesday_hours
                     if (checkbox_closed.isChecked){
                         findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = "Closed"
-                    } else {
+                    } else if (checkbox_open24.isChecked){
+                       findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = "Open 24h"
+                   } else {
                         var time =  ""
                         if (firstH_view.visibility.equals(View.VISIBLE)) time = time + start1.text + " - " + end1.text
                         if (firstH_view.visibility.equals(View.VISIBLE) && secondH_view.visibility.equals(View.VISIBLE)) time += "\n"
@@ -461,7 +485,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         val customView: View = LayoutInflater.from(this).inflate(
-                R.layout.action_bar, LinearLayout(
+                R.layout.layout_action_bar, LinearLayout(
                 this
         ), false
         )
@@ -657,7 +681,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private fun addPlace(place_name_text: String, place_address_text: String, place_description_text: String, place_phone1_text: String, place_email1_text: String, place_website1_text: String, place_phone2_text: String, place_email2_text: String, place_website2_text: String, place_workhours: Workhour, category: String, selectedTags: ArrayList<String>) {
 
             if (FirebaseAuth.getInstance().currentUser != null) {
-                val nPlace = Place(place_name_text,place_address_text,coordinates.latitude, coordinates.longitude, place_description_text, place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
+                val nPlace = Place(place_name_text,place_address_text,coordinates.latitude, coordinates.longitude, place_description_text, place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
                 var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
                 val key: String = db.getReference("places").push().key.toString()
                 db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {

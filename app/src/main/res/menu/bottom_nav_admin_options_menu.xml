@@ -3,13 +3,13 @@
     <item
         android:id="@+id/admin_manage_places"
         android:title="Manage Places"
-        android:icon="@android:drawable/ic_dialog_map"/>
+        android:icon="@drawable/ic_menu_map_locations"/>
     <item
         android:id="@+id/admin_tags"
         android:title="Tags"
-        android:icon="@android:drawable/ic_menu_agenda"/>
+        android:icon="@drawable/ic_tag"/>
     <item
         android:id="@+id/admin_categories"
         android:title="Categories"
-        android:icon="@android:drawable/ic_dialog_dialer"/>
+        android:icon="@drawable/ic_category"/>
 </menu>

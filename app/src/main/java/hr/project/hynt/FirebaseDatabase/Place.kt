@@ -26,6 +26,7 @@ data class Place(val title: String = "",
                  val workhours: Workhour = Workhour(),
                  val category : String = "",
                  val tags : ArrayList<String> = ArrayList<String>(),
+                 val reviews : HashMap<String, Review> = HashMap<String, Review>(),
                  val authorID: String = "",
                  val approved: Boolean = false
 

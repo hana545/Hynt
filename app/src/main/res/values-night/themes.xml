@@ -16,8 +16,14 @@
         <item name="android:editTextPreferenceStyle">@color/white</item>
         <item name="android:editTextStyle">@color/white</item>
     </style>
+
     <style name="TagChipFilter" parent="@style/Widget.MaterialComponents.Chip.Filter">
         <item name="chipBackgroundColor">@color/background_color_chip_state_list</item>
         <item name="android:textColor">@color/text_color_chip_state_list</item>
     </style>
+    <style name="DayChip" parent="@style/Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/background_color_chip_state_list</item>
+        <item name="android:textColor">@color/text_color_chip_state_list</item>
+    </style>
+
 </resources>

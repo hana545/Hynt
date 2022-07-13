@@ -91,7 +91,7 @@
             android:gravity="center_horizontal" />
 
 
-        <include layout="@layout/filter"/>
+        <include layout="@layout/layout_filter"/>
 
     </LinearLayout>
 <!--Custom Navigation Drawer End -->

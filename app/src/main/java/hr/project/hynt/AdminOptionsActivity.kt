@@ -89,7 +89,7 @@ class AdminOptionsActivity : AppCompatActivity() {
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         val customView: View = LayoutInflater.from(this).inflate(
-                R.layout.action_bar, LinearLayout(
+                R.layout.layout_action_bar, LinearLayout(
                 this
         ), false
         )

@@ -4,21 +4,28 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.util.CollectionUtils.listOf
+import com.google.firebase.auth.FirebaseAuth
 import hr.project.hynt.FirebaseDatabase.Place
+import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.Workhour
 import hr.project.hynt.R
+import java.lang.Math.round
 import java.util.*
 
 class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<String>, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
 
+    val authUser = FirebaseAuth.getInstance().currentUser
+    var hasRev : MutableList<Boolean> = ArrayList()
+    var reviewID : MutableList<String> = ArrayList()
+    var review : MutableList<Review> = ArrayList()
+    var score : MutableList<Int> = ArrayList()
+    var allReviews = ArrayList<ArrayList<Review>>()
+
     interface ItemClickListener{
-        fun onItemClick(id: String)
+        fun onItemClick(place: Place, id: String, score: Int, hasRev: Boolean, reviewID : String, review : Review, allReviews : List<Review>)
     }
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,9 +41,14 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val place = mList[position]
+        hasRev.add(false)
+        reviewID.add("")
+        review.add(Review())
+        score.add(0)
+        allReviews.add(ArrayList<Review>())
 
         holder.title.text = place.title
-        holder.address.text = place.address
+        holder.address.text = place.address.substringBefore(',')
         holder.category.text = place.category
         val opened = checkWorkhour(place.workhours)
         if (opened == 0){
@@ -46,11 +58,40 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
         } else {
             holder.workhour.visibility = View.INVISIBLE
         }
-        holder.card.setOnClickListener{
-            mItemClickListener.onItemClick(mList_id[position])
+
+        hasRev[position] = false
+        if(!place.reviews.isEmpty()){
+            score[position] = 0
+            var size = 0
+            allReviews[position].clear()
+            place.reviews.forEach { id, rev ->
+                allReviews[position].add(rev)
+                size++
+                score[position] += rev.stars
+                if (authUser != null) {
+                    if (rev.refId.equals(authUser.uid)){
+                        reviewID[position] = id
+                        hasRev[position] = true
+                        review[position] = rev
+                    }
+                }
+            }
+            val tmp_score = (score[position].toFloat() / size)
+            score[position] = round(tmp_score)
         }
 
+        val list_stars = ArrayList<ImageView>()
+        list_stars.add(holder.star1)
+        list_stars.add(holder.star2)
+        list_stars.add(holder.star3)
+        list_stars.add(holder.star4)
+        list_stars.add(holder.star5)
+        check_stars(score[position], list_stars)
 
+        holder.card.setOnClickListener{
+            val sortedReviews = allReviews[position].sortedWith(compareBy({ it.timestamp })).reversed()
+            mItemClickListener.onItemClick(place, mList_id[position], score[position], hasRev[position], reviewID[position], review[position], sortedReviews)
+        }
     }
 
     // return the number of the items in the list
@@ -66,46 +107,53 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
         val workhour: ImageView = itemView.findViewById(R.id.workhour_icon)
         val card: CardView = itemView.findViewById(R.id.place_card)
 
+        val star1: ImageView = itemView.findViewById(R.id.star1)
+        val star2: ImageView = itemView.findViewById(R.id.star2)
+        val star3: ImageView = itemView.findViewById(R.id.star3)
+        val star4: ImageView = itemView.findViewById(R.id.star4)
+        val star5: ImageView = itemView.findViewById(R.id.star5)
+
+
     }
 
     private fun checkWorkhour(workhours : Workhour) : Int {
-        val days = listOf("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
         var day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        Log.d("PlaceAdapter", "day: "+day)
         val current_workhours = workhours[day]
         if (current_workhours.isEmpty()){
             return 2
         } else if (current_workhours == "Closed") {
             return 0
+        } else if (current_workhours == "Open 24h") {
+            return 1
         } else {
             val range1 = current_workhours.substringBefore('\n')
-            Log.d("PlaceAdapter", "range1: "+range1)
             val start1 = range1.substring(0,2).toInt() * 100 + range1.substring(5,7).toInt()
-            Log.d("PlaceAdapter", "start1: "+start1)
             val end1 = range1.substring(10,12).toInt() * 100 + range1.substring(15,17).toInt()
-            Log.d("PlaceAdapter", "end1: "+end1)
             if (checkHours(start1, end1)) return 1
             if (current_workhours.length > 20){
                 val range2 = current_workhours.substringAfter('\n')
                 val start2 = range2.substring(0,2).toInt() * 100 + range2.substring(5,7).toInt()
                 val end2 = range2.substring(10,12).toInt() * 100 + range2.substring(15,17).toInt()
                 if (checkHours(start2, end2)) return 1
-                Log.d("PlaceAdapter", "end2: "+end2)
-                Log.d("PlaceAdapter", "range2: "+range2)
-                Log.d("PlaceAdapter", "start2: "+start2)
             }
         }
         return 0
     }
 
     private fun checkHours(start: Int, end: Int) : Boolean {
-        var hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) * 100 + Calendar.getInstance().get(Calendar.MINUTE)
-        if (start < hour && end > hour){
-           return true
-        } else {
-            return false
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) * 100 + Calendar.getInstance().get(Calendar.MINUTE)
+        return start < hour && end > hour
+    }
+
+    private fun check_stars(n: Int, list_stars: ArrayList<ImageView>) {
+        for (i in 0..4) {
+            if (i >= n) {
+                list_stars[i].setImageResource(R.drawable.ic_star_review_off)
+                continue
+            }
+            list_stars[i].setImageResource(R.drawable.ic_star_review_on)
         }
-        return true
+
     }
 
 
