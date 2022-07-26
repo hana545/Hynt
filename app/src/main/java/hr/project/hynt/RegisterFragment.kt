@@ -116,7 +116,7 @@ class RegisterFragment : Fragment() {
         }
         if (password.isEmpty()) {
             password_edittext!!.requestFocus()
-            password_error = "Enter valid email address"
+            password_error = "Password can not be empty"
             password_error_view?.setText(password_error)
             password_error_view?.setVisibility(View.VISIBLE)
             validate = true
@@ -145,38 +145,37 @@ class RegisterFragment : Fragment() {
                         //add user to database
                         if (task.isSuccessful) {
                             val Fuser = FirebaseAuth.getInstance().currentUser
+                            val user = User(Calendar.getInstance().time, username, email)
                             val profileUpdates = UserProfileChangeRequest.Builder()
                                     .setDisplayName(username).build()
                             Fuser!!.updateProfile(profileUpdates)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             Log.d("User profile", "User profile updated.")
+                                            db.getReference("users").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(user).addOnCompleteListener { task ->
+                                                Log.d("User profile", "User profile created")
+                                                if (task.isSuccessful) {
+                                                    db.getReference("roles").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue("user")
+                                                    Toast.makeText(activity, "User has been registered successfully!", Toast.LENGTH_LONG).show()
+                                                    val shPref = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                                                    val editor = shPref.edit()
+                                                    editor.putString("Role", "user").apply()
+                                                    val intent = Intent(requireActivity(), MainMapActivity::class.java)
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    startActivity(intent)
+                                                    requireActivity().finish()
+
+                                                } else {
+                                                    progresBar!!.visibility = View.INVISIBLE
+                                                    Toast.makeText(
+                                                            activity,
+                                                            "Failed to register!.",
+                                                            Toast.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                            }
                                         }
                                     }
-                            val user = User(username, email)
-                            db.getReference("users").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(user).addOnCompleteListener { task ->
-                                        Log.d("User profile", "User profile created")
-                                        if (task.isSuccessful) {
-                                            db.getReference("roles").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue("user")
-                                            Toast.makeText(activity, "User has been registered successfully!", Toast.LENGTH_LONG).show()
-                                            val shPref = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                                            val editor = shPref.edit()
-                                            editor.putString("Role", "user").apply()
-                                            val intent = Intent(requireActivity(), MainMapActivity::class.java)
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            startActivity(intent)
-                                            requireActivity().finish()
-
-                                        } else {
-                                            progresBar!!.visibility = View.INVISIBLE
-                                            Toast.makeText(
-                                                    activity,
-                                                    "Failed to register!.",
-                                                    Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    }
-
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "createUserWithEmail:failure", task.exception)

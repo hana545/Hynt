@@ -22,6 +22,7 @@
             android:id="@+id/login_email_layout"
             android:layout_width="match_parent"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
@@ -49,6 +50,7 @@
             app:passwordToggleEnabled="true"
             android:layout_below="@+id/login_email_error"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -62,7 +64,6 @@
             android:layout_below="@+id/login_email_error"
             android:ems="10"
             android:textColor="@color/white"
-
             android:hint="@string/login_password"
             android:inputType="textPassword"
             android:background="@color/transparent" />

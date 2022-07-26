@@ -8,6 +8,7 @@
     android:background="@color/black_blue"
     android:weightSum = "1">
     <LinearLayout
+        android:id="@+id/btn_home"
         android:layout_width = "wrap_content"
         android:layout_height = "match_parent"
         android:layout_weight = "0.9">
@@ -45,5 +46,11 @@
             android:padding="5dp"
             android:textColor="@color/text_light"
             />
+        <ImageView
+            android:layout_width = "wrap_content"
+            android:layout_height = "match_parent"
+            android:padding="5dp"
+            android:gravity="center"
+            android:src = "@android:drawable/ic_menu_more" />
     </LinearLayout>
 </LinearLayout>

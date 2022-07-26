@@ -25,7 +25,7 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
     var allReviews = ArrayList<ArrayList<Review>>()
 
     interface ItemClickListener{
-        fun onItemClick(place: Place, id: String, score: Int, hasRev: Boolean, reviewID : String, review : Review, allReviews : List<Review>)
+        fun onItemClick(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
     }
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -60,10 +60,10 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
         }
 
         hasRev[position] = false
+        allReviews[position].clear()
+        score[position] = 0
         if(!place.reviews.isEmpty()){
-            score[position] = 0
             var size = 0
-            allReviews[position].clear()
             place.reviews.forEach { id, rev ->
                 allReviews[position].add(rev)
                 size++
@@ -90,7 +90,7 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
 
         holder.card.setOnClickListener{
             val sortedReviews = allReviews[position].sortedWith(compareBy({ it.timestamp })).reversed()
-            mItemClickListener.onItemClick(place, mList_id[position], score[position], hasRev[position], reviewID[position], review[position], sortedReviews)
+            mItemClickListener.onItemClick(position, place, mList_id[position], score[position], sortedReviews, hasRev[position], reviewID[position], review[position])
         }
     }
 

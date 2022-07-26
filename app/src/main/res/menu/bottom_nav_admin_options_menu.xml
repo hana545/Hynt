@@ -3,7 +3,7 @@
     <item
         android:id="@+id/admin_manage_places"
         android:title="Manage Places"
-        android:icon="@drawable/ic_menu_map_locations"/>
+        android:icon="@drawable/ic_buildings_town"/>
     <item
         android:id="@+id/admin_tags"
         android:title="Tags"

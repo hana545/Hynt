@@ -3,6 +3,7 @@ package hr.project.hynt
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -29,14 +31,16 @@ import hr.project.hynt.Adapters.PlacesManageAdapter
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.TagCategory
+import hr.project.hynt.FirebaseDatabase.User
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
+class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+    val authUser = FirebaseAuth.getInstance().currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +52,12 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
             savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_admin_manage_places, container, false)
+        val view = inflater.inflate(R.layout.fragment_user_my_places, container, false)
         val recyclerview = view.findViewById<RecyclerView>(R.id.place_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        val adapter = PlacesManageAdapter(allPlaces, allPlacesId, "admin", this)
+        val adapter = PlacesManageAdapter(allPlaces, allPlacesId, "user",this)
         recyclerview.adapter = adapter
         getAllPlaces(adapter)
         // Inflate the layout for this fragment
@@ -61,7 +65,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
     }
 
     fun getAllPlaces(adapter: PlacesManageAdapter) {
-        val places_query = db.getReference("places")
+        val places_query = db.getReference("places").orderByChild("timestamp/time")
         places_query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
@@ -69,11 +73,13 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
                 if (snapshot.exists()) {
                     for (places: DataSnapshot in snapshot.children) {
                         val place: Place? = places.getValue<Place>()
-                        if (place != null && !place.approved && place.pending) {
+                        if (place != null && place.authorID.equals(authUser!!.uid.toString())) {
                             allPlaces.add(place)
                             allPlacesId.add(places.key.toString())
                         }
                     }
+                    allPlaces.reverse()
+                    allPlacesId.reverse()
                     adapter.notifyDataSetChanged()
 
                 }
@@ -87,26 +93,33 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
     }
 
     override fun onPositiveButtonClick(id: String, place: Place) {
-        AlertDialog.Builder(activity)
-                .setTitle("Approve place")
-                .setMessage("Are you sure you want to approve this place: " + place.title + "?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
-                    db.getReference("places").child(id).child("approved").setValue(true)
-                    db.getReference("places").child(id).child("pending").setValue(false)
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(R.drawable.ic_buildings_town)
-                .setCancelable(false)
-                .show()
+        val intent = Intent(requireContext(), AddNewPlaceActivity::class.java)
+        intent.putExtra("new", false)
+        intent.putExtra("place_id", id)
+        startActivity(intent)
     }
 
     override fun onNegativeButtonClick(id: String, placeName: String) {
         AlertDialog.Builder(activity)
-                .setTitle("Reject place")
-                .setMessage("Are you sure you want to reject this place: " + placeName + "?")
+                .setTitle("Delete place")
+                .setMessage("Are you sure you want to delete this place: " + placeName + "?")
                 .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
-                    db.getReference("places").child(id).child("approved").setValue(false)
-                    db.getReference("places").child(id).child("pending").setValue(false)
+                    db.getReference("places").child(id).removeValue()
+                    db.getReference("users").addValueEventListener(object : ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                           if(snapshot.exists()){
+                               for (users : DataSnapshot in snapshot.children){
+                                   db.getReference("users").child(users.key.toString()).child("reviews").child(id).removeValue()
+                               }
+                           }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+
+                        }
+
+                    })
+                    show_info_dialog("Place deleted", true)
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(R.drawable.ic_remove)
@@ -114,13 +127,13 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
                 .show()
     }
 
-    /////////////////WIP
+
     override fun onItemClick(place: Place, placeId: String) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(true)
-        dialog.setContentView(R.layout.dialog_show_place_manage)
+        dialog.setContentView(R.layout.dialog_show_place)
 
         dialog.findViewById<ImageView>(R.id.close_dialog).setOnClickListener { dialog.dismiss() }
 
@@ -132,7 +145,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         place_title.text = place.title
         place_address.text = place.address
         place_description.text = place.desc
-        if (!place.desc.isEmpty()) place_description.visibility = View.VISIBLE
+        if (place.desc.isEmpty()) place_description.visibility = View.GONE
         place_category.text = place.category
         // for Tags
         for (tag in place.tags) {
@@ -193,18 +206,28 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
             dialog.findViewById<TextView>(R.id.sunday_hours).text = place.workhours.sunday
         }
 
+        if(!place.approved) {
+            if(place.desc.isEmpty()) dialog.findViewById<LinearLayout>(R.id.show_place_intro).visibility = View.GONE
+            dialog.findViewById<LinearLayout>(R.id.show_place_review_score).visibility = View.GONE
+            dialog.findViewById<LinearLayout>(R.id.show_place_reviews).visibility = View.GONE
+        }
 
-        ///buttons
-        val btn_approve: ImageButton = dialog.findViewById(R.id.btn_show_place_approve)
-        btn_approve.setOnClickListener {
-            dialog.dismiss()
-            onPositiveButtonClick(placeId, place)
+
+        dialog.show()
+    }
+
+    private fun show_info_dialog(text : String, succes : Boolean){
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        if (succes) {
+            dialog.setContentView(R.layout.dialog_info_success)
+        } else {
+            dialog.setContentView(R.layout.dialog_info_failed)
         }
-        val btn_delete: ImageButton = dialog.findViewById(R.id.btn_show_place_delete)
-        btn_delete.setOnClickListener {
-            dialog.dismiss()
-            onNegativeButtonClick(placeId, place.title,)
-        }
+        dialog.findViewById<TextView>(R.id.info_text).text = text
+        dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
 }

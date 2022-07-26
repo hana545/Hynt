@@ -22,6 +22,7 @@
             android:id="@+id/register_username_layout"
             android:layout_width="match_parent"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
@@ -48,6 +49,7 @@
             android:id="@+id/register_email_layout"
             android:layout_width="match_parent"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_below="@+id/register_username_error"
             android:layout_height="wrap_content">
@@ -76,6 +78,7 @@
             android:layout_width="match_parent"
             app:passwordToggleEnabled="true"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_below="@+id/register_email_error"
             android:layout_height="wrap_content">
@@ -102,6 +105,7 @@
             android:layout_width="match_parent"
             app:passwordToggleEnabled="true"
             android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
             app:boxStrokeColor="@color/text_light"
             android:layout_below="@+id/register_password_error"
             android:layout_height="wrap_content">

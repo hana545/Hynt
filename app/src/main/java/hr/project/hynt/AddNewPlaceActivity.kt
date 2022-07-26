@@ -23,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -64,6 +63,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private lateinit var btn_addPlace: Button
 
 
+    val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +80,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         btn_addPlace = findViewById(R.id.btn_add_place)
 
         ////For Tags
-        getAllTags()
+        if (intent.getBooleanExtra("new", true)) getAllTags(ArrayList<String>())
 
         ////For Categories
         val categorySpinner = findViewById<Spinner>(R.id.categories_spinner)
@@ -136,6 +136,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         val friday_hour = findViewById<TextView>(R.id.friday_hours)
         val saturday_hour = findViewById<TextView>(R.id.saturday_hours)
         val sunday_hour = findViewById<TextView>(R.id.sunday_hours)
+
         val mondayWorkhour = findViewById<ImageButton>(R.id.btn_edit_monday_hour)
         mondayWorkhour.setOnClickListener {
             workhoursDialog(mondayWorkhour.id, monday_hour.text.toString())
@@ -181,6 +182,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
 
         placeAddressAutocompleteResult = place_address
         setContactButtonListeners()
+
         ///Autocomplete for address
         btn_autocomplete.setOnClickListener {
             openAutocomplete()
@@ -201,6 +203,44 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             val intent = Intent(this, LocationPickerActivity::class.java)
             intent.putExtra("coordinates", coordinates)
             resultLauncher.launch(intent)
+        }
+
+        ///if the place is not new, if the place is in editing mode
+        if(intent.getBooleanExtra("new", true) == false){
+            val place_id = intent.getStringExtra("place_id")!!
+            var place : Place = Place()
+            db.getReference("places").child(place_id).addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        place = snapshot.getValue<Place>()!!
+                        place_name.setText(place.title)
+                        place_address.setText(place.address)
+                        place_description.setText(place.desc)
+                        place_phone1.setText(place.phone1)
+                        place_email1.setText(place.email1)
+                        place_web1.setText(place.website1)
+                        place_phone2.setText(place.phone2)
+                        place_email2.setText(place.email2)
+                        place_web2.setText(place.website2)
+
+                        categorySpinner.setSelection(allCategories.indexOf(place.category))
+
+                        getAllTags(place.tags)
+
+                        monday_hour.text = place.workhours.monday
+                        tuesday_hour.text = place.workhours.tuesday
+                        wednesday_hour.text = place.workhours.wednesday
+                        thursday_hour.text = place.workhours.thursday
+                        friday_hour.text = place.workhours.friday
+                        saturday_hour.text = place.workhours.saturday
+                        sunday_hour.text = place.workhours.sunday
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w("Database Error", "Failed to read value.", error.toException())
+                }
+
+            })
         }
 
 
@@ -234,6 +274,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         }
 
     }
+
 
 
     private fun checkAndAddZero(number : Int) : String {
@@ -481,9 +522,20 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
 
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun setCustomActionBar() {
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         val customView: View = LayoutInflater.from(this).inflate(
                 R.layout.layout_action_bar, LinearLayout(
                 this
@@ -499,6 +551,13 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 )
         )
 
+        val btn_home : LinearLayout = customView.findViewById<View>(R.id.btn_home) as LinearLayout
+        btn_home.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, MainMapActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+        })
         val btn_user : LinearLayout = customView.findViewById<View>(R.id.btn_user_profile) as LinearLayout
         if (authUser != null) {
             val username : TextView = btn_user.findViewById(R.id.user_username) as TextView
@@ -511,22 +570,8 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             btn_user.visibility = View.GONE
         }
     }
-    private fun addBottomSheet() {
-        val mBottomSheetLayout : ConstraintLayout = findViewById(R.id.bottomSheet);
-        val sheetBehavior = BottomSheetBehavior.from(mBottomSheetLayout);
-        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        val btn_toggle_locations: ImageButton = findViewById<ImageButton>(R.id.bottom_sheet_header)
-        btn_toggle_locations.setOnClickListener(View.OnClickListener {
-            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                btn_toggle_locations.setImageResource(R.drawable.ic_expand_more)
-            } else {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                btn_toggle_locations.setImageResource(R.drawable.ic_expand_less)
-            }
-        })
-    }
-    fun showBottomSheetDialogOptions(role: String) {
+
+    fun showBottomSheetDialogOptions(role : String) {
 
         val bottomSheetDialog = BottomSheetDialog(this)
         if(role == "admin") {
@@ -555,43 +600,52 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         } else {
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_users_options)
         }
+        bottomSheetDialog.findViewById<LinearLayout>(R.id.home)!!.visibility = View.VISIBLE
+        val home = bottomSheetDialog.findViewById<LinearLayout>(R.id.homeMap)
+        home!!.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, MainMapActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
+        })
         val add_place = bottomSheetDialog.findViewById<LinearLayout>(R.id.add_place)
         add_place!!.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, AddNewPlaceActivity::class.java)
             bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_addresses = bottomSheetDialog.findViewById<LinearLayout>(R.id.myAddresses)
         my_addresses!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "addresses")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_reviews = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_reviews)
         my_reviews!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "reviews")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_places)
         my_places!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "places")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val settings = bottomSheetDialog.findViewById<LinearLayout>(R.id.settings)
         settings!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
-        })
-        val signout = bottomSheetDialog.findViewById<LinearLayout>(R.id.signOut)
-        signout!!.setOnClickListener(View.OnClickListener {
-            logOut()
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserSettingsActivity::class.java)
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         bottomSheetDialog.show()
     }
-    private fun logOut(){
-        FirebaseAuth.getInstance().signOut()
-        getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE).edit().remove("Role").apply()
-        val intent = Intent(this, LaunchActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent)
-        finish()
-    }
 
-    private fun getAllTags() {
+    private fun getAllTags(placeTags: ArrayList<String>) {
         var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
         val places_query = db.getReference("tags")
         places_query.addValueEventListener(object: ValueEventListener {
@@ -605,12 +659,13 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                         if (tag != null) {
                             allTags.add(tag)
                             allTags_id.add(tag_id)
-                            addChip(tag, allTags.indexOf(tag))
-
+                            if (intent.getBooleanExtra("new", true)){
+                                addChip(tag, ArrayList<String>())
+                            } else {
+                                addChip(tag, placeTags)
+                            }
                         }
                     }
-
-
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -620,9 +675,12 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         })
     }
 
-    private fun addChip(tag: String, position: Int){
+    private fun addChip(tag: String, placeTags: ArrayList<String>){
         val chip = this.layoutInflater.inflate(R.layout.view_chips_buttons, null, false) as Chip
         chip.text = tag
+        for (placeTag in placeTags){
+            if (placeTag == tag) chip.isChecked = true
+        }
         chip.id = View.generateViewId()
         findViewById<ChipGroup>(R.id.add_place_tags_chip_group).addView(chip)
     }
@@ -681,12 +739,18 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private fun addPlace(place_name_text: String, place_address_text: String, place_description_text: String, place_phone1_text: String, place_email1_text: String, place_website1_text: String, place_phone2_text: String, place_email2_text: String, place_website2_text: String, place_workhours: Workhour, category: String, selectedTags: ArrayList<String>) {
 
             if (FirebaseAuth.getInstance().currentUser != null) {
-                val nPlace = Place(place_name_text,place_address_text,coordinates.latitude, coordinates.longitude, place_description_text, place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
+                val nPlace = Place(Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude, place_description_text, place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
                 var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
-                val key: String = db.getReference("places").push().key.toString()
+                var key = ""
+                if(intent.getBooleanExtra("new", true) == false){
+                    key = intent.getStringExtra("place_id")!!
+                } else {
+                    key = db.getReference("places").push().key.toString()
+                }
                 db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
-                    Toast.makeText(this, "Successfully added place "+nPlace.title, Toast.LENGTH_LONG).show()
-                    finish()
+                    show_info_dialog("Successfully added place " + nPlace.title, true)
+                    //Toast.makeText(this, "Successfully added place " + nPlace.title, Toast.LENGTH_LONG).show()
+                    //finish()
                 }
             } else {
                 Toast.makeText(this@AddNewPlaceActivity, "Error occurred, try again", Toast.LENGTH_SHORT).show()
@@ -720,8 +784,6 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 throwable.printStackTrace()
             }
         })
-
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -739,6 +801,22 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             btn_addPlace.setBackgroundColor(ContextCompat.getColor(this, R.color.black_blue))
             btn_addPlace.isEnabled = true
         }
+    }
+    private fun show_info_dialog(text : String, success : Boolean){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        if (success) {
+            dialog.setContentView(R.layout.dialog_info_success)
+        } else {
+            dialog.setContentView(R.layout.dialog_info_failed)
+        }
+        dialog.findViewById<TextView>(R.id.info_text).text = text
+        dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener {
+            dialog.dismiss()
+            finish() }
+        dialog.show()
     }
 
 }

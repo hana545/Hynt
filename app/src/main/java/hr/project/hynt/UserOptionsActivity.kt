@@ -22,65 +22,63 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
-class AdminOptionsActivity : AppCompatActivity() {
+class UserOptionsActivity : AppCompatActivity() {
 
 
     var active_fragment = ""
     val authUser = FirebaseAuth.getInstance().currentUser
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_admin_options)
+        setContentView(R.layout.activity_user_options)
 
-        val sh = this.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-        if (authUser == null && sh.getString("Role", "").toString() != "admin") {
+        if (authUser == null) {
             finish()
         }
         setCustomActionBar()
 
-        if (intent.getStringExtra("fragment") == "tags") {
-            loadFragment(AdminManageTagsFragment())
-            active_fragment = "tags"
-        } else if (intent.getStringExtra("fragment") == "categories") {
-            loadFragment(AdminManageCategoriesFragment())
-            active_fragment = "categories"
+        if (intent.getStringExtra("fragment") == "addresses") {
+            loadFragment(UserMyAddressesFragment())
+            active_fragment = "addresses"
+        } else if (intent.getStringExtra("fragment") == "reviews") {
+            loadFragment(UserMyReviewsFragment())
+            active_fragment = "reviews"
         } else {
-            loadFragment(AdminManagePlacesFragment())
+            loadFragment(UserMyPlacesFragment())
             active_fragment = "places"
         }
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.admin_bottomNavigationView)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.user_bottomNavigationView)
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.admin_manage_places -> {
+                R.id.user_my_addresses -> {
+                    if (active_fragment != "addresses") {
+                        active_fragment = "addresses"
+                        loadFragment(UserMyAddressesFragment())
+                    }
+                    true
+                }
+                R.id.user_my_reviews -> {
+                    if (active_fragment != "reviews") {
+                        active_fragment = "reviews"
+                        loadFragment(UserMyReviewsFragment())
+                    }
+                    true
+                }
+                R.id.user_my_places -> {
                     if (active_fragment != "places") {
                         active_fragment = "places"
-                        loadFragment(AdminManagePlacesFragment())
-                    }
-                    true
-                }
-                R.id.admin_tags -> {
-                    if (active_fragment != "tags") {
-                        active_fragment = "tags"
-                        loadFragment(AdminManageTagsFragment())
-                    }
-                    true
-                }
-                R.id.admin_categories -> {
-                    if (active_fragment != "categories") {
-                        active_fragment = "categories"
-                        loadFragment(AdminManageCategoriesFragment())
+                        loadFragment(UserMyPlacesFragment())
                     }
                     true
                 }
                 else -> false
             }
-
         }
 
     }
     private fun loadFragment(fragment: Fragment) {
         // load fragment
         supportFragmentManager.beginTransaction()
-                .replace(R.id.admin_fragment_container, fragment)
+                .replace(R.id.user_fragment_container, fragment)
                 .commit()
     }
 
@@ -124,31 +122,29 @@ class AdminOptionsActivity : AppCompatActivity() {
     private fun showBottomSheetDialogUserOptions(role : String) {
 
         val bottomSheetDialog = BottomSheetDialog(this)
-        if (role == "admin") {
+        if(role == "admin") {
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_admin_options)
             val manage_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.manage_places)
             manage_places!!.setOnClickListener(View.OnClickListener {
-                if (active_fragment != "places") {
-                    active_fragment = "place"
-                    loadFragment(AdminManagePlacesFragment())
-                }
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "places")
                 bottomSheetDialog.dismiss()
+                startActivity(intent)
+
             })
             val tags = bottomSheetDialog.findViewById<LinearLayout>(R.id.tags)
             tags!!.setOnClickListener(View.OnClickListener {
-                if (active_fragment != "tags") {
-                    active_fragment = "tags"
-                    loadFragment(AdminManageTagsFragment())
-                }
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "tags")
                 bottomSheetDialog.dismiss()
+                startActivity(intent)
             })
             val categories = bottomSheetDialog.findViewById<LinearLayout>(R.id.categories)
             categories!!.setOnClickListener(View.OnClickListener {
-                if (active_fragment != "categories") {
-                    active_fragment = "categories"
-                    loadFragment(AdminManageCategoriesFragment())
-                }
+                val intent = Intent(this, AdminOptionsActivity::class.java)
+                intent.putExtra("fragment", "categories")
                 bottomSheetDialog.dismiss()
+                startActivity(intent)
             })
         } else {
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_users_options)
@@ -162,6 +158,7 @@ class AdminOptionsActivity : AppCompatActivity() {
             bottomSheetDialog.dismiss()
             startActivity(intent)
         })
+
         val add_place = bottomSheetDialog.findViewById<LinearLayout>(R.id.add_place)
         add_place!!.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, AddNewPlaceActivity::class.java)
@@ -170,24 +167,27 @@ class AdminOptionsActivity : AppCompatActivity() {
         })
         val my_addresses = bottomSheetDialog.findViewById<LinearLayout>(R.id.myAddresses)
         my_addresses!!.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, UserOptionsActivity::class.java)
-            intent.putExtra("fragment", "addresses")
+            if (active_fragment != "addresses") {
+                active_fragment = "addresses"
+                loadFragment(UserMyAddressesFragment())
+            }
             bottomSheetDialog.dismiss()
-            startActivity(intent)
         })
         val my_reviews = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_reviews)
         my_reviews!!.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, UserOptionsActivity::class.java)
-            intent.putExtra("fragment", "reviews")
+            if (active_fragment != "reviews") {
+                active_fragment = "reviews"
+                loadFragment(UserMyReviewsFragment())
+            }
             bottomSheetDialog.dismiss()
-            startActivity(intent)
         })
         val my_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_places)
         my_places!!.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, UserOptionsActivity::class.java)
-            intent.putExtra("fragment", "places")
+            if (active_fragment != "places") {
+                active_fragment = "places"
+                loadFragment(UserMyPlacesFragment())
+            }
             bottomSheetDialog.dismiss()
-            startActivity(intent)
         })
         val settings = bottomSheetDialog.findViewById<LinearLayout>(R.id.settings)
         settings!!.setOnClickListener(View.OnClickListener {
@@ -195,6 +195,7 @@ class AdminOptionsActivity : AppCompatActivity() {
             bottomSheetDialog.dismiss()
             startActivity(intent)
         })
+
         bottomSheetDialog.show()
     }
 

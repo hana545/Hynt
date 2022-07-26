@@ -1,28 +1,32 @@
 package hr.project.hynt.Adapters
 
-import android.util.ArrayMap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
-import hr.project.hynt.FirebaseDatabase.Workhour
 import hr.project.hynt.R
 import java.util.*
+import java.util.Collections.emptyList
 
-class ReviewsAdapter (private val mList: List<Review>) : RecyclerView.Adapter<ReviewsAdapter.ViewHolder>() {
+class ReviewsAdapter(private val mList: List<Review>, private val mList_id: List<String>? = emptyList(), private val type: String, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<ReviewsAdapter.ViewHolder>() {
+
+    interface ItemClickListener{
+        fun onItemClick(review : Review, reviewID : String)
+    }
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.view_review, parent, false)
+        var view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.view_review_card, parent, false)
+        if (type ==  "myReviews") {
+            view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.view_my_review_card, parent, false)
+        }
 
         return ViewHolder(view)
     }
@@ -32,7 +36,15 @@ class ReviewsAdapter (private val mList: List<Review>) : RecyclerView.Adapter<Re
 
         val review = mList[position]
 
-        holder.reviewAuthor.text = review.refName + " said:"
+        if (type == "myReviews"){
+            holder.reviewAuthor.text = review.refName
+            holder.card!!.setOnClickListener{
+                mItemClickListener.onItemClick(review, mList_id!!.get(position))
+            }
+
+        } else {
+            holder.reviewAuthor.text = review.refName + " said:"
+        }
         holder.reviewDate.text = review.date
         if (!review.txt.isEmpty()) {
             holder.reviewText.text = "\""+review.txt+"\""
@@ -50,6 +62,7 @@ class ReviewsAdapter (private val mList: List<Review>) : RecyclerView.Adapter<Re
         check_stars(review.stars, list_stars)
 
 
+
     }
 
     // return the number of the items in the list
@@ -59,6 +72,7 @@ class ReviewsAdapter (private val mList: List<Review>) : RecyclerView.Adapter<Re
 
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
+        val card : CardView? = itemView.findViewById(R.id.review_card)
         val reviewAuthor: TextView = itemView.findViewById(R.id.review_author)
         val reviewDate: TextView = itemView.findViewById(R.id.review_date)
         val reviewText: TextView = itemView.findViewById(R.id.review_txt)
@@ -68,6 +82,7 @@ class ReviewsAdapter (private val mList: List<Review>) : RecyclerView.Adapter<Re
         val star3: ImageView = itemView.findViewById(R.id.review_star3)
         val star4: ImageView = itemView.findViewById(R.id.review_star4)
         val star5: ImageView = itemView.findViewById(R.id.review_star5)
+
 
     }
     

@@ -24,7 +24,7 @@
             android:gravity="start"
             android:fontFamily="sans-serif-thin"
             android:layout_weight="0.99"
-
+            android:textColor="@color/black_blue"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -32,10 +32,9 @@
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTintMode="screen"
-            android:background="@drawable/bg_rounded_border"
+            android:src="@drawable/ic_remove"
             android:padding="20dp"
-            app:srcCompat="@android:drawable/ic_delete" />
+            android:backgroundTint="@color/transparent"/>
 
 
     </LinearLayout>

@@ -1,18 +1,9 @@
 package hr.project.hynt.FirebaseDatabase
 
-import android.util.Log
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import java.util.*
 
-data class Place(val title: String = "",
+data class Place(val timestamp: Date =  Calendar.getInstance().time,
+                 val title: String = "",
                  val address: String = "",
                  val lat: Double = 0.0,
                  val lng: Double = 0.0,
@@ -28,10 +19,8 @@ data class Place(val title: String = "",
                  val tags : ArrayList<String> = ArrayList<String>(),
                  val reviews : HashMap<String, Review> = HashMap<String, Review>(),
                  val authorID: String = "",
-                 val approved: Boolean = false
+                 val approved: Boolean = false,
+                 val pending: Boolean = true
 
 ) {
-
-
-
 }

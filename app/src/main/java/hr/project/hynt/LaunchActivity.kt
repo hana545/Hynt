@@ -25,28 +25,6 @@ class LaunchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
 
-        val authUser = FirebaseAuth.getInstance().currentUser
-        if (authUser != null) {
-            val intent = Intent(this, MainMapActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent)
-            db.getReference("roles").child(authUser!!.uid).addValueEventListener(object:
-                ValueEventListener {
-                @RequiresApi(Build.VERSION_CODES.R)
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val role = snapshot.getValue<String>()
-                        val shPref = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                        val editor = shPref.edit()
-                        editor.putString("Role", role.toString()).apply()
-                        finish()
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-
-        }
         supportActionBar!!.hide()
         val btn_map = findViewById<Button>(R.id.btn_guest)
         val btn_login = findViewById<Button>(R.id.btn_login)

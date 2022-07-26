@@ -5,13 +5,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/blue_light">
+    <LinearLayout
+        android:id="@+id/home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:padding="5dp"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:id="@+id/homeMap"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_main_location_map_foreground"
+                android:layout_gravity="center"
+                android:layout_margin="3dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back to home map"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:padding="3dp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:dividerColor="@color/blue_dark"/>
+
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/first_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="3"
         android:padding="5dp"
+        android:layout_below="@+id/home"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -121,7 +161,7 @@
             android:id="@+id/add_place"
             android:background="?android:attr/selectableItemBackground"
             android:padding="5dp"
-            android:layout_weight="1">
+            android:layout_weight="0.5">
 
             <ImageView
                 android:layout_width="24dp"
@@ -149,7 +189,7 @@
             android:gravity="center"
             android:background="?android:attr/selectableItemBackground"
             android:padding="5dp"
-            android:layout_weight="1">
+            android:layout_weight="0.5">
 
             <ImageView
                 android:layout_width="24dp"
@@ -169,32 +209,6 @@
 
 
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/signOut"
-            android:gravity="center"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="5dp"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_log_out"
-                android:layout_gravity="center"
-                android:layout_margin="3dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Log out"
-                android:layout_gravity="center"
-                android:padding="3dp"
-                android:textColor="@color/white"/>
-
-        </LinearLayout>
 
     </LinearLayout>
 

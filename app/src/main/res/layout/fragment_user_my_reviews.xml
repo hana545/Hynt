@@ -5,15 +5,15 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/text_light"
-    tools:context=".AdminManagePlacesFragment">
+    tools:context=".UserMyReviewsFragment">
 
     <TextView
-        android:id="@+id/fragment_name_places"
+        android:id="@+id/fragment_name_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:backgroundTint="@color/black_blue_low_opacity"
-        android:text="@string/places_title"
+        android:text="All My Reviews"
         android:textSize="25sp"
         android:textAlignment="center"
         android:fontFamily="@font/auttera">
@@ -23,7 +23,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_name_places"
+        android:layout_below="@+id/fragment_name_review"
         android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="25dp"
         app:dividerColor="@color/blue_dark"
@@ -32,7 +32,7 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/place_recyclerView"
+        android:id="@+id/review_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/divider"

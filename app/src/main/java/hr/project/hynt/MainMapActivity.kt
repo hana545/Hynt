@@ -10,6 +10,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -60,7 +64,7 @@ import java.util.*
 import java.text.SimpleDateFormat
 
 
-class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener {
+class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener, ReviewsAdapter.ItemClickListener {
 
     private var mapView: MapView? = null
     private var mapboxMap: MapboxMap? = null
@@ -72,24 +76,18 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
-    var allPlacesRevScore = ArrayMap<String, HashMap<String, Int>>()
 
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.w("MapActivity", "onCreate")
         Mapbox.getInstance(this, getString(R.string.access_token))
 
         setContentView(R.layout.activity_main_map)
 
-        val recyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
-        // this creates a horizontal linear layout Manager
-        recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        val adapter = PlacesAdapter(allPlaces, allPlacesId, this)
-        recyclerview.adapter = adapter
-        getAllPlaces(adapter)
         ////set action bar
         setCustomActionBar()
         ////drawer for filter
@@ -103,6 +101,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapView!!.getMapAsync(this)
 
     }
+
 
     private fun setCustomActionBar() {
         this.supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
@@ -186,35 +185,34 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         })
         val my_addresses = bottomSheetDialog.findViewById<LinearLayout>(R.id.myAddresses)
         my_addresses!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "addresses")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_reviews = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_reviews)
         my_reviews!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "reviews")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val my_places = bottomSheetDialog.findViewById<LinearLayout>(R.id.my_places)
         my_places!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserOptionsActivity::class.java)
+            intent.putExtra("fragment", "places")
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         val settings = bottomSheetDialog.findViewById<LinearLayout>(R.id.settings)
         settings!!.setOnClickListener(View.OnClickListener {
-            bottomSheetDialog.dismiss();
-        })
-        val signout = bottomSheetDialog.findViewById<LinearLayout>(R.id.signOut)
-        signout!!.setOnClickListener(View.OnClickListener {
-            logOut()
-            bottomSheetDialog.dismiss();
+            val intent = Intent(this, UserSettingsActivity::class.java)
+            bottomSheetDialog.dismiss()
+            startActivity(intent)
         })
         bottomSheetDialog.show()
     }
-    private fun logOut(){
-        FirebaseAuth.getInstance().signOut()
-        getSharedPreferences("MySharedPref",  Context.MODE_PRIVATE).edit().remove("Role").apply()
-        val intent = Intent(this, LaunchActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent)
-        finish()
-    }
+
 
     private fun addDrawerFilter() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -235,34 +233,43 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         })
     }
 
-    fun getAllPlaces(adapter: PlacesAdapter) {
-        val places_query = db.getReference("places")
+    fun getAllPlaces(adapter: PlacesAdapter, dialog : Dialog) {
+        val places_query = db.getReference("places").orderByChild("approved").equalTo(true)
         places_query.addValueEventListener(object: ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
                 allPlacesId.clear()
-                allPlacesRevScore.clear()
                 if (snapshot.exists()) {
+                    Log.w("MapActivity", "Loading all places")
                     for (places : DataSnapshot in snapshot.children) {
                         val place : Place? = places.getValue<Place>()
-                        if (place != null && place.approved) {
+                        if (place != null) {
                             allPlaces.add(place)
                             allPlacesId.add(places.key.toString())
-                            mapboxMap?.addMarker(
-                                    MarkerOptions()
-                                            .position(LatLng(place.lat, place.lng))
-                                            .title(place.title))
                         }
                     }
-                    adapter.notifyDataSetChanged()
 
+                    Log.w("MapActivity", "Loading all places --done")
+                    showMarkers()
                 }
+                dialog.dismiss()
+                adapter.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.w("Database Error", "Failed to read value.", error.toException())
             }
 
         })
+    }
+    private fun showMarkers() {
+        for (place : Place in allPlaces) {
+            Log.w("MapActivity", "Showing markers - "+place.title)
+            mapboxMap?.addMarker(
+                    MarkerOptions()
+                            .position(LatLng(place.lat, place.lng))
+                            .title(place.title))
+        }
     }
 
 
@@ -278,10 +285,27 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
+        val loading_dialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        loading_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        loading_dialog.setContentView(R.layout.activity_splash_screen)
+        loading_dialog.show()
+        if (!isNetworkAvailable(this)) loading_dialog.findViewById<TextView>(R.id.splash_internet_conn).visibility = View.VISIBLE
+
         this.mapboxMap = mapboxMap
         mapboxMap.setStyle(
                 Style.MAPBOX_STREETS
         ) { style -> enableLocationComponent(style) }
+
+        ///recyler view for places
+        val recyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
+        // this creates a horizontal linear layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        val adapter = PlacesAdapter(allPlaces, allPlacesId, this)
+        recyclerview.adapter = adapter
+        getAllPlaces(adapter, loading_dialog)
+
+        Log.w("MapActivity", "Map ready")
 
 
     }
@@ -422,11 +446,15 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onStart() {
+        Log.w("MapActivity", "onStart")
         super.onStart()
         mapView!!.onStart()
     }
 
     override fun onResume() {
+
+        Log.w("MapActivity", "onResume")
+        setCustomActionBar()
         super.onResume()
         mapView!!.onResume()
     }
@@ -447,6 +475,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onDestroy() {
+
+        Log.w("MapActivity", "onDestroy")
         super.onDestroy()
         mapView!!.onDestroy()
     }
@@ -456,7 +486,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapView!!.onLowMemory()
     }
 
-    override fun onItemClick(place: Place, id: String, score: Int, hasRev: Boolean, reviewID : String, review : Review, allReview : List<Review>){
+    override fun onItemClick(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -467,6 +497,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         place_title.text = place.title
         val place_description : TextView = dialog.findViewById<TextView>(R.id.show_place_description)
         place_description.text = place.desc
+        if (place.desc.isEmpty()) place_description.visibility = View.GONE
         dialog.findViewById<ImageView>(R.id.close_dialog).setOnClickListener { dialog.dismiss() }
 
         //for reviewing
@@ -557,16 +588,10 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 if (checked_stars > 0 && checked_stars < 6) {
                     val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, place.title, id)
                     val reviewP = Review( Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, authUser.displayName!!, authUser.uid)
-                    if (hasRev){
-                        db.getReference("places").child(id).child("reviews").child(reviewID).setValue(reviewP)
-                        db.getReference("users").child(authUser.uid).child("reviews").child(reviewID).setValue(reviewU)
-                    } else {
-                        val key = db.getReference("reviews").push().key.toString()
-                        db.getReference("places").child(id).child("reviews").child(key).setValue(reviewP)
-                        db.getReference("users").child(authUser.uid).child("reviews").child(key).setValue(reviewU)
-                    }
+                    db.getReference("places").child(id).child("reviews").child(authUser!!.uid).setValue(reviewP)
+                    db.getReference("users").child(authUser.uid).child("reviews").child(id).setValue(reviewU)
                     dialog.dismiss()
-                    show_info_dialog("Thank you for reviewing "+place.title+"!")
+                    show_info_dialog("Thank you for reviewing "+place.title+"!", true)
 
 
                 }
@@ -585,13 +610,17 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         list_stars.add(star3)
         list_stars.add(star4)
         list_stars.add(star5)
-        Log.d("PlacesAdapter", "Check stars in dialog - score: "+score)
+
         check_stars(score-1, list_stars)
 
         //for Addres and Category
         val place_address : TextView = dialog.findViewById<TextView>(R.id.show_place_address_data)
-        val place_category : TextView = dialog.findViewById<TextView>(R.id.show_place_category)
         place_address.text = place.address
+        dialog.findViewById<ImageButton>(R.id.show_place_btn_show_on_map).setOnClickListener {
+            setFocusOnMap(place.lat, place.lng)
+            dialog.dismiss()
+        }
+        val place_category : TextView = dialog.findViewById<TextView>(R.id.show_place_category)
         place_category.text = place.category
 
         // for Tags
@@ -657,17 +686,31 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         val review_container = dialog.findViewById<RecyclerView>(R.id.show_place_review_list)
         review_container.layoutManager = LinearLayoutManager(baseContext)
 
-        val adapter = ReviewsAdapter(allReview)
+        val adapter = ReviewsAdapter(allReviews, null,"other", this)
         review_container.adapter = adapter
 
         dialog.show()
     }
-    private fun show_info_dialog(text : String){
+
+    private fun setFocusOnMap(lat: Double, lng: Double) {
+        val position = CameraPosition.Builder()
+                .target(LatLng(lat, lng))
+                .zoom(16.0) // Sets the zoom
+                .build()
+        mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 200)
+       // mapboxMap!!.addMarker(MarkerOptions().position(LatLng(lat, lng)))
+    }
+
+    private fun show_info_dialog(text : String, success : Boolean){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(true)
-        dialog.setContentView(R.layout.dialog_info)
+        if (success) {
+            dialog.setContentView(R.layout.dialog_info_success)
+        } else {
+            dialog.setContentView(R.layout.dialog_info_failed)
+        }
         dialog.findViewById<TextView>(R.id.info_text).text = text
         dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
         dialog.show()
@@ -681,6 +724,36 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             }
             list_stars[i].setImageResource(R.drawable.ic_star_review_on)
         }
+    }
+    fun isNetworkAvailable(context: Context?): Boolean {
+        if (context == null) return false
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onItemClick(review: Review, reviewID : String) {
+        //do nothing
     }
 
 }

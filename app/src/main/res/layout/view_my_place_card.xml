@@ -12,7 +12,6 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:backgroundTint="@color/white"
         android:padding="5dp">
 
         <LinearLayout
@@ -92,34 +91,40 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"
+            android:gravity="center_horizontal|bottom"
             android:weightSum="1"
+            android:layout_alignParentBottom="true"
             android:layout_below="@+id/place_card_address">
-            <ImageButton
-                android:id="@+id/btn_positive"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:backgroundTint="#88F494"
-                android:src="@drawable/mapbox_ic_check"
-                android:layout_weight="0.5"
-                />
-            <ImageButton
-                android:id="@+id/btn_negative"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:backgroundTint="@color/text_light"
-                android:src="@drawable/ic_remove"
-                android:layout_weight="0.5"
-                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/black_blue_low_opacity">
+                <ImageButton
+                    android:id="@+id/btn_positive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:backgroundTint="#F6F1C2"
+                    android:src="@drawable/ic_edit"
+                    android:layout_weight="0.5"
+                    />
+                <ImageButton
+                    android:id="@+id/btn_negative"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:backgroundTint="@color/text_light"
+                    android:src="@drawable/ic_remove"
+                    android:layout_weight="0.5"
+                    />
+            </LinearLayout>
         </LinearLayout>
-
-
-
     </RelativeLayout>
+
 
 </androidx.cardview.widget.CardView>

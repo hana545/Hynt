@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:id="@+id/add_place_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_light">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+            <LinearLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Update your informations"
+                    android:textAlignment="center"
+                    android:textSize="25sp"
+                    android:fontFamily="@font/auttera"/>
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="15dp"
+                    app:dividerColor="@color/black_blue"
+                    android:layout_below="@id/user_settings_btn_change_password"/>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/user_settings_username_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/header">
+                <TextView
+                    android:id="@+id/user_settings_username_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:hint="@string/register_username"
+                    />
+                <EditText
+                    android:id="@+id/user_settings_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:inputType="text"
+                    android:ems="10" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/user_settings_email_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/user_settings_username_layout">
+                <TextView
+                    android:id="@+id/user_settings_email_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:hint="@string/email"
+                    />
+                <EditText
+                    android:id="@+id/user_settings_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:inputType="text"
+                    android:ems="10" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/user_settings_btn_change_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_settings_email_layout"
+                android:textAllCaps="false"
+                android:textColor="@color/blue_dark"
+                android:textSize="18sp"
+                android:gravity="left"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:fontFamily="sans-serif-medium"
+                android:text="Change password"/>
+
+            <Button
+                android:id="@+id/btn_save_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_settings_btn_change_password"
+                android:backgroundTint="@color/black_blue"
+                android:textColor="@color/text_light"
+                android:text="Save"
+                android:fontFamily="@font/auttera"
+                android:textAllCaps="false"
+                android:padding="10dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/user_settings_join_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/btn_save_settings">
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:dividerColor="@color/blue_light"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="You are with us since"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/auttera"/>
+                <TextView
+                    android:id="@+id/user_joined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/auttera"/>
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:dividerColor="@color/blue_light"/>
+            </LinearLayout>
+            <Button
+                android:id="@+id/user_settings_sign_out"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_settings_join_info"
+                android:textColor="#590407"
+                android:gravity="start"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="Sign out"/>
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

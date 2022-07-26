@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_light">
+    <LinearLayout
+        android:id="@+id/dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="10dp">
+        <ImageButton
+            android:id="@+id/dialog_cancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:tint="@android:color/white"
+            android:background="@color/transparent"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_weight="0.1"
+            />
+        <ImageButton
+            android:id="@+id/dialog_save"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:tint="@android:color/white"
+            android:background="@color/transparent"
+            android:src="@drawable/mapbox_ic_check"
+            android:layout_weight="0.1"
+            />
+    </LinearLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_header"
+        android:layout_marginVertical="2dp"
+        android:layout_marginHorizontal="20dp"
+        app:dividerColor="@color/blue_dark"/>
+
+    <LinearLayout
+        android:id="@+id/dialog_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/divider"
+        android:layout_marginHorizontal="20dp"
+        android:paddingVertical="15dp">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dialog_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            android:textColorHint="@color/white"
+            app:hintTextColor="@color/text_light"
+            app:boxStrokeColor="@color/text_light"
+            android:paddingVertical="10dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/dialog_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:background="@color/transparent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:id="@+id/dialog_password_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dialog_layout0"
+                app:passwordToggleEnabled="true"
+                android:textColorHint="@color/white"
+                app:hintTextColor="@color/text_light"
+                app:boxStrokeColor="@color/text_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dialog_data0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:ems="10"
+                    android:textColor="@color/white"
+                    android:hint="Old password"
+                    android:inputType="textPassword"
+                    android:background="@color/transparent" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dialog_layout1"
+                app:passwordToggleEnabled="true"
+                android:textColorHint="@color/white"
+                app:hintTextColor="@color/text_light"
+                app:boxStrokeColor="@color/text_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dialog_data1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:ems="10"
+                    android:textColor="@color/white"
+                    android:hint="New password"
+                    android:inputType="textPassword"
+                    android:background="@color/transparent" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dialog_layout2"
+                app:passwordToggleEnabled="true"
+                android:textColorHint="@color/white"
+                app:hintTextColor="@color/text_light"
+                app:boxStrokeColor="@color/text_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dialog_data2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:ems="10"
+                    android:textColor="@color/white"
+                    android:hint="Repeat new password"
+                    android:inputType="textPassword"
+                    android:background="@color/transparent" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <ProgressBar
+                android:id="@+id/dialog_pass_progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/white"
+                android:visibility="invisible"
+                android:layout_marginVertical="10dp"
+                android:layout_centerHorizontal="true"
+                style="?android:attr/progressBarStyle"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
