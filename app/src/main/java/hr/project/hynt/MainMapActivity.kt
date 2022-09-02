@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.ArrayMap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,9 +32,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.gms.common.util.CollectionUtils.listOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -45,6 +46,8 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -58,10 +61,13 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import hr.project.hynt.Adapters.PlacesAdapter
 import hr.project.hynt.Adapters.ReviewsAdapter
+import hr.project.hynt.FirebaseDatabase.Address
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
+import java.lang.Math.*
 import java.util.*
 import java.text.SimpleDateFormat
+import kotlin.collections.ArrayList
 
 
 class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener, ReviewsAdapter.ItemClickListener {
@@ -70,12 +76,30 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     private var mapboxMap: MapboxMap? = null
     private var locationComponent: LocationComponent? = null
     private var isInTrackingMode = false
+    private var myCords = LatLng(0.0,0.0)
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
+    lateinit var loadingDialog : Dialog
+
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
+    var hint = false
+    lateinit var placesRecyclerview : RecyclerView
+    val placesAdapter = PlacesAdapter(allPlaces,this)
+
+    var sort = 0
+    var allCategories = ArrayList<String>()
+    var allTags = ArrayList<String>()
+    var allCheckedCategories = ArrayList<String>()
+    var allCheckedTags = ArrayList<String>()
+    var range = 10
+    var workhourOptions = arrayOf(true, true, true)
+    var filterCoords = LatLng(0.0,0.0)
+
+    var allMyAddresses = ArrayList<String>()
+    var allMyAddressesCoordinates = ArrayList<LatLng>()
 
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
@@ -83,15 +107,24 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.w("MapActivity", "onCreate")
+        Log.d("MapActivity", "onCreate")
         Mapbox.getInstance(this, getString(R.string.access_token))
 
         setContentView(R.layout.activity_main_map)
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_NETWORK_STATE),
+                PERMISSION_REQUEST_CODE_LOCATION
+            )
+        }
+
+        loadingDialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        loadingDialog.setContentView(R.layout.activity_splash_screen)
         ////set action bar
         setCustomActionBar()
-        ////drawer for filter
-        addDrawerFilter()
         ////bottom sheet - show locations
         addBottomSheet()
         ////map
@@ -213,48 +246,381 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         bottomSheetDialog.show()
     }
 
+    private fun getAllTags() {
+        var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+        db.getReference("tags").addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                allTags.clear()
+                if (snapshot.exists()) {
+                    for (tags : DataSnapshot in snapshot.children) {
+                        val tag = tags.getValue<String>()
+                        if (tag != null) {
+                            allTags.add(tag)
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Database Error", "Failed to read value.", error.toException())
+            }
+        })
+    }
+    private fun getallCategories() {
+        var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+        db.getReference("categories").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    allCategories.clear()
+                    for (categories: DataSnapshot in snapshot.children) {
+                        val category = categories.getValue<String>()
+                        if (category != null) {
+                            allCategories.add(category)
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Database Error", "Failed to read value.", error.toException())
+            }
+
+        })
+    }
+    private fun getAllMyAddresses(adapter : ArrayAdapter<String>) {
+        if (authUser != null) {
+            var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+            db.getReference("users").child(authUser!!.uid).child("addresses")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        allMyAddresses.clear()
+                        allMyAddressesCoordinates.clear()
+                        allMyAddresses.add("My location")
+                        allMyAddressesCoordinates.add(myCords)
+                        filterCoords = allMyAddressesCoordinates[0]
+                        if (snapshot.exists()) {
+                            for (addresses: DataSnapshot in snapshot.children) {
+                                val address = addresses.getValue<Address>()
+                                if (address != null) {
+                                    allMyAddresses.add(address.name)
+                                    allMyAddressesCoordinates.add(LatLng(address.lat, address.lng))
+                                }
+                            }
+                        }
+                        adapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.w("Database Error", "Failed to read value.", error.toException())
+                    }
+
+                })
+        } else {
+            allMyAddresses.add("My location")
+            allMyAddressesCoordinates.add(myCords)
+            filterCoords = allMyAddressesCoordinates[0]
+            adapter.notifyDataSetChanged()
+        }
+    }
 
     private fun addDrawerFilter() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         findViewById<View>(R.id.float_btn_search_filter_locations).setOnClickListener(View.OnClickListener {
             drawerLayout.openDrawer(GravityCompat.END)
         })
+        val sortSpinner = findViewById<Spinner>(R.id.filter_sort_spinner)
+        val sortAdapter : ArrayAdapter<String> = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf("Distance", "Rating (High-Low)", "Rating (Low-High)", "Title (A-Z)", "Title (Z-A)"))
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.adapter = sortAdapter
+
+        getAllTags()
+        getallCategories()
+        val addressSpinner = findViewById<Spinner>(R.id.filter_address_spinner)
+        val addressAdapter : ArrayAdapter<String> = ArrayAdapter(this, android.R.layout.simple_spinner_item, allMyAddresses)
+        addressAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        addressSpinner.adapter = addressAdapter
+        addressSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                filterCoords = allMyAddressesCoordinates[p2]
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        })
+        getAllMyAddresses(addressAdapter)
+
+        val btn_workhour_none = findViewById<CheckBox>(R.id.checkBox_none) //workhour = 2
+        val btn_workhour_opened = findViewById<CheckBox>(R.id.checkBox_opened) //workhour = 1
+        val btn_workhour_closed = findViewById<CheckBox>(R.id.checkBox_closed) //workhour = 0
+
+        btn_workhour_none.setOnClickListener {
+            if (!btn_workhour_opened.isChecked && !btn_workhour_closed.isChecked) {
+                btn_workhour_opened.isChecked = true
+                btn_workhour_closed.isChecked = true
+            }
+        }
+        btn_workhour_opened.setOnClickListener {
+            if (!btn_workhour_closed.isChecked && !btn_workhour_opened.isChecked) btn_workhour_none.isChecked = true
+        }
+
+        btn_workhour_closed.setOnClickListener {
+            if (!btn_workhour_closed.isChecked && !btn_workhour_opened.isChecked) btn_workhour_none.isChecked = true
+        }
+
+
         drawerLayout.setDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(view: View, v: Float) {}
+            override fun onDrawerSlide(view: View, v: Float) {
+
+            }
+
             override fun onDrawerOpened(view: View) {
-                supportActionBar!!.hide()
+                //supportActionBar!!.hide()
+                findViewById<Button>(R.id.filter_btn_search).setOnClickListener {
+                    hint = false
+                    placesAdapter.setHint(false)
+
+                    workhourOptions[0] = btn_workhour_closed.isChecked
+                    workhourOptions[1] = btn_workhour_opened.isChecked
+                    workhourOptions[2] = btn_workhour_none.isChecked
+
+                    sort = sortSpinner.selectedItemId.toInt()
+                    getAllPlaces()
+
+                    if (addressSpinner.selectedItemId > 0){
+                        mapboxMap?.addMarker(MarkerOptions().position(filterCoords)
+                                .title(addressSpinner.selectedItem.toString())
+                                .icon(IconFactory.getInstance(this@MainMapActivity).fromResource(R.drawable.map_default_map_marker)))
+                    }
+
+                    setFocusOnMap(filterCoords.latitude, filterCoords.longitude)
+                    placesRecyclerview.layoutManager?.scrollToPosition(0)
+                    drawerLayout.closeDrawer(GravityCompat.END)
+                }
+                findViewById<Button>(R.id.filter_btn_clear_filter).setOnClickListener {
+                    sort = 0
+                    sortSpinner.setSelection(0)
+                    findViewById<ChipGroup>(R.id.filter_category_chip_group).removeAllViews()
+                    allCheckedCategories.clear()
+                    findViewById<ChipGroup>(R.id.filter_tag_chip_group).removeAllViews()
+                    allCheckedTags.clear()
+                    addressSpinner.setSelection(0)
+                    filterCoords = myCords
+                    range = 10
+                    findViewById<TextView>(R.id.filter_range_data_label).text = range.toString() + " km"
+                    workhourOptions[0] = true
+                    workhourOptions[1] = true
+                    workhourOptions[2] = true
+                    btn_workhour_closed.isChecked = true
+                    btn_workhour_opened.isChecked = true
+                    btn_workhour_none.isChecked = true
+                    hint = false
+                    placesAdapter.setHint(false)
+                    setFocusOnMap(myCords.latitude, myCords.longitude)
+                    getAllPlaces()
+                }
+                findViewById<Button>(R.id.filter_category).setOnClickListener {
+                    showDialogFilterAdd("Categories", allCheckedCategories, allCategories, findViewById<ChipGroup>(R.id.filter_category_chip_group))
+                }
+                findViewById<Button>(R.id.filter_tag).setOnClickListener {
+                    showDialogFilterAdd("Tags", allCheckedTags, allTags, findViewById<ChipGroup>(R.id.filter_tag_chip_group))
+                }
+
+                findViewById<TextView>(R.id.filter_range_data_label).text = range.toString() + " km"
+                findViewById<Button>(R.id.filter_range).setOnClickListener {
+                    val dialog = Dialog(this@MainMapActivity)
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                    dialog.setCancelable(false)
+                    dialog.setContentView(R.layout.dialog_filter_range)
+                    dialog.findViewById<TextView>(R.id.filter_add_title).text = "Set range"
+                    dialog.findViewById<TextView>(R.id.filter_range_data_label).text = "Range:" + range.toString() + "km"
+                    dialog.findViewById<SeekBar>(R.id.filter_range_seek_bar).progress = range
+                    var tmp_range = range
+                    dialog.findViewById<SeekBar>(R.id.filter_range_seek_bar).setOnSeekBarChangeListener(object :
+                            SeekBar.OnSeekBarChangeListener {
+                        override fun onProgressChanged(seek: SeekBar,
+                                                       progress: Int, fromUser: Boolean) {
+                            tmp_range = seek.progress
+                            dialog.findViewById<TextView>(R.id.filter_range_data_label).text = "Range:" + tmp_range.toString() + "km"
+                            // write custom code for progress is changed
+                        }
+
+                        override fun onStartTrackingTouch(seek: SeekBar) {
+                            // write custom code for progress is started
+                        }
+
+                        override fun onStopTrackingTouch(seek: SeekBar) {
+                            // write custom code for progress is stopped
+
+                        }
+                    })
+                    dialog.findViewById<Button>(R.id.filter_btn_save_add).setOnClickListener {
+                        range = tmp_range
+                        findViewById<TextView>(R.id.filter_range_data_label).text = range.toString() + " km"
+                        dialog.dismiss()
+
+                    }
+                    dialog.findViewById<Button>(R.id.filter_btn_cancel_add).setOnClickListener {
+                        dialog.dismiss()
+                    }
+
+
+                    dialog.show()
+                }
             }
 
             override fun onDrawerClosed(view: View) {
-                supportActionBar!!.show()
+
             }
 
-            override fun onDrawerStateChanged(i: Int) {}
+            override fun onDrawerStateChanged(i: Int) {
+            }
         })
     }
 
-    fun getAllPlaces(adapter: PlacesAdapter, dialog : Dialog) {
+    fun showDialogFilterAdd(title : String, checkedData : ArrayList<String>, data : ArrayList<String>, chipGroup: ChipGroup){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_filter_add)
+
+        val filterChipGroup = dialog.findViewById<ChipGroup>(R.id.filter_add_chip_group)
+        dialog.findViewById<TextView>(R.id.filter_add_title).text = title
+
+        val allChipsID = ArrayList<Int>()
+        dialog.findViewById<Button>(R.id.filter_btn_save_add).setOnClickListener {
+            chipGroup.removeAllViews()
+            val chips = filterChipGroup.checkedChipIds
+            checkedData.clear()
+            for (id in chips){
+                val chip_text = dialog.findViewById<Chip>(id).text
+                checkedData.add(chip_text as String)
+                val chip = this.layoutInflater.inflate(R.layout.view_chips_buttons, null, false) as Chip
+                chip.text = chip_text
+                chip.id = View.generateViewId()
+                chip.isEnabled = false
+                chipGroup.addView(chip)
+            }
+            dialog.dismiss()
+
+        }
+        dialog.findViewById<Button>(R.id.filter_btn_cancel_add).setOnClickListener {
+            dialog.dismiss()
+        }
+        for (text in data){
+             val chip = this.layoutInflater.inflate(R.layout.view_chips_buttons, null, false) as Chip
+            chip.text = text
+            for (checked in checkedData){
+                if (checked == text) chip.isChecked = true
+            }
+            chip.id = View.generateViewId()
+            allChipsID.add(chip.id)
+            filterChipGroup.addView(chip)
+        }
+        dialog.findViewById<RadioButton>(R.id.filter_btn_check_all).setOnClickListener {
+            if (dialog.findViewById<RadioButton>(R.id.filter_btn_check_all).isChecked) {
+                for (id in allChipsID){
+                    dialog.findViewById<Chip>(id).isChecked = true
+                }
+
+            }
+        }
+        dialog.findViewById<RadioButton>(R.id.filter_btn_check_none).setOnClickListener {
+            if (dialog.findViewById<RadioButton>(R.id.filter_btn_check_none).isChecked) {
+                for (id in allChipsID){
+                    dialog.findViewById<Chip>(id).isChecked = false
+                }
+
+            }
+        }
+        dialog.show()
+    }
+
+    fun getAllPlaces() {
         val places_query = db.getReference("places").orderByChild("approved").equalTo(true)
         places_query.addValueEventListener(object: ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
                 allPlacesId.clear()
+                removeMarkers()
                 if (snapshot.exists()) {
-                    Log.w("MapActivity", "Loading all places")
+                    Log.d("MapActivity", "Loading all places")
                     for (places : DataSnapshot in snapshot.children) {
                         val place : Place? = places.getValue<Place>()
                         if (place != null) {
-                            allPlaces.add(place)
-                            allPlacesId.add(places.key.toString())
+                            Log.d("MapActivity", "Found Place : "+place.title)
+                            place.distance = getDistance(filterCoords, LatLng(place.lat,place.lng))
+                            var hasTag = false
+                            for (tag in place.tags){
+                                if (tag in allCheckedTags) hasTag = true
+                            }
+                            val opened = placesAdapter.checkWorkhour(place.workhours)
+
+                            if ((place.category in allCheckedCategories || allCheckedCategories.isEmpty()) && (hasTag || allCheckedTags.isEmpty()) && place.distance <= range && ((workhourOptions[0] && opened == 0) || (workhourOptions[1] && opened == 1) || (workhourOptions[2] && opened == 2) )) {
+
+                                if(!place.reviews.isEmpty()){
+                                    var score = 0
+                                    place.reviews.forEach { id, rev ->
+                                        score += rev.stars
+                                    }
+                                    place.rating = (score.toFloat() / place.reviews.size).toDouble()
+                                }
+                                allPlaces.add(place)
+                                allPlacesId.add(places.key.toString())
+                            }
                         }
                     }
+                    //sorting
+                    var tmpPlaces = ArrayList<Place>()
+                    when (sort){
+                        //by distance
+                        0 -> {
+                            tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.distance })))
+                        }
+                        //by rating (high - low)
+                        1 -> {
+                            tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.rating })).reversed())
+                        }
+                        //by rating (low - high)
+                        2 -> {
+                            tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.rating })))
+                        }
+                        //by A-Z
+                        3 -> {
+                            tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.title })))
+                        }
+                        //by Z-A
+                        4 -> {
+                            tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.title })).reversed())
+                        }
 
-                    Log.w("MapActivity", "Loading all places --done")
+                    }
+                    //var tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.distance })))
+                    allPlaces.clear()
+                    allPlaces.addAll(tmpPlaces)
+
+                    //if hint clicked
+                    if (hint and !allPlaces.isEmpty()){
+                        val index = Random().nextInt(allPlaces.size)
+                        val selected = allPlaces[index]
+                        allPlaces.removeAt(index)
+                        allPlaces.add(0, selected)
+                        placesAdapter.setHint(true)
+                        placesAdapter.setHintDialog(true)
+                        setFocusOnMap(selected.lat, selected.lng)
+                     }
+
+                    findViewById<TextView>(R.id.places_txtInfo).visibility = if (!allPlaces.isEmpty()) View.GONE else View.VISIBLE
+
+
+                    Log.d("MapActivity", "Loading all places --done")
                     showMarkers()
+                    loadingDialog.dismiss()
+
                 }
-                dialog.dismiss()
-                adapter.notifyDataSetChanged()
+                placesAdapter.notifyDataSetChanged()
+
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.w("Database Error", "Failed to read value.", error.toException())
@@ -264,12 +630,29 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
     private fun showMarkers() {
         for (place : Place in allPlaces) {
-            Log.w("MapActivity", "Showing markers - "+place.title)
             mapboxMap?.addMarker(
                     MarkerOptions()
                             .position(LatLng(place.lat, place.lng))
                             .title(place.title))
         }
+    }
+    private fun removeMarkers() {
+        for (marker : Marker in mapboxMap?.markers!!) {
+            mapboxMap?.removeMarker(marker)
+        }
+    }
+
+    fun getDistance(locCoords : LatLng, placeCoords : LatLng) : Double{
+        val r = 6371
+        val dlat = Math.toRadians(placeCoords.latitude-locCoords.latitude)
+        val dlng = Math.toRadians(placeCoords.longitude-locCoords.longitude)
+
+        val a = sin(dlat/2) * sin(dlat/2) + cos(Math.toRadians(placeCoords.latitude)) * cos(Math.toRadians(locCoords.latitude)) * sin(dlng/2)  * sin(dlng/2)
+
+        val c = 2 * atan2(sqrt(a), sqrt(1-a));
+        val d = r * c
+
+        return d
     }
 
 
@@ -282,30 +665,38 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 PERMISSION_REQUEST_CODE_LOCATION
             )
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                PERMISSION_REQUEST_CODE_LOCATION
+            )
+        }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        val loading_dialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        loading_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        loading_dialog.setContentView(R.layout.activity_splash_screen)
-        loading_dialog.show()
-        if (!isNetworkAvailable(this)) loading_dialog.findViewById<TextView>(R.id.splash_internet_conn).visibility = View.VISIBLE
+        loadingDialog.show()
+        if (!isNetworkAvailable(this)) loadingDialog.findViewById<TextView>(R.id.splash_internet_conn).visibility = View.VISIBLE
 
         this.mapboxMap = mapboxMap
+        Log.d("MapActivity", "Map ready")
         mapboxMap.setStyle(
                 Style.MAPBOX_STREETS
         ) { style -> enableLocationComponent(style) }
 
         ///recyler view for places
-        val recyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
+        placesRecyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
         // this creates a horizontal linear layout Manager
-        recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        placesRecyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        placesRecyclerview.adapter = placesAdapter
 
-        val adapter = PlacesAdapter(allPlaces, allPlacesId, this)
-        recyclerview.adapter = adapter
-        getAllPlaces(adapter, loading_dialog)
+        findViewById<View>(R.id.float_btn_hint).setOnClickListener(View.OnClickListener {
+            hint = true
+            getAllPlaces()
+            addBottomSheet()
+            placesRecyclerview.layoutManager?.scrollToPosition(0)
+        })
 
-        Log.w("MapActivity", "Map ready")
 
 
     }
@@ -335,7 +726,9 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             locationComponent!!.activateLocationComponent(locationComponentActivationOptions)
 
             // Enable to make component visible
-            locationComponent!!.isLocationComponentEnabled = true
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationComponent!!.isLocationComponentEnabled = true
+            }
 
             // Set the component's camera mode
             locationComponent!!.cameraMode = CameraMode.TRACKING
@@ -368,12 +761,20 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             } else {
                 noLocation(true)
             }
+            var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+            var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+            myCords = LatLng(mylat, mylng)
+            filterCoords = myCords
+            addDrawerFilter()
+            getAllPlaces()
             //button to move back to location
             findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
                 var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
                 var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+                myCords = LatLng(mylat, mylng)
+
                 val position = CameraPosition.Builder()
-                        .target(LatLng(mylat, mylng))
+                        .target(myCords)
                         .zoom(15.0) // Sets the zoom
                         .build()
                 mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1500)
@@ -446,14 +847,14 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onStart() {
-        Log.w("MapActivity", "onStart")
+        Log.d("MapActivity", "onStart")
         super.onStart()
         mapView!!.onStart()
     }
 
     override fun onResume() {
 
-        Log.w("MapActivity", "onResume")
+        Log.d("MapActivity", "onResume")
         setCustomActionBar()
         super.onResume()
         mapView!!.onResume()
@@ -476,7 +877,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     override fun onDestroy() {
 
-        Log.w("MapActivity", "onDestroy")
+        Log.d("MapActivity", "onDestroy")
         super.onDestroy()
         mapView!!.onDestroy()
     }
@@ -585,10 +986,13 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
 
             btn_saveReview.setOnClickListener {
+                var text = review_text.text.toString()
+                text = text.replace("\\s+".toRegex(), " ").trim()
                 if (checked_stars > 0 && checked_stars < 6) {
-                    val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, place.title, id)
-                    val reviewP = Review( Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, authUser.displayName!!, authUser.uid)
-                    db.getReference("places").child(id).child("reviews").child(authUser!!.uid).setValue(reviewP)
+                    val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), text, checked_stars, place.title, id)
+                    val reviewP = Review( Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), text, checked_stars, authUser.displayName!!, authUser.uid)
+
+                    db.getReference("places").child(id).child("reviews").child(authUser.uid).setValue(reviewP)
                     db.getReference("users").child(authUser.uid).child("reviews").child(id).setValue(reviewU)
                     dialog.dismiss()
                     show_info_dialog("Thank you for reviewing "+place.title+"!", true)
@@ -715,6 +1119,24 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
+    override fun showHint(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review) {
+        val hint_dialog = Dialog(this@MainMapActivity)
+        hint_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        hint_dialog.setCancelable(true)
+        hint_dialog.setCanceledOnTouchOutside(true)
+        hint_dialog.setContentView(R.layout.dialog_info_hint)
+        hint_dialog.findViewById<TextView>(R.id.info_text_place).text = place.title
+        hint_dialog.findViewById<Button>(R.id.btn_show_place).setOnClickListener {
+            hint_dialog.dismiss()
+            onItemClick(position, place, id, score, allReviews, hasRev, reviewID, review)}
+        hint_dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { hint_dialog.dismiss() }
+        hint_dialog.findViewById<Button>(R.id.btn_another_hint).setOnClickListener {
+            hint_dialog.dismiss()
+            hint = true
+            getAllPlaces()
+        }
+        hint_dialog.show()
+        }
 
     private fun check_stars(n: Int, list_stars : ArrayList<ImageView>) {
         for (i in 0..4) {
@@ -744,9 +1166,11 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 }
             }
         } else {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
-                return true
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
+                val activeNetworkInfo = connectivityManager.activeNetworkInfo
+                if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                    return true
+                }
             }
         }
         return false
@@ -757,3 +1181,4 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
 }
+

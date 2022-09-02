@@ -53,24 +53,24 @@
             android:id="@+id/show_place_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_below="@+id/divider"
+            android:orientation="vertical"
             android:paddingVertical="15dp">
 
             <TextView
                 android:id="@+id/show_place_description"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:background="@color/black_blue_low_opacity"
+                android:gravity="center"
                 android:textStyle="italic"
-                android:visibility="gone"
                 android:textColor="@color/text_light"
-                android:layout_marginVertical="5dp"
-                android:paddingHorizontal="10dp"
-                android:layout_gravity="center"
                 android:layout_marginHorizontal="25dp"
-                android:ems="10" />
+                android:layout_marginVertical="5dp"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="20dp"
+                android:background="@color/black_blue_low_opacity"
+                android:ems="10"
+                android:visibility="gone"/>
 
 
             <LinearLayout
@@ -81,21 +81,21 @@
                 android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:padding="10dp"
-                    android:tint="@color/text_light"
                     android:src="@drawable/ic_place_info_address"
-                    />
+                    android:tint="@color/text_light" />
 
                 <TextView
                     android:id="@+id/show_place_address_data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="10"
                     android:paddingHorizontal="10dp"
-                    android:textColor="@color/text_light"
-                    android:ems="10" />
+                    android:textColor="@color/text_light" />
 
 
             </LinearLayout>
@@ -107,36 +107,38 @@
                 android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:padding="10dp"
-                    android:src="@drawable/ic_category"
-                    />
+                    android:src="@drawable/ic_category" />
+
                 <TextView
                     android:id="@+id/show_place_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ems="10"
                     android:paddingHorizontal="10dp"
-                    android:textColor="@color/text_light"
-                    android:ems="10"/>
+                    android:textColor="@color/text_light" />
             </LinearLayout>
+
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/show_place_tags_chip_group"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
                 android:gravity="center"
-                app:flexWrap="wrap"
                 android:orientation="horizontal"
-                app:justifyContent="center"
-                android:layout_marginHorizontal="10dp">
-            </com.google.android.flexbox.FlexboxLayout>
+                app:flexWrap="wrap"
+                app:justifyContent="center"></com.google.android.flexbox.FlexboxLayout>
+
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="2dp"
-                android:layout_marginHorizontal="20dp"/>
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="2dp" />
 
 
             <!--Contacts -->
@@ -146,93 +148,102 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_light"
-                    android:text="@string/place_gContact"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/auttera"
-                    android:textAlignment="center"
                     android:background="@color/black_blue_low_opacity"
+                    android:ems="10"
+                    android:fontFamily="@font/auttera"
                     android:padding="10dp"
-                    android:ems="10" />
+                    android:text="@string/place_gContact"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_light"
+                    android:textSize="20sp" />
+
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="2dp"
-                    android:layout_marginHorizontal="20dp"/>
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginVertical="2dp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:id="@+id/show_place_contacts_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingVertical="5dp"
-                        android:visibility="gone"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingVertical="5dp"
+                        android:visibility="gone">
+
                         <ImageView
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_phone"
-                            />
+                            android:tint="@color/text_light" />
+
                         <TextView
                             android:id="@+id/show_place_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:paddingHorizontal="10dp"/>
+                            android:paddingHorizontal="10dp"
+                            android:textColor="@color/text_light" />
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:id="@+id/show_place_contacts_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingVertical="5dp"
-                        android:visibility="gone"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingVertical="5dp"
+                        android:visibility="gone">
+
                         <ImageView
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_email"
-                            />
+                            android:tint="@color/text_light" />
+
                         <TextView
                             android:id="@+id/show_place_email"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:paddingHorizontal="10dp" />
+                            android:paddingHorizontal="10dp"
+                            android:textColor="@color/text_light" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:id="@+id/show_place_contacts_web"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingVertical="5dp"
-                        android:visibility="gone"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingVertical="5dp"
+                        android:visibility="gone">
+
                         <ImageView
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_website_link"
-                            />
+                            android:tint="@color/text_light" />
+
                         <TextView
                             android:id="@+id/show_place_web"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:paddingHorizontal="10dp"/>
+                            android:paddingHorizontal="10dp"
+                            android:textColor="@color/text_light" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -244,213 +255,229 @@
                 android:id="@+id/show_place_workhours"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingVertical="5dp"
+                android:orientation="vertical"
                 android:paddingHorizontal="20dp"
-                android:orientation="vertical">
+                android:paddingVertical="5dp">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_light"
-                    android:text="@string/place_gWorkhours"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/auttera"
-                    android:textAlignment="center"
                     android:background="@color/black_blue_low_opacity"
+                    android:ems="10"
+                    android:fontFamily="@font/auttera"
                     android:padding="10dp"
-                    android:ems="10" />
+                    android:text="@string/place_gWorkhours"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_light"
+                    android:textSize="20sp" />
+
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="2dp"
-                    android:layout_marginHorizontal="20dp"/>
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginVertical="2dp" />
+
                 <RelativeLayout
                     android:id="@+id/monday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/monday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/monday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/monday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/monday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
 
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/tuesday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/tuesday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/tuesday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/tuesday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tuesday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/wednesday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/wednesday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/wednesday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/wednesday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/wednesday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
-                        android:gravity="center_vertical"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/thursday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/thursday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/thursday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/thursday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/thursday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
-                        android:gravity="center_vertical"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
 
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/friday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/friday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/friday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/friday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/friday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
 
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/saturday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/saturday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/saturday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/saturday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/saturday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
 
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/sunday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/sunday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/sunday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/sunday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/sunday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
-                        android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:hint="--:--  –  --:--"
+                        android:textColor="@color/text_light" />
 
                 </RelativeLayout>
             </LinearLayout>
@@ -460,26 +487,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="5dp"
                 android:paddingHorizontal="20dp"
+                android:paddingVertical="5dp"
                 android:visibility="gone">
+
                 <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_light"
-                android:text="@string/place_gImages"
-                android:textSize="20sp"
-                android:fontFamily="@font/auttera"
-                android:textAlignment="center"
-                android:background="@color/black_blue_low_opacity"
-                android:padding="10dp"
-                android:ems="10" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/black_blue_low_opacity"
+                    android:ems="10"
+                    android:fontFamily="@font/auttera"
+                    android:padding="10dp"
+                    android:text="@string/place_gImages"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_light"
+                    android:textSize="20sp" />
+
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="2dp"
-                    android:layout_marginHorizontal="20dp"/>
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginVertical="2dp" />
             </LinearLayout>
 
         </LinearLayout>

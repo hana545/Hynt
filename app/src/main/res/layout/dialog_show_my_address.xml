@@ -135,6 +135,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
+                        app:closeIconEnabled="false"
                         android:text="Home"
                         app:chipIcon="@drawable/ic_address_category_home"/>
                     <com.google.android.material.chip.Chip
@@ -142,6 +143,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
+                        app:closeIconEnabled="false"
                         android:text="Work"
                         app:chipIcon="@drawable/ic_address_category_work"/>
                     <com.google.android.material.chip.Chip
@@ -149,6 +151,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
+                        app:closeIconEnabled="false"
                         android:text="Education"
                         app:chipIcon="@drawable/ic_address_category_education"/>
                     <com.google.android.material.chip.Chip
@@ -156,6 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
+                        app:closeIconEnabled="false"
                         android:text="Other"
                         app:chipIcon="@drawable/ic_address_category_other"/>
                 </com.google.android.material.chip.ChipGroup>

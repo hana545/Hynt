@@ -108,9 +108,11 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
         }
         val btn_saveReview : Button = dialog.findViewById<Button>(R.id.btn_save_review)
         val btn_deleteReview : Button = dialog.findViewById<Button>(R.id.btn_delete_review)
-        btn_saveReview.setOnClickListener {
-            val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, review.refName, review.refId)
-            val reviewP = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), review_text.text.toString(), checked_stars, authUser!!.displayName!!, authUser.uid)
+        btn_saveReview.setOnClickListener{
+            var  text :String = review_text.text.toString()
+            text = text.replace("\\s+".toRegex(), " ").trim()
+            val reviewU = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), text, checked_stars, review.refName, review.refId)
+            val reviewP = Review(Calendar.getInstance().time, SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()), text, checked_stars, authUser!!.displayName!!, authUser.uid)
 
             db.getReference("places").child(review.refId).child("reviews").child(authUser.uid).setValue(reviewP)
             db.getReference("users").child(authUser.uid).child("reviews").child(review.refId).setValue(reviewU)
@@ -122,10 +124,11 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
             AlertDialog.Builder(activity)
                     .setTitle("Delete review")
                     .setMessage("Are you sure you want to delete this review?")
-                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { delete_dialog, which ->
                         db.getReference("places").child(review.refId).child("reviews").child(authUser!!.uid).removeValue()
                         db.getReference("users").child(authUser.uid).child("reviews").child(review.refId).removeValue()
                         dialog.dismiss()
+                        delete_dialog.dismiss()
                         show_info_dialog("Review deleted", true)
                     })
                     .setNegativeButton(android.R.string.no, null)
@@ -163,7 +166,6 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
                     }
                 }
                 allReviews.reverse()
-                Log.i("ReviewShow", "all." + allReviews)
                 adapter.notifyDataSetChanged()
             }
 

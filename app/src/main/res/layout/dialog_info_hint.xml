@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center|center_vertical"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingVertical="20dp">
+
+        <ImageView
+            android:id="@+id/card_icon"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_happy_news" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center|center_vertical"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Your hint: "
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/info_text_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textAlignment="center"
+                android:textColor="@color/blue_dark"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="It is placed first in your list of places"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="normal" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_show_place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:backgroundTint="@color/black_blue"
+                    android:fontFamily="@font/auttera"
+                    android:letterSpacing="0.1"
+                    android:text="Show place"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/btn_continue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/black_blue"
+                    android:fontFamily="@font/auttera"
+                    android:letterSpacing="0.1"
+                    android:text="Continue"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="20dp">
+
+                <Button
+                    android:id="@+id/btn_another_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:backgroundTint="@color/text_light"
+                    android:drawableBottom="@drawable/ic_hint_bulb"
+                    android:fontFamily="@font/auttera"
+                    android:letterSpacing="0.1"
+                    android:padding="15dp"
+                    android:text="Another hint"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black_blue" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

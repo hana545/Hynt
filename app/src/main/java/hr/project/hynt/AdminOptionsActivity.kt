@@ -105,7 +105,6 @@ class AdminOptionsActivity : AppCompatActivity() {
         btn_home.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, MainMapActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         })
         val btn_user : LinearLayout = customView.findViewById<View>(R.id.btn_user_profile) as LinearLayout
@@ -158,7 +157,6 @@ class AdminOptionsActivity : AppCompatActivity() {
         home!!.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, MainMapActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             bottomSheetDialog.dismiss()
             startActivity(intent)
         })

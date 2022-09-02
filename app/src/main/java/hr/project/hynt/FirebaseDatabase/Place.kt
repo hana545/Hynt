@@ -2,7 +2,8 @@ package hr.project.hynt.FirebaseDatabase
 
 import java.util.*
 
-data class Place(val timestamp: Date =  Calendar.getInstance().time,
+data class Place(val id: String = "",
+                 val timestamp: Date =  Calendar.getInstance().time,
                  val title: String = "",
                  val address: String = "",
                  val lat: Double = 0.0,
@@ -20,7 +21,9 @@ data class Place(val timestamp: Date =  Calendar.getInstance().time,
                  val reviews : HashMap<String, Review> = HashMap<String, Review>(),
                  val authorID: String = "",
                  val approved: Boolean = false,
-                 val pending: Boolean = true
+                 val pending: Boolean = true,
+                 var rating: Double = 0.0,
+                 var distance: Double = 0.0
 
 ) {
 }

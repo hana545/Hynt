@@ -110,7 +110,7 @@
                     android:id="@+id/btn_positive"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:backgroundTint="#F6F1C2"
+                    android:backgroundTint="@color/text_light"
                     android:src="@drawable/ic_edit"
                     android:layout_weight="0.5"
                     />
@@ -118,8 +118,8 @@
                     android:id="@+id/btn_negative"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
-                    android:backgroundTint="@color/text_light"
-                    android:src="@drawable/ic_remove"
+                    android:backgroundTint="#AEA50208"
+                    android:src="@android:drawable/ic_menu_delete"
                     android:layout_weight="0.5"
                     />
             </LinearLayout>

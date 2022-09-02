@@ -114,7 +114,6 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
                 .show()
     }
 
-    /////////////////WIP
     override fun onItemClick(place: Place, placeId: String) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

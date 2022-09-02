@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -39,6 +41,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
 
+    var filter = 0
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
@@ -59,12 +62,32 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
 
         val adapter = PlacesManageAdapter(allPlaces, allPlacesId, "user",this)
         recyclerview.adapter = adapter
-        getAllPlaces(adapter)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar_UserPlaces)
+        getAllPlaces(adapter, progressBar)
+        view.findViewById<FloatingActionButton>(R.id.fragment_btn_add_new_place).setOnClickListener {
+            val intent = Intent(context, AddNewPlaceActivity::class.java)
+            startActivity(intent)
+        }
+        view.findViewById<TextView>(R.id.fil_approved).setOnClickListener {
+            filter = 1
+            progressBar.visibility = View.VISIBLE
+            getAllPlaces(adapter, progressBar)
+        }
+        view.findViewById<TextView>(R.id.fil_pending).setOnClickListener {
+            filter = 2
+            progressBar.visibility = View.VISIBLE
+            getAllPlaces(adapter, progressBar)
+        }
+        view.findViewById<TextView>(R.id.fil_notapproved).setOnClickListener {
+            filter = 3
+            progressBar.visibility = View.VISIBLE
+            getAllPlaces(adapter, progressBar)
+        }
         // Inflate the layout for this fragment
         return view
     }
 
-    fun getAllPlaces(adapter: PlacesManageAdapter) {
+    fun getAllPlaces(adapter: PlacesManageAdapter, progressBar: ProgressBar) {
         val places_query = db.getReference("places").orderByChild("timestamp/time")
         places_query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -74,12 +97,35 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
                     for (places: DataSnapshot in snapshot.children) {
                         val place: Place? = places.getValue<Place>()
                         if (place != null && place.authorID.equals(authUser!!.uid.toString())) {
-                            allPlaces.add(place)
-                            allPlacesId.add(places.key.toString())
+                            when (filter) {
+                                0 -> {
+                                    allPlaces.add(place)
+                                    allPlacesId.add(places.key.toString())
+                                }
+                                1 -> {
+                                    if (place.approved && !place.pending) {
+                                        allPlaces.add(place)
+                                        allPlacesId.add(places.key.toString())
+                                    }
+                                }
+                                2 -> {
+                                    if (!place.approved && place.pending) {
+                                        allPlaces.add(place)
+                                        allPlacesId.add(places.key.toString())
+                                    }
+                                }
+                                3 -> {
+                                    if (!place.approved && !place.pending) {
+                                        allPlaces.add(place)
+                                        allPlacesId.add(places.key.toString())
+                                    }
+                                }
+                            }
                         }
                     }
                     allPlaces.reverse()
                     allPlacesId.reverse()
+                    progressBar.visibility = View.GONE
                     adapter.notifyDataSetChanged()
 
                 }
@@ -145,6 +191,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
         place_title.text = place.title
         place_address.text = place.address
         place_description.text = place.desc
+        dialog.findViewById<ImageButton>(R.id.show_place_btn_show_on_map).visibility = View.GONE
         if (place.desc.isEmpty()) place_description.visibility = View.GONE
         place_category.text = place.category
         // for Tags

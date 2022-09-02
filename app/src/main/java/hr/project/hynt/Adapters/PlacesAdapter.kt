@@ -1,5 +1,6 @@
 package hr.project.hynt.Adapters
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,18 +16,21 @@ import hr.project.hynt.R
 import java.lang.Math.round
 import java.util.*
 
-class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<String>, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
+class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
 
     val authUser = FirebaseAuth.getInstance().currentUser
     var hasRev : MutableList<Boolean> = ArrayList()
     var reviewID : MutableList<String> = ArrayList()
     var review : MutableList<Review> = ArrayList()
-    var score : MutableList<Int> = ArrayList()
     var allReviews = ArrayList<ArrayList<Review>>()
+    var showHint: Boolean = false
+    var showHintDialog = true
 
     interface ItemClickListener{
         fun onItemClick(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
+        fun showHint(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
     }
+
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -41,19 +45,19 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val place = mList[position]
+
         hasRev.add(false)
         reviewID.add("")
         review.add(Review())
-        score.add(0)
         allReviews.add(ArrayList<Review>())
 
         holder.title.text = place.title
         holder.address.text = place.address.substringBefore(',')
         holder.category.text = place.category
         val opened = checkWorkhour(place.workhours)
-        if (opened == 0){
+        if (opened == 0) {
             holder.workhour.setImageResource(R.drawable.ic_closed_label)
-        } else if (opened == 1){
+        } else if (opened == 1) {
             holder.workhour.setImageResource(R.drawable.ic_open_label)
         } else {
             holder.workhour.visibility = View.INVISIBLE
@@ -61,23 +65,17 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
 
         hasRev[position] = false
         allReviews[position].clear()
-        score[position] = 0
-        if(!place.reviews.isEmpty()){
-            var size = 0
+        if (!place.reviews.isEmpty()) {
             place.reviews.forEach { id, rev ->
                 allReviews[position].add(rev)
-                size++
-                score[position] += rev.stars
                 if (authUser != null) {
-                    if (rev.refId.equals(authUser.uid)){
+                    if (rev.refId.equals(authUser.uid)) {
                         reviewID[position] = id
                         hasRev[position] = true
                         review[position] = rev
                     }
                 }
             }
-            val tmp_score = (score[position].toFloat() / size)
-            score[position] = round(tmp_score)
         }
 
         val list_stars = ArrayList<ImageView>()
@@ -86,11 +84,23 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
         list_stars.add(holder.star3)
         list_stars.add(holder.star4)
         list_stars.add(holder.star5)
-        check_stars(score[position], list_stars)
+        check_stars(round(place.rating.toFloat()), list_stars)
 
+        val sortedReviews = allReviews[position].sortedWith(compareBy({ it.timestamp })).reversed()
+        if (position == 0){
+            if (showHint) {
+                holder.card.setBackgroundResource(R.drawable.bg_rounded_border_solid)
+                if(showHintDialog){
+                    showHintDialog = false
+                    mItemClickListener.showHint(position, place, place.id, round(place.rating.toFloat()), sortedReviews, hasRev[position], reviewID[position], review[position])
+                }
+
+            } else {
+                holder.card.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            }
+        }
         holder.card.setOnClickListener{
-            val sortedReviews = allReviews[position].sortedWith(compareBy({ it.timestamp })).reversed()
-            mItemClickListener.onItemClick(position, place, mList_id[position], score[position], sortedReviews, hasRev[position], reviewID[position], review[position])
+            mItemClickListener.onItemClick(position, place, place.id, round(place.rating.toFloat()), sortedReviews, hasRev[position], reviewID[position], review[position])
         }
     }
 
@@ -116,7 +126,7 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
 
     }
 
-    private fun checkWorkhour(workhours : Workhour) : Int {
+    fun checkWorkhour(workhours : Workhour) : Int {
         var day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
         val current_workhours = workhours[day]
         if (current_workhours.isEmpty()){
@@ -154,6 +164,15 @@ class PlacesAdapter (private val mList: List<Place>, private val mList_id: List<
             list_stars[i].setImageResource(R.drawable.ic_star_review_on)
         }
 
+    }
+
+    fun setHint(changedHint: Boolean) {
+        showHint = changedHint
+        notifyDataSetChanged()
+    }
+    fun setHintDialog(changedHint: Boolean) {
+        showHintDialog = changedHint
+        notifyDataSetChanged()
     }
 
 

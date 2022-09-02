@@ -16,10 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.google.android.flexbox.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -48,13 +46,7 @@ import java.util.*
 
 class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObserver.OnScrollChangedListener {
 
-
-    var allCategories_id = ArrayList<String>()
     var allCategories = ArrayList<String>()
-
-    var allTags_id = ArrayList<String>()
-    var allTags = ArrayList<String>()
-
 
     private var placeAddressAutocompleteResult : EditText? = null
 
@@ -215,6 +207,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                         place = snapshot.getValue<Place>()!!
                         place_name.setText(place.title)
                         place_address.setText(place.address)
+                        coordinates = LatLng(place.lat,place.lng)
                         place_description.setText(place.desc)
                         place_phone1.setText(place.phone1)
                         place_email1.setText(place.email1)
@@ -555,7 +548,6 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         btn_home.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, MainMapActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         })
         val btn_user : LinearLayout = customView.findViewById<View>(R.id.btn_user_profile) as LinearLayout
@@ -605,7 +597,6 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         home!!.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, MainMapActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             bottomSheetDialog.dismiss()
             startActivity(intent)
         })
@@ -650,20 +641,20 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         val places_query = db.getReference("tags")
         places_query.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                allTags.clear()
-                allTags_id.clear()
+                var allTags = ArrayList<String>()
                 if (snapshot.exists()) {
                     for (tags : DataSnapshot in snapshot.children) {
                         val tag = tags.getValue<String>()
-                        val tag_id = tags.key.toString()
                         if (tag != null) {
                             allTags.add(tag)
-                            allTags_id.add(tag_id)
-                            if (intent.getBooleanExtra("new", true)){
-                                addChip(tag, ArrayList<String>())
-                            } else {
-                                addChip(tag, placeTags)
-                            }
+                        }
+                    }
+                    allTags.sort()
+                    for (tag : String in allTags) {
+                        if (intent.getBooleanExtra("new", true)){
+                            addChip(tag, ArrayList<String>())
+                        } else {
+                            addChip(tag, placeTags)
                         }
                     }
                 }
@@ -688,23 +679,22 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private fun getAllCategories(adapter : ArrayAdapter<String>) {
         var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
         val places_query = db.getReference("categories")
-        places_query.addValueEventListener(object: ValueEventListener {
+        places_query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 allCategories.clear()
-                allCategories_id.clear()
                 if (snapshot.exists()) {
-                    for (tags : DataSnapshot in snapshot.children) {
-                        val tag = tags.getValue<String>()
-                        val tag_id = tags.key.toString()
-                        if (tag != null) {
-                            allCategories.add(tag)
-                            allCategories_id.add(tag_id)
+                    for (categories: DataSnapshot in snapshot.children) {
+                        val category = categories.getValue<String>()
+                        if (category != null) {
+                            allCategories.add(category)
 
                         }
                     }
                     adapter.notifyDataSetChanged()
                 }
+                allCategories.sort()
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Log.w("Database Error", "Failed to read value.", error.toException())
             }
@@ -739,7 +729,6 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private fun addPlace(place_name_text: String, place_address_text: String, place_description_text: String, place_phone1_text: String, place_email1_text: String, place_website1_text: String, place_phone2_text: String, place_email2_text: String, place_website2_text: String, place_workhours: Workhour, category: String, selectedTags: ArrayList<String>) {
 
             if (FirebaseAuth.getInstance().currentUser != null) {
-                val nPlace = Place(Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude, place_description_text, place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
                 var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
                 var key = ""
                 if(intent.getBooleanExtra("new", true) == false){
@@ -747,10 +736,10 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 } else {
                     key = db.getReference("places").push().key.toString()
                 }
+                val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
                 db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
                     show_info_dialog("Successfully added place " + nPlace.title, true)
-                    //Toast.makeText(this, "Successfully added place " + nPlace.title, Toast.LENGTH_LONG).show()
-                    //finish()
+
                 }
             } else {
                 Toast.makeText(this@AddNewPlaceActivity, "Error occurred, try again", Toast.LENGTH_SHORT).show()
