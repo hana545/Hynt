@@ -1,5 +1,6 @@
 package hr.project.hynt
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
@@ -156,14 +158,25 @@ class RegisterFragment : Fragment() {
                                                 Log.d("User profile", "User profile created")
                                                 if (task.isSuccessful) {
                                                     db.getReference("roles").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue("user")
-                                                    Toast.makeText(activity, "User has been registered successfully!", Toast.LENGTH_LONG).show()
-                                                    val shPref = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                                                    val editor = shPref.edit()
-                                                    editor.putString("Role", "user").apply()
-                                                    val intent = Intent(requireActivity(), MainMapActivity::class.java)
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    startActivity(intent)
-                                                    requireActivity().finish()
+                                                    //Toast.makeText(activity, "User has been registered successfully!", Toast.LENGTH_LONG).show()
+
+                                                    progresBar!!.visibility = View.INVISIBLE
+                                                    val dialog = Dialog(requireActivity())
+                                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                                    dialog.setCancelable(false)
+                                                    dialog.setCanceledOnTouchOutside(false)
+                                                    dialog.setContentView(R.layout.dialog_info_success)
+                                                    dialog.findViewById<TextView>(R.id.info_text).text = "User has been registered successfully! \n Please verify your email and then login."
+                                                    dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener {
+                                                        FirebaseAuth.getInstance().signOut()
+                                                        val intent = Intent(requireActivity(), AuthorizationActivity::class.java)
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                        intent.putExtra("fragment","login")
+                                                        startActivity(intent)
+                                                        requireActivity().finish()
+                                                        dialog.dismiss()
+                                                    }
+                                                    dialog.show()
 
                                                 } else {
                                                     progresBar!!.visibility = View.INVISIBLE
@@ -176,6 +189,8 @@ class RegisterFragment : Fragment() {
                                             }
                                         }
                                     }
+                            Fuser.sendEmailVerification()
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "createUserWithEmail:failure", task.exception)

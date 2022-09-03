@@ -30,6 +30,7 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
 
     var allTags_id = ArrayList<String>()
     var allTags = ArrayList<String>()
+    var collectiveTags = hashMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,19 +65,20 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
             override fun onDataChange(snapshot: DataSnapshot) {
                 allTags.clear()
                 allTags_id.clear()
+                collectiveTags.clear()
                 if (snapshot.exists()) {
                     for (tags : DataSnapshot in snapshot.children) {
                         val tag = tags.getValue<String>()
                         val tag_id = tags.key.toString()
                         if (tag != null) {
-                            allTags.add(tag)
-                            allTags_id.add(tag_id)
-
+                            collectiveTags.put(tag_id,tag)
                         }
                     }
-                    adapter.notifyDataSetChanged()
-
                 }
+                val result = collectiveTags.toList().sortedBy {  (_, value) -> value}.toMap()
+                allTags.addAll(result.values)
+                allTags_id.addAll(result.keys)
+                adapter.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.w("Database Error", "Failed to read value.", error.toException())

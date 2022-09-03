@@ -63,10 +63,8 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        val authUser = FirebaseAuth.getInstance().currentUser
-        if (authUser != null) {
-            finish()
-        }
+        finish()
+
     }
 
     override fun onDestroy() {

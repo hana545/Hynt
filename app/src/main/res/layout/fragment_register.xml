@@ -142,24 +142,16 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/register_password__conf_error"/>
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/btn_google_signin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/google_sign_up"
-            android:layout_marginTop="18dp"
-            android:layout_below="@+id/btn_register"/>
-
 
         <ProgressBar
             android:id="@+id/register_progress_bar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="20dp"
+            android:padding="15dp"
             android:visibility="invisible"
-            android:layout_below="@+id/btn_google_signin"
+            android:layout_below="@+id/btn_register"
             android:layout_centerHorizontal="true"
             android:indeterminateTint="@color/blue_light"/>
 

@@ -267,9 +267,9 @@ class UserSettingsActivity: AppCompatActivity() {
                     FirebaseAuth.getInstance().signOut()
                     getSharedPreferences("MySharedPref", Context.MODE_PRIVATE).edit().remove("Role").apply()
                     val intent = Intent(this, LaunchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(intent)
-                    finish()
+                    finishAffinity()
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(R.drawable.ic_log_out)

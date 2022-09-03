@@ -9,12 +9,15 @@
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/activity_main_map.xml" value="0.15885416666666666" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_add_new_address.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_info_hint.xml" value="0.33" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_reset_password.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_show_my_address.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_show_place.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_show_place_manage.xml" value="0.23956262425447317" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_admin_manage_categories.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_admin_manage_places.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_admin_manage_tags.xml" value="0.12552083333333333" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_login.xml" value="0.22" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_register.xml" value="0.121875" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_user_my_addresses.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_user_my_places.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/layout_filter.xml" value="0.2" />

@@ -29,6 +29,7 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
 
     var allCategories_id = ArrayList<String>()
     var allCategories = ArrayList<String>()
+    var collectiveCategories = hashMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,18 +67,21 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
                 if (snapshot.exists()) {
                     allCategories.clear()
                     allCategories_id.clear()
+                    collectiveCategories.clear()
                     for (categories: DataSnapshot in snapshot.children) {
                         val category = categories.getValue<String>()
                         val category_id = categories.key.toString()
                         if (category != null) {
-                            allCategories.add(category)
-                            allCategories_id.add(category_id)
+                            collectiveCategories.put(category_id,category)
 
                         }
                     }
-                    adapter.notifyDataSetChanged()
-
                 }
+                val result = collectiveCategories.toList().sortedBy { (_, value) -> value}.toMap()
+                allCategories.addAll(result.values)
+                allCategories_id.addAll(result.keys)
+                adapter.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -387,8 +387,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                     sort = sortSpinner.selectedItemId.toInt()
                     getAllPlaces()
 
-                    if (addressSpinner.selectedItemId > 0){
-                        mapboxMap?.addMarker(MarkerOptions().position(filterCoords)
+                    if (addressSpinner.selectedItemPosition > 0){
+                        mapboxMap!!.addMarker(MarkerOptions().position(filterCoords)
                                 .title(addressSpinner.selectedItem.toString())
                                 .icon(IconFactory.getInstance(this@MainMapActivity).fromResource(R.drawable.map_default_map_marker)))
                     }
@@ -638,16 +638,16 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
     private fun removeMarkers() {
         for (marker : Marker in mapboxMap?.markers!!) {
-            mapboxMap?.removeMarker(marker)
+            if(marker.position != filterCoords) mapboxMap?.removeMarker(marker)
         }
     }
 
-    fun getDistance(locCoords : LatLng, placeCoords : LatLng) : Double{
+    private fun getDistance(locCoords : LatLng, placeCoords : LatLng) : Double{
         val r = 6371
-        val dlat = Math.toRadians(placeCoords.latitude-locCoords.latitude)
-        val dlng = Math.toRadians(placeCoords.longitude-locCoords.longitude)
+        val dlat = toRadians(placeCoords.latitude-locCoords.latitude)
+        val dlng = toRadians(placeCoords.longitude-locCoords.longitude)
 
-        val a = sin(dlat/2) * sin(dlat/2) + cos(Math.toRadians(placeCoords.latitude)) * cos(Math.toRadians(locCoords.latitude)) * sin(dlng/2)  * sin(dlng/2)
+        val a = sin(dlat/2) * sin(dlat/2) + cos(toRadians(placeCoords.latitude)) * cos(toRadians(locCoords.latitude)) * sin(dlng/2)  * sin(dlng/2)
 
         val c = 2 * atan2(sqrt(a), sqrt(1-a));
         val d = r * c
@@ -662,13 +662,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_CODE_LOCATION
-            )
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                 PERMISSION_REQUEST_CODE_LOCATION
             )
         }
@@ -726,9 +719,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             locationComponent!!.activateLocationComponent(locationComponentActivationOptions)
 
             // Enable to make component visible
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationComponent!!.isLocationComponentEnabled = true
-            }
+            locationComponent!!.isLocationComponentEnabled = true
 
             // Set the component's camera mode
             locationComponent!!.cameraMode = CameraMode.TRACKING
@@ -767,6 +758,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             filterCoords = myCords
             addDrawerFilter()
             getAllPlaces()
+            setFocusOnMap(myCords.latitude, myCords.longitude)
             //button to move back to location
             findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
                 var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude

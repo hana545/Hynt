@@ -195,9 +195,8 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
                             allAddressesId.add(addresses.key.toString())
                         }
                     }
-                    adapter.notifyDataSetChanged()
-
                 }
+                adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
