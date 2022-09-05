@@ -7,7 +7,9 @@
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/drawable/ic_hint_bulb.xml" value="0.168" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/activity_add_new_place.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/activity_main_map.xml" value="0.15885416666666666" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/bottom_sheet_places.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_add_new_address.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_fullscreen_images.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_info_hint.xml" value="0.33" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_reset_password.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/dialog_show_my_address.xml" value="0.27291666666666664" />
@@ -21,10 +23,15 @@
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_user_my_addresses.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/fragment_user_my_places.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/layout_filter.xml" value="0.2" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_fullscreen_image_slider.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_image.xml" value="0.22" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_image_upload.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_manage_place_card.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_my_address_card.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_my_place_card.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_place_card.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_tags_categories.xml" value="0.121875" />
+        <entry key="..\:/Users/Hana/AndroidStudioProjects/Hynt/app/src/main/res/layout/view_upload_image.xml" value="0.121875" />
       </map>
     </option>
   </component>

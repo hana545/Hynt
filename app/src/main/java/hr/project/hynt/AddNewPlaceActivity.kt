@@ -1,13 +1,18 @@
 package hr.project.hynt
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -16,8 +21,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.flexbox.*
+import androidx.core.net.toUri
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -28,6 +39,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
+import com.google.firebase.storage.UploadTask
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse
@@ -35,6 +49,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions
+import hr.project.hynt.Adapters.ImagesAdapter
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.Workhour
@@ -42,9 +57,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
-class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObserver.OnScrollChangedListener {
+class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObserver.OnScrollChangedListener, ImagesAdapter.ItemClickListener {
 
     var allCategories = ArrayList<String>()
 
@@ -54,6 +71,15 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
     private lateinit var scrollView: ScrollView
     private lateinit var btn_addPlace: Button
 
+
+    private val REQUEST_CODE = 200
+    private val PERMISSION_REQUEST_CODE_STORAGE =  102
+    val allImages = ArrayList<String>()
+    val existingImages = HashMap<String, String>()
+    val storageReference = FirebaseStorage.getInstance().reference
+
+    lateinit var imagesRecylerView : RecyclerView
+    val imagesAdapter = ImagesAdapter(allImages,true, this)
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
@@ -119,6 +145,18 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 btn_add_workhours.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_clock_hour, 0, R.drawable.ic_expand_less, 0)
             }
         }
+        btn_add_images.setOnClickListener {
+            val images = findViewById<RelativeLayout>(R.id.add_place_images)
+            if (images.visibility == View.VISIBLE){
+                images.visibility = View.GONE
+                btn_add_images.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pictures, 0, R.drawable.ic_expand_more, 0)
+            } else {
+                images.visibility = View.VISIBLE
+                btn_add_images.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pictures, 0, R.drawable.ic_expand_less, 0)
+            }
+        }
+
+
 
         //for workhour data input
         val monday_hour = findViewById<TextView>(R.id.monday_hours)
@@ -157,6 +195,23 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         sundayWorkhour.setOnClickListener {
             workhoursDialog(sundayWorkhour.id, sunday_hour.text.toString())
         }
+
+        findViewById<Button>(R.id.add_place_btn_add_images).setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST_CODE_STORAGE
+                )
+            } else {
+                uploadImages()
+            }
+        }
+        ///recycler view for images
+        imagesRecylerView = findViewById<RecyclerView>(R.id.recyler_view_images)
+        // this creates a horizontal linear layout Manager
+        imagesRecylerView.layoutManager = GridLayoutManager(applicationContext, 2)
+        imagesRecylerView.adapter = imagesAdapter
 
         //////////////////////////
         ///Init data
@@ -227,6 +282,11 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                         friday_hour.text = place.workhours.friday
                         saturday_hour.text = place.workhours.saturday
                         sunday_hour.text = place.workhours.sunday
+
+                        allImages.clear()
+                        allImages.addAll(place.images.values)
+                        existingImages.clear()
+                        existingImages.putAll(place.images)
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -268,7 +328,37 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
 
     }
 
+    private fun uploadImages() {
+        var intent = Intent()
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(
+            Intent.createChooser(intent, "Choose Pictures")
+            , REQUEST_CODE
+        )
+    }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE_STORAGE -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+                uploadImages()
+            } else {
+                // Permission Denied
+                AlertDialog.Builder(this)
+                    .setTitle("Denied access to storage")
+                    .setMessage("You have not granted permission to access your storage! You need to change that for uploading pictures. ")
+                    .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { d, _ ->
+                        d.dismiss()
+                    })
+                    .setIcon(R.drawable.ic_settings)
+                    .setCancelable(false)
+                    .show()
+            }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
 
     private fun checkAndAddZero(number : Int) : String {
         return if (number < 10) "0$number" else number.toString()
@@ -714,6 +804,26 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         startActivityForResult(intent, 1)
     }
 
+    override fun onImageClick(imageUri: Uri, allImages: ArrayList<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBtnRemove(position: Int){
+        if(allImages.get(position) in existingImages.values){
+            FirebaseStorage.getInstance().getReferenceFromUrl(allImages[position]).delete().addOnCompleteListener(
+                OnCompleteListener<Void> { task ->
+                    if (task.isSuccessful) {
+                        Log.w("showImages", "deleteImage:success ")
+                    } else {
+                        Log.w("showImages", "deleteImage:failure "+task.exception)
+                    }
+                })
+
+        }
+        allImages.removeAt(position)
+        imagesAdapter.notifyDataSetChanged()
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -722,6 +832,25 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             placeAddressAutocompleteResult?.setText(feature.placeName())
             coordinates = LatLng((feature.geometry() as Point).latitude(), (feature.geometry() as Point).longitude())
 
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+            // if multiple images are selected
+            if (data?.getClipData() != null) {
+                var count = data.clipData?.itemCount
+                for (i in 0..count!! - 1) {
+                    var imageUri: Uri = data.clipData?.getItemAt(i)!!.uri
+                    allImages.add(imageUri.toString())
+                    imagesAdapter.notifyDataSetChanged()
+
+                }
+            } else if (data?.getData() != null) {
+                // if single image is selected
+                var imageUri: Uri = data.data!!
+                allImages.add(imageUri.toString())
+                imagesAdapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -736,10 +865,35 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 } else {
                     key = db.getReference("places").push().key.toString()
                 }
-                val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(),FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
+                val imageNames = HashMap<String, String>()
+                val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(), imageNames, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
                 db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
                     show_info_dialog("Successfully added place " + nPlace.title, true)
+                    for(imageUri in allImages) {
+                        if(imageUri in existingImages.values){
+                            for((key, value) in existingImages)
+                                if (value.equals(imageUri)) imageNames.put(key, imageUri)
+                            db.getReference("places").child(key).child("images").setValue(imageNames)
+                            continue
+                        } else {
+                            val imageName = UUID.randomUUID().toString()
+                            val ref = storageReference?.child("myImages/").child(key).child(imageName)
+                            ref.putFile(imageUri.toUri()!!).addOnCompleteListener(
+                                OnCompleteListener<UploadTask.TaskSnapshot> { task ->
+                                    if (task.isSuccessful) {
+                                        ref.downloadUrl.addOnSuccessListener { uri ->
+                                            imageNames.put(imageName, uri.toString())
+                                            db.getReference("places").child(key).child("images").setValue(imageNames)
+                                        }
+                                        Log.w("showImages", "uploadImage:success")
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w("showImages", "uploadImage:failure", task.exception)
 
+                                    }
+                                })
+                        }
+                    }
                 }
             } else {
                 Toast.makeText(this@AddNewPlaceActivity, "Error occurred, try again", Toast.LENGTH_SHORT).show()

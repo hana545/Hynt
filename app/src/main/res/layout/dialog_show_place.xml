@@ -296,7 +296,8 @@
                 android:layout_height="match_parent"
                 android:paddingVertical="5dp"
                 android:paddingHorizontal="20dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -453,19 +454,19 @@
                     android:id="@+id/saturday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/saturday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/saturday"
+                        android:layout_alignParentStart="true"
+                        android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
                         android:padding="10dp"
-                        android:textSize="15sp"
+                        android:text="@string/saturday"
                         android:textColor="@color/text_light"
-                        android:fontFamily="@font/auttera"
-                        android:textStyle="bold"
-                        android:layout_alignParentStart="true"
-                        />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                     <TextView
                         android:id="@+id/saturday_hours"
                         android:layout_width="wrap_content"
@@ -504,6 +505,46 @@
 
                 </RelativeLayout>
             </LinearLayout>
+
+            <!--Images -->
+            <LinearLayout
+                android:id="@+id/show_place_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="20dp"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_light"
+                    android:text="@string/place_gImages"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/auttera"
+                    android:textAlignment="center"
+                    android:background="@color/black_blue_low_opacity"
+                    android:padding="10dp"
+                    android:ems="10" />
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginHorizontal="20dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyler_view_images"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+
             <!--Reviews -->
             <LinearLayout
                 android:id="@+id/show_place_reviews"
@@ -665,35 +706,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/show_place_images"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="5dp"
-                android:paddingHorizontal="20dp"
-                android:visibility="gone">
-                <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_light"
-                android:text="@string/place_gImages"
-                android:textSize="20sp"
-                android:fontFamily="@font/auttera"
-                android:textAlignment="center"
-                android:background="@color/black_blue_low_opacity"
-                android:padding="10dp"
-                android:ems="10" />
-                <com.google.android.material.divider.MaterialDivider
-                    android:id="@+id/divider6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="2dp"
-                    android:layout_marginHorizontal="20dp"/>
-            </LinearLayout>
-
         </LinearLayout>
-
 
     </RelativeLayout>
 </ScrollView>

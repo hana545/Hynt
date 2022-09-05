@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "76945513032",
+    "firebase_url": "https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "hynt-cb624",
     "storage_bucket": "hynt-cb624.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "76945513032-c49usk1p1qnnv35bee8okif05mes16uu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hr.project.hynt",
+            "certificate_hash": "2b609b350442d10771e9c7c85e137c505edf9520"
+          }
+        },
         {
           "client_id": "76945513032-s9tcsjkaperlobricte01cs8cq2ve3bu.apps.googleusercontent.com",
           "client_type": 3

@@ -1,6 +1,7 @@
 package hr.project.hynt.Adapters
 
 import android.graphics.Color
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +9,18 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.Workhour
 import hr.project.hynt.R
 import java.lang.Math.round
 import java.util.*
+import kotlin.collections.ArrayList
+
 
 class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
 
@@ -27,8 +33,8 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
     var showHintDialog = true
 
     interface ItemClickListener{
-        fun onItemClick(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
-        fun showHint(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
+        fun onItemClick(position: Int, place: Place, id: String, score: Int, allImages : ArrayList<String>, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
+        fun showHint(position: Int, place: Place, id: String, score: Int, allImages: ArrayList<String>, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review)
     }
 
     // create new views
@@ -92,15 +98,16 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
                 holder.card.setBackgroundResource(R.drawable.bg_rounded_border_solid)
                 if(showHintDialog){
                     showHintDialog = false
-                    mItemClickListener.showHint(position, place, place.id, round(place.rating.toFloat()), sortedReviews, hasRev[position], reviewID[position], review[position])
+                    mItemClickListener.showHint(position, place, place.id, round(place.rating.toFloat()), ArrayList(place.images.values), sortedReviews, hasRev[position], reviewID[position], review[position])
                 }
 
             } else {
                 holder.card.setBackgroundColor(Color.parseColor("#FFFFFF"))
             }
         }
+
         holder.card.setOnClickListener{
-            mItemClickListener.onItemClick(position, place, place.id, round(place.rating.toFloat()), sortedReviews, hasRev[position], reviewID[position], review[position])
+            mItemClickListener.onItemClick(position, place, place.id, round(place.rating.toFloat()), ArrayList(place.images.values), sortedReviews, hasRev[position], reviewID[position], review[position])
         }
     }
 

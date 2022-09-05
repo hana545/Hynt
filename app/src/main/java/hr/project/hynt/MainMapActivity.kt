@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -27,10 +28,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.gms.common.util.CollectionUtils.listOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -55,12 +59,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.*
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.maps.*
+import hr.project.hynt.Adapters.ImagesAdapter
 import hr.project.hynt.Adapters.PlacesAdapter
 import hr.project.hynt.Adapters.ReviewsAdapter
+import hr.project.hynt.Adapters.ViewPagerAdapter
 import hr.project.hynt.FirebaseDatabase.Address
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
@@ -70,7 +73,7 @@ import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 
 
-class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener, ReviewsAdapter.ItemClickListener {
+class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener, ReviewsAdapter.ItemClickListener, ImagesAdapter.ItemClickListener {
 
     private var mapView: MapView? = null
     private var mapboxMap: MapboxMap? = null
@@ -537,6 +540,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     fun getAllPlaces() {
+
         val places_query = db.getReference("places").orderByChild("approved").equalTo(true)
         places_query.addValueEventListener(object: ValueEventListener {
             @RequiresApi(Build.VERSION_CODES.N)
@@ -616,9 +620,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
                     Log.d("MapActivity", "Loading all places --done")
                     showMarkers()
-                    loadingDialog.dismiss()
-
                 }
+                loadingDialog.dismiss()
                 placesAdapter.notifyDataSetChanged()
 
             }
@@ -879,7 +882,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapView!!.onLowMemory()
     }
 
-    override fun onItemClick(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review){
+    override fun onItemClick(position: Int, place: Place, id: String, score: Int, allImages : ArrayList<String>, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -1066,9 +1069,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         for(i in 1..7){
             if (!place.workhours[i].isEmpty()) any = true
         }
-        if (!any){
-            dialog.findViewById<LinearLayout>(R.id.show_place_workhours).visibility = View.GONE
-        } else {
+        if (any){
+            dialog.findViewById<LinearLayout>(R.id.show_place_workhours).visibility = View.VISIBLE
             dialog.findViewById<TextView>(R.id.monday_hours).text = place.workhours.monday
             dialog.findViewById<TextView>(R.id.tuesday_hours).text = place.workhours.tuesday
             dialog.findViewById<TextView>(R.id.wednesday_hours).text = place.workhours.wednesday
@@ -1077,13 +1079,20 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             dialog.findViewById<TextView>(R.id.saturday_hours).text = place.workhours.saturday
             dialog.findViewById<TextView>(R.id.sunday_hours).text = place.workhours.sunday
         }
+        ///for Images
+        if (allImages.isNotEmpty()) dialog.findViewById<LinearLayout>(R.id.show_place_images).visibility = View.VISIBLE
+        val image_container = dialog.findViewById<RecyclerView>(R.id.recyler_view_images)
+        image_container.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val imageAdapter = ImagesAdapter(allImages, false,this)
+        image_container.adapter = imageAdapter
 
         ///for Reviews
         val review_container = dialog.findViewById<RecyclerView>(R.id.show_place_review_list)
         review_container.layoutManager = LinearLayoutManager(baseContext)
 
-        val adapter = ReviewsAdapter(allReviews, null,"other", this)
-        review_container.adapter = adapter
+        val reviewAdapter = ReviewsAdapter(allReviews, null,"other", this)
+        review_container.adapter = reviewAdapter
+
 
         dialog.show()
     }
@@ -1111,7 +1120,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
-    override fun showHint(position: Int, place: Place, id: String, score: Int, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review) {
+    override fun showHint(position: Int, place: Place, id: String, score: Int, allImages: ArrayList<String>, allReviews : List<Review>, hasRev: Boolean, reviewID : String, review : Review) {
         val hint_dialog = Dialog(this@MainMapActivity)
         hint_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         hint_dialog.setCancelable(true)
@@ -1120,7 +1129,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         hint_dialog.findViewById<TextView>(R.id.info_text_place).text = place.title
         hint_dialog.findViewById<Button>(R.id.btn_show_place).setOnClickListener {
             hint_dialog.dismiss()
-            onItemClick(position, place, id, score, allReviews, hasRev, reviewID, review)}
+            onItemClick(position, place, id, score,allImages, allReviews, hasRev, reviewID, review)}
         hint_dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { hint_dialog.dismiss() }
         hint_dialog.findViewById<Button>(R.id.btn_another_hint).setOnClickListener {
             hint_dialog.dismiss()
@@ -1170,6 +1179,28 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
     override fun onItemClick(review: Review, reviewID : String) {
         //do nothing
+    }
+
+    override fun onImageClick(imageUri: Uri, allImages : ArrayList<String>) {
+        val imageSliderDialog = Dialog(this@MainMapActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        imageSliderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        imageSliderDialog.setCancelable(true)
+        imageSliderDialog.setCanceledOnTouchOutside(true)
+        imageSliderDialog.setContentView(R.layout.dialog_fullscreen_images)
+
+        val viewPager = imageSliderDialog.findViewById<ViewPager>(R.id.ViewPager_fullscreen_images)
+        val viewPagerAdapter = ViewPagerAdapter(this@MainMapActivity, allImages)
+        viewPager.adapter = viewPagerAdapter
+
+        imageSliderDialog.findViewById<ImageButton>(R.id.btn_exit_fullscreen_images).setOnClickListener {
+            imageSliderDialog.dismiss()
+        }
+
+        imageSliderDialog.show()
+    }
+
+    override fun onBtnRemove(position: Int) {
+        TODO("Not yet implemented")
     }
 
 }

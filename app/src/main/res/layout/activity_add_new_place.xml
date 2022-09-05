@@ -132,20 +132,21 @@
                         android:ems="10" />
                 </LinearLayout>
             </RelativeLayout>
+
             <Button
                 android:id="@+id/btn_add_place_contactInfo_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/add_place_basicInfo"
                 android:backgroundTint="@color/blue_light"
-                android:textColor="@color/text_light"
-                android:text="@string/place_gContact"
-                android:textSize="18sp"
-                android:fontFamily="@font/auttera"
-                android:textAllCaps="false"
                 android:drawableLeft="@drawable/ic_contact"
                 android:drawableRight="@drawable/ic_expand_more"
+                android:fontFamily="@font/auttera"
                 android:gravity="left|center_vertical"
-                android:layout_below="@+id/add_place_basicInfo"/>
+                android:text="@string/place_gContact"
+                android:textAllCaps="false"
+                android:textColor="@color/text_light"
+                android:textSize="18sp" />
 
             <RelativeLayout
                 android:id="@+id/add_place_contactInfo"
@@ -412,16 +413,45 @@
                 android:id="@+id/btn_add_place_images_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/add_place_workhours"
                 android:backgroundTint="@color/blue_light"
-                android:textColor="@color/text_light"
-                android:text="@string/place_gImages"
-                android:textSize="18sp"
-                android:fontFamily="@font/auttera"
-                android:textAllCaps="false"
                 android:drawableLeft="@drawable/ic_pictures"
                 android:drawableRight="@drawable/ic_expand_more"
+                android:fontFamily="@font/auttera"
                 android:gravity="left|center_vertical"
-                android:layout_below="@+id/add_place_workhours"/>
+                android:text="@string/place_gImages"
+                android:textAllCaps="false"
+                android:textColor="@color/text_light"
+                android:textSize="18sp" />
+            <RelativeLayout
+                android:id="@+id/add_place_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_rounded_border"
+                android:layout_below="@+id/btn_add_place_images_label"
+                android:visibility="gone"
+                android:padding="20dp">
+
+                <Button
+                    android:id="@+id/add_place_btn_add_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="40dp"
+                    android:drawableLeft="@android:drawable/ic_input_add"
+                    android:drawableTint="@color/black_blue"
+                    android:textColor="@color/black_blue"
+                    android:backgroundTint="@color/blue_light"
+                    android:background="@drawable/bg_rounded_border"
+                    android:paddingLeft="50dp"
+                    android:text="Add images"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyler_view_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/add_place_btn_add_images"/>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/add_place_categories_spinner"
@@ -430,7 +460,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="10dp"
                 android:weightSum="1"
-                android:layout_below="@+id/btn_add_place_images_label"
+                android:layout_below="@+id/add_place_images"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"

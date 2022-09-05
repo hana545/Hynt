@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -28,6 +29,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
+import hr.project.hynt.Adapters.ImagesAdapter
 import hr.project.hynt.Adapters.PlacesAdapter
 import hr.project.hynt.Adapters.PlacesManageAdapter
 import hr.project.hynt.FirebaseDatabase.Place
@@ -36,8 +38,9 @@ import hr.project.hynt.FirebaseDatabase.TagCategory
 import hr.project.hynt.FirebaseDatabase.User
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
+class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, ImagesAdapter.ItemClickListener {
     var allPlaces = ArrayList<Place>()
     var allPlacesId = ArrayList<String>()
 
@@ -241,9 +244,8 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
         for (i in 1..7) {
             if (!place.workhours[i].isEmpty()) any = true
         }
-        if (!any) {
-            dialog.findViewById<LinearLayout>(R.id.show_place_workhours).visibility = View.GONE
-        } else {
+        if (any) {
+            dialog.findViewById<LinearLayout>(R.id.show_place_workhours).visibility = View.VISIBLE
             dialog.findViewById<TextView>(R.id.monday_hours).text = place.workhours.monday
             dialog.findViewById<TextView>(R.id.tuesday_hours).text = place.workhours.tuesday
             dialog.findViewById<TextView>(R.id.wednesday_hours).text = place.workhours.wednesday
@@ -252,6 +254,12 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
             dialog.findViewById<TextView>(R.id.saturday_hours).text = place.workhours.saturday
             dialog.findViewById<TextView>(R.id.sunday_hours).text = place.workhours.sunday
         }
+
+        if (place.images.isNotEmpty()) dialog.findViewById<LinearLayout>(R.id.show_place_images).visibility = View.VISIBLE
+        val image_container = dialog.findViewById<RecyclerView>(R.id.recyler_view_images)
+        image_container.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+        val imageAdapter = ImagesAdapter(ArrayList(place.images.values), false,this)
+        image_container.adapter = imageAdapter
 
         if(!place.approved) {
             if(place.desc.isEmpty()) dialog.findViewById<LinearLayout>(R.id.show_place_intro).visibility = View.GONE
@@ -276,6 +284,14 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener {
         dialog.findViewById<TextView>(R.id.info_text).text = text
         dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener { dialog.dismiss() }
         dialog.show()
+    }
+
+    override fun onImageClick(imageUri: Uri, allImages: ArrayList<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBtnRemove(position: Int) {
+        TODO("Not yet implemented")
     }
 }
 
