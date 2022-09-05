@@ -16,7 +16,7 @@ class ImagesAdapter(private val mList: List<String>, val uploadImage: Boolean, v
 
 
     interface ItemClickListener{
-        fun onImageClick(imageUri: Uri, allImages : ArrayList<String>)
+        fun onImageClick(position : Int, allImages : ArrayList<String>)
         fun onBtnRemove(position : Int)
     }
 
@@ -50,7 +50,7 @@ class ImagesAdapter(private val mList: List<String>, val uploadImage: Boolean, v
             }
         } else {
             holder.image.setOnClickListener{
-                mItemClickListener.onImageClick(imageUri.toUri(), mList as ArrayList<String>)
+                mItemClickListener.onImageClick(position, mList as ArrayList<String>)
             }
         }
 

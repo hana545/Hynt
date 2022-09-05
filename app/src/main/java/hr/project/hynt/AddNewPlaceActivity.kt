@@ -804,7 +804,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         startActivityForResult(intent, 1)
     }
 
-    override fun onImageClick(imageUri: Uri, allImages: ArrayList<String>) {
+    override fun onImageClick(position: Int, allImages: ArrayList<String>) {
         TODO("Not yet implemented")
     }
 

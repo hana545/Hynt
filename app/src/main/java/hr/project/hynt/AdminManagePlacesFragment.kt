@@ -218,7 +218,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         dialog.show()
     }
 
-    override fun onImageClick(imageUri: Uri, allImages: ArrayList<String>) {
+    override fun onImageClick(position: Int, allImages: ArrayList<String>) {
         TODO("Not yet implemented")
     }
 

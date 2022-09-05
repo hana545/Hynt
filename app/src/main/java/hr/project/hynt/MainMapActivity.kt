@@ -1181,7 +1181,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         //do nothing
     }
 
-    override fun onImageClick(imageUri: Uri, allImages : ArrayList<String>) {
+    override fun onImageClick(position: Int, allImages : ArrayList<String>) {
         val imageSliderDialog = Dialog(this@MainMapActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         imageSliderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         imageSliderDialog.setCancelable(true)
@@ -1191,6 +1191,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         val viewPager = imageSliderDialog.findViewById<ViewPager>(R.id.ViewPager_fullscreen_images)
         val viewPagerAdapter = ViewPagerAdapter(this@MainMapActivity, allImages)
         viewPager.adapter = viewPagerAdapter
+        viewPager.setCurrentItem(position)
 
         imageSliderDialog.findViewById<ImageButton>(R.id.btn_exit_fullscreen_images).setOnClickListener {
             imageSliderDialog.dismiss()
