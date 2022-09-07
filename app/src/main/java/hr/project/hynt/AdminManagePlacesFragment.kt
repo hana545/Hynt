@@ -41,7 +41,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
     var allPlacesId = ArrayList<String>()
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
-    val storageReference = FirebaseStorage.getInstance().reference
+    lateinit var text_info : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +54,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_admin_manage_places, container, false)
+        text_info = view.findViewById(R.id.fragment_info)
         val recyclerview = view.findViewById<RecyclerView>(R.id.place_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -80,7 +81,8 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
                         }
                     }
                     adapter.notifyDataSetChanged()
-
+                } else {
+                    text_info.visibility = View.VISIBLE
                 }
             }
 
@@ -132,12 +134,23 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         val place_address: TextView = dialog.findViewById<TextView>(R.id.show_place_address_data)
         val place_description: TextView = dialog.findViewById<TextView>(R.id.show_place_description)
         val place_category: TextView = dialog.findViewById<TextView>(R.id.show_place_category)
+        val place_user: TextView = dialog.findViewById<TextView>(R.id.show_place_user)
 
         place_title.text = place.title
         place_address.text = place.address
         place_description.text = place.desc
         if (!place.desc.isEmpty()) place_description.visibility = View.VISIBLE
         place_category.text = place.category
+        db.getReference("users").child(place.authorID).child("username").addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    place_user.text = snapshot.getValue<String>()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("Database Error", "Failed to read value.", error.toException())
+            }
+        })
         // for Tags
         for (tag in place.tags) {
             val chip = this.layoutInflater.inflate(R.layout.view_chips_buttons, null, false) as Chip
@@ -216,6 +229,10 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
             onNegativeButtonClick(placeId, place.title,)
         }
         dialog.show()
+    }
+
+    override fun onItemLongClick(place: Place, placeId: String) {
+        TODO("Not yet implemented")
     }
 
     override fun onImageClick(position: Int, allImages: ArrayList<String>) {

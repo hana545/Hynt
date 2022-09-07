@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,6 +32,8 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
     var allCategories = ArrayList<String>()
     var collectiveCategories = hashMapOf<String, String>()
 
+    lateinit var text_info : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +45,7 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_admin_manage_categories, container, false)
+        text_info = view.findViewById(R.id.fragment_info)
         val btn_addCategory = view.findViewById<FloatingActionButton>(R.id.btn_add_new_category)
         btn_addCategory.setOnClickListener(View.OnClickListener {
             showAddCategoryDialog()
@@ -76,6 +80,8 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
 
                         }
                     }
+                } else {
+                    text_info.visibility = View.VISIBLE
                 }
                 val result = collectiveCategories.toList().sortedBy { (_, value) -> value}.toMap()
                 allCategories.addAll(result.values)

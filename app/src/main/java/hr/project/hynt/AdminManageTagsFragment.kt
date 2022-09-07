@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,6 +33,8 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
     var allTags = ArrayList<String>()
     var collectiveTags = hashMapOf<String, String>()
 
+    lateinit var text_info : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +46,7 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_admin_manage_tags, container, false)
+        text_info = view.findViewById(R.id.fragment_info)
         val btn_addTag = view.findViewById<FloatingActionButton>(R.id.btn_add_new_tag)
         btn_addTag.setOnClickListener(View.OnClickListener {
             showAddTagDialog()
@@ -74,6 +78,8 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
                             collectiveTags.put(tag_id,tag)
                         }
                     }
+                } else {
+                    text_info.visibility = View.VISIBLE
                 }
                 val result = collectiveTags.toList().sortedBy {  (_, value) -> value}.toMap()
                 allTags.addAll(result.values)

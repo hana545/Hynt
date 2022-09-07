@@ -261,6 +261,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                             allTags.add(tag)
                         }
                     }
+                    allTags.sort()
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -280,6 +281,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                             allCategories.add(category)
                         }
                     }
+                    allCategories.sort()
                 }
             }
 
@@ -1078,6 +1080,18 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             dialog.findViewById<TextView>(R.id.friday_hours).text = place.workhours.friday
             dialog.findViewById<TextView>(R.id.saturday_hours).text = place.workhours.saturday
             dialog.findViewById<TextView>(R.id.sunday_hours).text = place.workhours.sunday
+            val workhours_days = ArrayList<RelativeLayout>()
+            workhours_days.add(dialog.findViewById(R.id.sunday))
+            workhours_days.add(dialog.findViewById(R.id.monday))
+            workhours_days.add(dialog.findViewById(R.id.tuesday))
+            workhours_days.add(dialog.findViewById(R.id.wednesday))
+            workhours_days.add(dialog.findViewById(R.id.thursday))
+            workhours_days.add(dialog.findViewById(R.id.friday))
+            workhours_days.add(dialog.findViewById(R.id.saturday))
+
+            Log.d("MapActivity", "day "+Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+            workhours_days[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1].setBackgroundColor(Color.parseColor("#AD33689A"))
+
         }
         ///for Images
         if (allImages.isNotEmpty()) dialog.findViewById<LinearLayout>(R.id.show_place_images).visibility = View.VISIBLE

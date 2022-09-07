@@ -48,6 +48,8 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
+    lateinit var text_info : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,6 +61,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_user_my_places, container, false)
+        text_info = view.findViewById(R.id.fragment_info)
         val recyclerview = view.findViewById<RecyclerView>(R.id.place_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -128,10 +131,10 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
                     }
                     allPlaces.reverse()
                     allPlacesId.reverse()
-                    progressBar.visibility = View.GONE
-                    adapter.notifyDataSetChanged()
-
                 }
+                if (allPlaces.isEmpty()) text_info.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+                adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -266,9 +269,24 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
             dialog.findViewById<LinearLayout>(R.id.show_place_review_score).visibility = View.GONE
             dialog.findViewById<LinearLayout>(R.id.show_place_reviews).visibility = View.GONE
         }
-
-
         dialog.show()
+    }
+
+    override fun onItemLongClick(place: Place, placeId: String) {
+        AlertDialog.Builder(activity)
+            .setTitle("Make duplicate")
+            .setMessage("Do you want to duplicate this place: "+place.title)
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                val intent = Intent(requireContext(), AddNewPlaceActivity::class.java)
+                intent.putExtra("copy", true)
+                intent.putExtra("place_id", placeId)
+                startActivity(intent)
+            })
+            .setNegativeButton("No", null)
+            .setIcon(R.drawable.ic_buildings_town)
+            .setCancelable(false)
+            .show()
+
     }
 
     private fun show_info_dialog(text : String, succes : Boolean){

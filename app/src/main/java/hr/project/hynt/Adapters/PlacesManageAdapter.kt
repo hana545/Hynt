@@ -21,6 +21,7 @@ class PlacesManageAdapter (private val mList: List<Place>, private val mList_id:
 
     interface ItemClickListener{
         fun onItemClick(place: Place, placeId : String)
+        fun onItemLongClick(place: Place, placeId : String)
         fun onPositiveButtonClick(id: String, place: Place)
         fun onNegativeButtonClick(id: String, placeName : String)
     }
@@ -55,6 +56,10 @@ class PlacesManageAdapter (private val mList: List<Place>, private val mList_id:
         }
         holder.card.setOnClickListener{
             mItemClickListener.onItemClick(place, mList_id[position])
+        }
+        holder.card.setOnLongClickListener {
+            mItemClickListener.onItemLongClick(place, mList_id[position])
+            true
         }
         if (type == "user"){
             if (place.approved){

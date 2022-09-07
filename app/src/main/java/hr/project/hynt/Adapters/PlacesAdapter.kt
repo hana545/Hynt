@@ -83,14 +83,12 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
                 }
             }
         }
-
-        val list_stars = ArrayList<ImageView>()
-        list_stars.add(holder.star1)
-        list_stars.add(holder.star2)
-        list_stars.add(holder.star3)
-        list_stars.add(holder.star4)
-        list_stars.add(holder.star5)
-        check_stars(round(place.rating.toFloat()), list_stars)
+        if(place.rating > 0){
+            holder.score.text = place.rating.toString()
+        } else {
+            holder.score.text = ""
+            holder.star.setImageResource(R.drawable.ic_star_review_off)
+        }
 
         val sortedReviews = allReviews[position].sortedWith(compareBy({ it.timestamp })).reversed()
         if (position == 0){
@@ -124,13 +122,8 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         val workhour: ImageView = itemView.findViewById(R.id.workhour_icon)
         val card: CardView = itemView.findViewById(R.id.place_card)
 
-        val star1: ImageView = itemView.findViewById(R.id.star1)
-        val star2: ImageView = itemView.findViewById(R.id.star2)
-        val star3: ImageView = itemView.findViewById(R.id.star3)
-        val star4: ImageView = itemView.findViewById(R.id.star4)
-        val star5: ImageView = itemView.findViewById(R.id.star5)
-
-
+        val star: ImageView = itemView.findViewById(R.id.star1)
+        val score: TextView = itemView.findViewById(R.id.place_score)
     }
 
     fun checkWorkhour(workhours : Workhour) : Int {
@@ -144,13 +137,17 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
             return 1
         } else {
             val range1 = current_workhours.substringBefore('\n')
-            val start1 = range1.substring(0,2).toInt() * 100 + range1.substring(5,7).toInt()
-            val end1 = range1.substring(10,12).toInt() * 100 + range1.substring(15,17).toInt()
+            var start1 = range1.substring(0,2).toInt() * 100 + range1.substring(5,7).toInt()
+            if(start1 == 0) start1 = 2400
+            var end1 = range1.substring(10,12).toInt() * 100 + range1.substring(15,17).toInt()
+            if(end1 == 0) end1 = 2400
             if (checkHours(start1, end1)) return 1
             if (current_workhours.length > 20){
                 val range2 = current_workhours.substringAfter('\n')
-                val start2 = range2.substring(0,2).toInt() * 100 + range2.substring(5,7).toInt()
-                val end2 = range2.substring(10,12).toInt() * 100 + range2.substring(15,17).toInt()
+                var start2 = range2.substring(0,2).toInt() * 100 + range2.substring(5,7).toInt()
+                if(start2 == 0) start2 = 2400
+                var end2 = range2.substring(10,12).toInt() * 100 + range2.substring(15,17).toInt()
+                if(end2 == 0) end2 = 2400
                 if (checkHours(start2, end2)) return 1
             }
         }
@@ -162,16 +159,6 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         return start < hour && end > hour
     }
 
-    private fun check_stars(n: Int, list_stars: ArrayList<ImageView>) {
-        for (i in 0..4) {
-            if (i >= n) {
-                list_stars[i].setImageResource(R.drawable.ic_star_review_off)
-                continue
-            }
-            list_stars[i].setImageResource(R.drawable.ic_star_review_on)
-        }
-
-    }
 
     fun setHint(changedHint: Boolean) {
         showHint = changedHint

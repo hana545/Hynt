@@ -80,6 +80,7 @@
                     android:ems="10"
                     android:enabled="false"
                     android:hint="Address"
+                    android:text="Select address with buttons below"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/blue_dark"
                     android:background="@color/transparent"/>

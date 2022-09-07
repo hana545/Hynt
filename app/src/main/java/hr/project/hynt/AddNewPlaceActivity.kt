@@ -2,10 +2,7 @@ package hr.project.hynt
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -98,7 +95,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         btn_addPlace = findViewById(R.id.btn_add_place)
 
         ////For Tags
-        if (intent.getBooleanExtra("new", true)) getAllTags(ArrayList<String>())
+        if (intent.getBooleanExtra("new", true) &&  !intent.getBooleanExtra("copy", false)) getAllTags(ArrayList<String>())
 
         ////For Categories
         val categorySpinner = findViewById<Spinner>(R.id.categories_spinner)
@@ -252,8 +249,8 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             resultLauncher.launch(intent)
         }
 
-        ///if the place is not new, if the place is in editing mode
-        if(intent.getBooleanExtra("new", true) == false){
+        ///if the place is not new, if the place is in editing mode or in copy mode
+        if(intent.getBooleanExtra("new", true) == false || intent.getBooleanExtra("copy", false) == true){
             val place_id = intent.getStringExtra("place_id")!!
             var place : Place = Place()
             db.getReference("places").child(place_id).addListenerForSingleValueEvent(object: ValueEventListener {
@@ -440,16 +437,8 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         }
 
         ///////hour picker
-        var hStart1 = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        var mStart1 = Calendar.getInstance().get(Calendar.MINUTE)
-        var hEnd1 = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        var mEnd1 = Calendar.getInstance().get(Calendar.MINUTE)
         var timeStart1 = ""
         var timeEnd1 = ""
-        var hStart2 = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        var mStart2 = Calendar.getInstance().get(Calendar.MINUTE)
-        var hEnd2 = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        var mEnd2 = Calendar.getInstance().get(Calendar.MINUTE)
         var timeStart2 = ""
         var timeEnd2 = ""
 
@@ -462,21 +451,21 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 checkbox_open24.isChecked = true
             } else {
                 //17 : 40 - 17 : 40
-                hStart1 = Integer.parseInt(hours.substring(0, 2))
-                mStart1 = Integer.parseInt(hours.substring(5, 7))
+                val hStart1 = Integer.parseInt(hours.substring(0, 2))
+                val mStart1 = Integer.parseInt(hours.substring(5, 7))
                 timeStart1 =  "${checkAndAddZero(hStart1)} : ${checkAndAddZero(mStart1)}"
-                hEnd1 = Integer.parseInt(hours.substring(10, 12))
-                mEnd1 = Integer.parseInt(hours.substring(15, 17))
+                val hEnd1 = Integer.parseInt(hours.substring(10, 12))
+                val mEnd1 = Integer.parseInt(hours.substring(15, 17))
                 timeEnd1 =  "${checkAndAddZero(hEnd1)} : ${checkAndAddZero(mEnd1)}"
                 if (hours.length > 17) {
                     //17 : 40 - 17 : 40\n17 : 40 - 17 : 40
                     secondH_view.visibility = View.VISIBLE
                     btn_add_hour.visibility = View.GONE
-                    hStart2 = Integer.parseInt(hours.substring(18, 20))
-                    mStart2 = Integer.parseInt(hours.substring(23, 25))
+                    val hStart2 = Integer.parseInt(hours.substring(18, 20))
+                    val mStart2 = Integer.parseInt(hours.substring(23, 25))
                     timeStart2 = "${checkAndAddZero(hStart2)} : ${checkAndAddZero(mStart2)}"
-                    hEnd2 = Integer.parseInt(hours.substring(28, 30))
-                    mEnd2 = Integer.parseInt(hours.substring(33, 35))
+                    val hEnd2 = Integer.parseInt(hours.substring(28, 30))
+                    val mEnd2 = Integer.parseInt(hours.substring(33, 35))
                     timeEnd2 = "${checkAndAddZero(hEnd2)} : ${checkAndAddZero(mEnd2)}"
                 }
             }
@@ -491,7 +480,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 val m = checkAndAddZero(minute)
                 timeStart1 =  "$h : $m"
                 start1.text = timeStart1
-            }, hStart1, mStart1, true)
+            }, 12, 0, true)
             picker.show()
         }
 
@@ -503,7 +492,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 val m = checkAndAddZero(minute)
                 timeEnd1 = "$h : $m"
                 end1.text = timeEnd1
-            }, hEnd1, mEnd1, true)
+            }, 12, 0, true)
             picker.show()
         }
         val start2 = dialog.findViewById<TextView>(R.id.hour_start2)
@@ -514,7 +503,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 val m = checkAndAddZero(minute)
                 timeStart2 =  "$h : $m"
                 start2.text = timeStart2
-            }, hStart2, mStart2, true)
+            },12, 0,  true)
             picker.show()
         }
 
@@ -526,7 +515,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 val m = checkAndAddZero(minute)
                 timeEnd2 = "$h : $m"
                 end2.text = timeEnd2
-            }, hEnd2, mEnd2, true)
+            }, 12, 0, true)
             picker.show()
         }
 
@@ -741,7 +730,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                     }
                     allTags.sort()
                     for (tag : String in allTags) {
-                        if (intent.getBooleanExtra("new", true)){
+                        if (intent.getBooleanExtra("new", true) && !intent.getBooleanExtra("copy", false)){
                             addChip(tag, ArrayList<String>())
                         } else {
                             addChip(tag, placeTags)
@@ -856,49 +845,52 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
 
 
     private fun addPlace(place_name_text: String, place_address_text: String, place_description_text: String, place_phone1_text: String, place_email1_text: String, place_website1_text: String, place_phone2_text: String, place_email2_text: String, place_website2_text: String, place_workhours: Workhour, category: String, selectedTags: ArrayList<String>) {
-
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
-                var key = ""
-                if(intent.getBooleanExtra("new", true) == false){
-                    key = intent.getStringExtra("place_id")!!
-                } else {
-                    key = db.getReference("places").push().key.toString()
-                }
-                val imageNames = HashMap<String, String>()
-                val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(), imageNames, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
-                db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
-                    show_info_dialog("Successfully added place " + nPlace.title, true)
-                    for(imageUri in allImages) {
-                        if(imageUri in existingImages.values){
-                            for((key, value) in existingImages)
-                                if (value.equals(imageUri)) imageNames.put(key, imageUri)
-                            db.getReference("places").child(key).child("images").setValue(imageNames)
-                            continue
-                        } else {
-                            val imageName = UUID.randomUUID().toString()
-                            val ref = storageReference?.child("myImages/").child(key).child(imageName)
-                            ref.putFile(imageUri.toUri()!!).addOnCompleteListener(
-                                OnCompleteListener<UploadTask.TaskSnapshot> { task ->
-                                    if (task.isSuccessful) {
-                                        ref.downloadUrl.addOnSuccessListener { uri ->
-                                            imageNames.put(imageName, uri.toString())
-                                            db.getReference("places").child(key).child("images").setValue(imageNames)
-                                        }
-                                        Log.w("showImages", "uploadImage:success")
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w("showImages", "uploadImage:failure", task.exception)
-
+        val progressDialog = ProgressDialog(this@AddNewPlaceActivity)
+        progressDialog.setMessage("Creating your place")
+        progressDialog.show()
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+            var key = ""
+            if(intent.getBooleanExtra("new", true) == false){
+                key = intent.getStringExtra("place_id")!!
+            } else {
+                key = db.getReference("places").push().key.toString()
+            }
+            val imageNames = HashMap<String, String>()
+            val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(), imageNames, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
+            db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
+                show_info_dialog("Successfully added place " + nPlace.title + "!", "It is waiting for approval but you can check it out in your list of places", true)
+                progressDialog.dismiss()
+                for(imageUri in allImages) {
+                    if(imageUri in existingImages.values){
+                        for((key, value) in existingImages)
+                            if (value.equals(imageUri)) imageNames.put(key, imageUri)
+                        db.getReference("places").child(key).child("images").setValue(imageNames)
+                        continue
+                    } else {
+                        val imageName = UUID.randomUUID().toString()
+                        val ref = storageReference?.child("myImages/").child(key).child(imageName)
+                        ref.putFile(imageUri.toUri()!!).addOnCompleteListener(
+                            OnCompleteListener<UploadTask.TaskSnapshot> { task ->
+                                if (task.isSuccessful) {
+                                    ref.downloadUrl.addOnSuccessListener { uri ->
+                                        imageNames.put(imageName, uri.toString())
+                                        db.getReference("places").child(key).child("images").setValue(imageNames)
                                     }
-                                })
-                        }
+                                    Log.w("showImages", "uploadImage:success")
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w("showImages", "uploadImage:failure", task.exception)
+
+                                }
+                            })
                     }
                 }
-            } else {
-                Toast.makeText(this@AddNewPlaceActivity, "Error occurred, try again", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            Toast.makeText(this@AddNewPlaceActivity, "Error occurred, try again", Toast.LENGTH_SHORT).show()
         }
+    }
     private fun geocoderRev(lat : Double, lng : Double){
 
         val reverseGeocode = MapboxGeocoding.builder()
@@ -945,7 +937,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             btn_addPlace.isEnabled = true
         }
     }
-    private fun show_info_dialog(text : String, success : Boolean){
+    private fun show_info_dialog(text : String, subtext : String, success : Boolean){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -956,6 +948,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             dialog.setContentView(R.layout.dialog_info_failed)
         }
         dialog.findViewById<TextView>(R.id.info_text).text = text
+        dialog.findViewById<TextView>(R.id.info_subtext).text = subtext
         dialog.findViewById<Button>(R.id.btn_continue).setOnClickListener {
             dialog.dismiss()
             finish() }

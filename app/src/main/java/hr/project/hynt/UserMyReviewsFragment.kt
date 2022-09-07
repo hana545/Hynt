@@ -34,6 +34,7 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
+    lateinit var text_info : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,6 +46,7 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_user_my_reviews, container, false)
+        text_info = view.findViewById(R.id.fragment_info)
         val recyclerview = view.findViewById<RecyclerView>(R.id.review_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
@@ -164,6 +166,8 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
                             allReviewsId.add(reviews.key.toString())
                         }
                     }
+                } else {
+                    text_info.visibility = View.VISIBLE
                 }
                 allReviews.reverse()
                 adapter.notifyDataSetChanged()

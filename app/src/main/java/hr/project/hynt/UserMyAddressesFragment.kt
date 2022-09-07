@@ -54,10 +54,10 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
-
     private var placeAddressAutocompleteResult : EditText? = null
     private var coordinates : LatLng = LatLng(0.0,0.0)
 
+    lateinit var text_info : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,7 +73,7 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
         mInflater = inflater
         mRootView = container
         val view = inflater.inflate(R.layout.fragment_user_my_addresses, container, false)
-
+        text_info = view.findViewById(R.id.fragment_info)
         val recyclerview = view.findViewById<RecyclerView>(R.id.review_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
@@ -195,6 +195,8 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
                             allAddressesId.add(addresses.key.toString())
                         }
                     }
+                } else {
+                    text_info.visibility = View.VISIBLE
                 }
                 adapter.notifyDataSetChanged()
             }

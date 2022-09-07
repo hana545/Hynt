@@ -29,7 +29,18 @@
         app:dividerColor="@color/blue_dark"
         />
 
-
+    <TextView
+        android:id="@+id/fragment_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="There is no place to manage"
+        android:textSize="25sp"
+        android:textStyle="italic"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/divider"
+        android:visibility="gone">
+    </TextView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/place_recyclerView"
