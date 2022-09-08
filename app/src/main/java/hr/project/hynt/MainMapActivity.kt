@@ -294,7 +294,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     private fun getAllMyAddresses(adapter : ArrayAdapter<String>) {
         if (authUser != null) {
             var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
-            db.getReference("users").child(authUser!!.uid).child("addresses")
+            db.getReference("users").child(authUser.uid).child("addresses")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         allMyAddresses.clear()
@@ -567,7 +567,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
                                 if(!place.reviews.isEmpty()){
                                     var score = 0
-                                    place.reviews.forEach { id, rev ->
+                                    place.reviews.forEach { _, rev ->
                                         score += rev.stars
                                     }
                                     place.rating = (score.toFloat() / place.reviews.size).toDouble()
@@ -757,18 +757,18 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             } else {
                 noLocation(true)
             }
-            var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
-            var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
-            myCords = LatLng(mylat, mylng)
+            var myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+            var myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+            myCords = LatLng(myLat, myLng)
             filterCoords = myCords
             addDrawerFilter()
             getAllPlaces()
             setFocusOnMap(myCords.latitude, myCords.longitude)
             //button to move back to location
             findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
-                var mylat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
-                var mylng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
-                myCords = LatLng(mylat, mylng)
+                myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+                myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+                myCords = LatLng(myLat, myLng)
 
                 val position = CameraPosition.Builder()
                         .target(myCords)

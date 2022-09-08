@@ -130,8 +130,8 @@ class LoginFragment : Fragment() {
     private fun loginUser() {
         val email = email_edittext!!.text.toString()
         val password = password_edittext!!.text.toString()
-        var email_error = ""
-        var password_error = ""
+        var email_error: String
+        var password_error: String
         var error = false
         if (email.isEmpty()) {
             email_edittext!!.requestFocus()

@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="1"
     android:background="@color/black_blue">
     <ImageButton
         android:id="@+id/btn_exit_fullscreen_images"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue_light"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_gravity="top|right"
         />
@@ -17,11 +17,7 @@
         android:id="@+id/ViewPager_fullscreen_images"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:layout_margin="10dp" />
-
-
-
 
 </LinearLayout>

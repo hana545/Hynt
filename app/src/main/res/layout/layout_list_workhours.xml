@@ -23,7 +23,7 @@
                 android:id="@+id/monday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/monday"
+                android:text="@string/monday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -36,7 +36,7 @@
                 android:id="@+id/monday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -70,7 +70,7 @@
                 android:id="@+id/tuesday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/tuesday"
+                android:text="@string/tuesday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -83,8 +83,7 @@
                 android:id="@+id/tuesday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -118,7 +117,7 @@
                 android:id="@+id/wednesday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/wednesday"
+                android:text="@string/wednesday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -131,8 +130,7 @@
                 android:id="@+id/wednesday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -166,7 +164,7 @@
                 android:id="@+id/thursday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/thursday"
+                android:text="@string/thursday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -179,8 +177,7 @@
                 android:id="@+id/thursday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -214,7 +211,7 @@
                 android:id="@+id/friday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/friday"
+                android:text="@string/friday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -227,8 +224,7 @@
                 android:id="@+id/friday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -262,7 +258,7 @@
                 android:id="@+id/saturday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:text="@string/saturday"
+                android:text="@string/saturday"
                 android:letterSpacing="0.15"
                 android:padding="10dp"
                 android:textSize="15sp"
@@ -275,8 +271,7 @@
                 android:id="@+id/saturday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton
@@ -323,8 +318,7 @@
                 android:id="@+id/sunday_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="--:--  –  --:--"
-
+                android:hint="@string/empty_workhours"
                 android:layout_weight="0.2"
                 android:textAlignment="center" />
             <ImageButton

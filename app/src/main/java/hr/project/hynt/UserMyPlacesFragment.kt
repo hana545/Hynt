@@ -155,7 +155,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         AlertDialog.Builder(activity)
                 .setTitle("Delete place")
                 .setMessage("Are you sure you want to delete this place: " + placeName + "?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     db.getReference("places").child(id).removeValue()
                     db.getReference("users").addValueEventListener(object : ValueEventListener{
                         override fun onDataChange(snapshot: DataSnapshot) {
@@ -276,7 +276,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         AlertDialog.Builder(activity)
             .setTitle("Make duplicate")
             .setMessage("Do you want to duplicate this place: "+place.title)
-            .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
                 val intent = Intent(requireContext(), AddNewPlaceActivity::class.java)
                 intent.putExtra("copy", true)
                 intent.putExtra("place_id", placeId)

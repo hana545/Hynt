@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Your hint: "
+                android:text="@string/your_hint_title"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="normal" />
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="It is placed first in your list of places"
+                android:text="@string/your_hint_info"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="normal" />
@@ -70,7 +70,7 @@
                     android:backgroundTint="@color/black_blue"
                     android:fontFamily="@font/auttera"
                     android:letterSpacing="0.1"
-                    android:text="Show place"
+                    android:text="@string/btn_show_place"
                     android:textAllCaps="false"
                     android:textColor="@color/text_light" />
 
@@ -81,7 +81,7 @@
                     android:backgroundTint="@color/black_blue"
                     android:fontFamily="@font/auttera"
                     android:letterSpacing="0.1"
-                    android:text="Continue"
+                    android:text="@string/btn_continue"
                     android:textAllCaps="false"
                     android:textColor="@color/text_light" />
             </LinearLayout>
@@ -103,7 +103,7 @@
                     android:fontFamily="@font/auttera"
                     android:letterSpacing="0.1"
                     android:padding="15dp"
-                    android:text="Another hint"
+                    android:text="@string/btn_another_hint"
                     android:textAllCaps="false"
                     android:textColor="@color/black_blue" />
 

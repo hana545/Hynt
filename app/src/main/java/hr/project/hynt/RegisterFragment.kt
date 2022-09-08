@@ -89,10 +89,10 @@ class RegisterFragment : Fragment() {
         val password = password_edittext!!.text.toString()
         val password_confirm = password_confirm_edittext!!.text.toString()
 
-        var username_error = ""
-        var email_error = ""
-        var password_error = ""
-        var password_confirm_error = ""
+        val username_error: String
+        val email_error: String
+        val password_error: String
+        val password_confirm_error: String
 
         var validate = false
         if (email.isEmpty()) {
@@ -122,7 +122,6 @@ class RegisterFragment : Fragment() {
             password_error_view?.setText(password_error)
             password_error_view?.setVisibility(View.VISIBLE)
             validate = true
-            return
         } else if (password.length < 6) {
             password_edittext!!.requestFocus()
             password_error = "Password must have at least 6 characters"

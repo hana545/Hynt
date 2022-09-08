@@ -46,7 +46,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_header"
                 app:layout_constraintVertical_bias="1"
-                android:text="There are no places near you"/>
+                android:text="@string/bs_no_places_info"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/places_recycler_view"
                 android:layout_width="match_parent"

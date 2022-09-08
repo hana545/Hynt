@@ -22,10 +22,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -37,7 +35,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.UploadTask
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
@@ -225,7 +222,6 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         val btn_findOnMap : ImageButton = findViewById(R.id.btn_map_address)
 
         placeAddressAutocompleteResult = place_address
-        setContactButtonListeners()
 
         ///Autocomplete for address
         btn_autocomplete.setOnClickListener {
@@ -252,7 +248,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         ///if the place is not new, if the place is in editing mode or in copy mode
         if(intent.getBooleanExtra("new", true) == false || intent.getBooleanExtra("copy", false) == true){
             val place_id = intent.getStringExtra("place_id")!!
-            var place : Place = Place()
+            var place : Place
             db.getReference("places").child(place_id).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
@@ -284,6 +280,9 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                         allImages.addAll(place.images.values)
                         existingImages.clear()
                         existingImages.putAll(place.images)
+
+
+                        setContactButtonListeners(place_phone2.text.isNotEmpty(), place_email2.text.isNotEmpty(), place_web2.text.isNotEmpty())
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -291,6 +290,9 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 }
 
             })
+        } else {
+            setContactButtonListeners(false, false, false)
+
         }
 
 
@@ -523,7 +525,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         val save = dialog.findViewById<TextView>(R.id.btn_save)
         save.setOnClickListener {
             val chipgroup = dialog.findViewById<ChipGroup>(R.id.days_of_the_week_picker)
-            val dayId : List<Int> = chipgroup.checkedChipIds
+            val daysId : List<Int> = chipgroup.checkedChipIds
             var chipID: String
             var targetID: String
             if ((( (start1.text.isEmpty() || end1.text.isEmpty()) && firstH_view.visibility == View.VISIBLE ) || ((start2.text.isEmpty() && end2.text.isEmpty()) && secondH_view.visibility == View.VISIBLE)) && !checkbox_closed.isChecked && !checkbox_open24.isChecked) {
@@ -531,14 +533,14 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
             } else if ((start1.text == end1.text && firstH_view.visibility == View.VISIBLE ) || ((start2.text == end2.text && secondH_view.visibility == View.VISIBLE)) && !checkbox_closed.isChecked) {
                 Toast.makeText(this, "Workhour can't start and end on the same hour, check Open 24h instead", Toast.LENGTH_SHORT).show()
             } else {
-               for (id in dayId){
-                    val chip = chipgroup.findViewById(id) as Chip
+               for (dayId in daysId){
+                    val chip = chipgroup.findViewById(dayId) as Chip
                     chipID = getResources().getResourceEntryName(chip.id) //chipDay_tuesday
                     targetID = chipID.drop("chipDay_".length) + "_hours" //tuesday_hours
                     if (checkbox_closed.isChecked){
-                        findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = "Closed"
+                        findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = resources.getString(R.string.closed)
                     } else if (checkbox_open24.isChecked){
-                       findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = "Open 24h"
+                       findViewById<TextView>(getResources().getIdentifier(targetID, "id", packageName)).text = resources.getString(R.string.open24)
                    } else {
                         var time =  ""
                         if (firstH_view.visibility.equals(View.VISIBLE)) time = time + start1.text + " - " + end1.text
@@ -556,41 +558,51 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         dialog.show()
     }
 
-    private fun setContactButtonListeners() {
-        val phone2 : LinearLayout = findViewById<LinearLayout>(R.id.add_place_contacts_phone2)
-        val place_add_phone : ImageButton = findViewById<ImageButton>(R.id.btn_add_place_phone)
-        val place_remove_phone : ImageButton = findViewById<ImageButton>(R.id.btn_remove_place_phone)
-        val email2 : LinearLayout = findViewById<LinearLayout>(R.id.add_place_contacts_email2)
-        val place_add_email : ImageButton = findViewById<ImageButton>(R.id.btn_add_place_email)
-        val place_remove_email : ImageButton = findViewById<ImageButton>(R.id.btn_remove_place_email)
-        val web2 : LinearLayout = findViewById<LinearLayout>(R.id.add_place_contacts_website2)
-        val place_add_website : ImageButton = findViewById<ImageButton>(R.id.btn_add_place_website)
-        val place_remove_website : ImageButton = findViewById<ImageButton>(R.id.btn_remove_place_website)
+    private fun setContactButtonListeners(phone : Boolean, email : Boolean, web : Boolean ) {
+        val phone2_data = findViewById<EditText>(R.id.add_place_phone2)
+        val phone2_layout = findViewById<LinearLayout>(R.id.add_place_contacts_phone2)
+        val place_add_phone = findViewById<ImageButton>(R.id.btn_add_place_phone)
+        val place_remove_phone = findViewById<ImageButton>(R.id.btn_remove_place_phone)
+        val email2_data = findViewById<EditText>(R.id.add_place_email2)
+        val email2_layout = findViewById<LinearLayout>(R.id.add_place_contacts_email2)
+        val place_add_email = findViewById<ImageButton>(R.id.btn_add_place_email)
+        val place_remove_email = findViewById<ImageButton>(R.id.btn_remove_place_email)
+        val web2_data = findViewById<EditText>(R.id.add_place_website2)
+        val web2_layout = findViewById<LinearLayout>(R.id.add_place_contacts_website2)
+        val place_add_website = findViewById<ImageButton>(R.id.btn_add_place_website)
+        val place_remove_website = findViewById<ImageButton>(R.id.btn_remove_place_website)
 
         place_add_phone.setOnClickListener {
-            phone2.visibility = View.VISIBLE
+            phone2_layout.visibility = View.VISIBLE
             place_add_phone.visibility = View.GONE
         }
         place_remove_phone.setOnClickListener {
-            phone2.visibility = View.GONE
+            phone2_layout.visibility = View.GONE
             place_add_phone.visibility = View.VISIBLE
+            phone2_data.setText("")
         }
         place_add_email.setOnClickListener {
-            email2.visibility = View.VISIBLE
+            email2_layout.visibility = View.VISIBLE
             place_add_email.visibility = View.GONE
         }
         place_remove_email.setOnClickListener {
-            email2.visibility = View.GONE
+            email2_layout.visibility = View.GONE
             place_add_email.visibility = View.VISIBLE
+            email2_data.setText("")
         }
         place_add_website.setOnClickListener {
-            web2.visibility = View.VISIBLE
+            web2_layout.visibility = View.VISIBLE
             place_add_website.visibility = View.GONE
         }
         place_remove_website.setOnClickListener {
-            web2.visibility = View.GONE
+            web2_layout.visibility = View.GONE
             place_add_website.visibility = View.VISIBLE
+            web2_data.setText("")
         }
+
+        if (phone) place_add_phone.performClick()
+        if (email) place_add_email.performClick()
+        if (web) place_add_website.performClick()
 
     }
 
@@ -849,8 +861,8 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
         progressDialog.setMessage("Creating your place")
         progressDialog.show()
         if (FirebaseAuth.getInstance().currentUser != null) {
-            var db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
-            var key = ""
+            val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
+            val key: String
             if(intent.getBooleanExtra("new", true) == false){
                 key = intent.getStringExtra("place_id")!!
             } else {
@@ -863,14 +875,14 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 progressDialog.dismiss()
                 for(imageUri in allImages) {
                     if(imageUri in existingImages.values){
-                        for((key, value) in existingImages)
-                            if (value.equals(imageUri)) imageNames.put(key, imageUri)
+                        for((name, uri) in existingImages)
+                            if (uri.equals(imageUri)) imageNames.put(name, imageUri)
                         db.getReference("places").child(key).child("images").setValue(imageNames)
                         continue
                     } else {
                         val imageName = UUID.randomUUID().toString()
-                        val ref = storageReference?.child("myImages/").child(key).child(imageName)
-                        ref.putFile(imageUri.toUri()!!).addOnCompleteListener(
+                        val ref = storageReference.child("myImages/").child(key).child(imageName)
+                        ref.putFile(imageUri.toUri()).addOnCompleteListener(
                             OnCompleteListener<UploadTask.TaskSnapshot> { task ->
                                 if (task.isSuccessful) {
                                     ref.downloadUrl.addOnSuccessListener { uri ->

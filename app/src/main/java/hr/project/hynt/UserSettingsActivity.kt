@@ -45,9 +45,9 @@ class UserSettingsActivity: AppCompatActivity() {
 
         val actionBar = supportActionBar
         actionBar!!.setDisplayHomeAsUpEnabled(true)
-        actionBar!!.setDisplayShowTitleEnabled(false)
+        actionBar.setDisplayShowTitleEnabled(false)
 
-        var user = User()
+        var user : User
         val joined = findViewById<TextView>(R.id.user_joined)
         val simpleDateFormat = SimpleDateFormat("dd MMMM yyyy")
 
@@ -55,7 +55,7 @@ class UserSettingsActivity: AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     user = snapshot.getValue<User>()!!
-                    joined.text = simpleDateFormat.format(user!!.timestamp.time).toString()
+                    joined.text = simpleDateFormat.format(user.timestamp.time).toString()
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -65,8 +65,8 @@ class UserSettingsActivity: AppCompatActivity() {
         val username = findViewById<EditText>(R.id.user_settings_username)
         val email = findViewById<EditText>(R.id.user_settings_email)
         val password = findViewById<Button>(R.id.user_settings_btn_change_password)
-        username.setText(authUser!!.displayName.toString())
-        email.setText(authUser!!.email.toString())
+        username.setText(authUser.displayName.toString())
+        email.setText(authUser.email.toString())
 
         username.setOnFocusChangeListener(){ _, hasFocus ->
             if (hasFocus) {
@@ -77,7 +77,7 @@ class UserSettingsActivity: AppCompatActivity() {
 
                 dialog.findViewById<TextInputLayout>(R.id.dialog_layout).hint = "Username"
                 val newData = dialog.findViewById<TextInputEditText>(R.id.dialog_data)
-                newData.setText(authUser!!.displayName.toString())
+                newData.setText(authUser.displayName.toString())
                 newData.requestFocus()
 
                 dialog.findViewById<ImageView>(R.id.dialog_cancel).setOnClickListener {
@@ -104,7 +104,7 @@ class UserSettingsActivity: AppCompatActivity() {
                 dialog.setContentView(R.layout.dialog_editable)
                 dialog.findViewById<TextInputLayout>(R.id.dialog_layout).hint = "Email"
                 val newData = dialog.findViewById<TextInputEditText>(R.id.dialog_data)
-                newData.setText(authUser!!.email.toString())
+                newData.setText(authUser.email.toString())
                 newData.requestFocus()
 
                 dialog.findViewById<ImageView>(R.id.dialog_cancel).setOnClickListener {
@@ -193,7 +193,7 @@ class UserSettingsActivity: AppCompatActivity() {
                     dialog.findViewById<TextInputLayout>(R.id.dialog_layout2).error = "You must repeat the password!"
                     error = true
                 }
-                if (newPass.text.toString()!! != newRPass.text.toString()!!) {
+                if (newPass.text.toString() != newRPass.text.toString()){
                     dialog.findViewById<TextInputLayout>(R.id.dialog_layout2).error = "Passwords do not match"
                     error = true
                 }
@@ -263,7 +263,7 @@ class UserSettingsActivity: AppCompatActivity() {
         AlertDialog.Builder(this)
                 .setTitle("Sign out")
                 .setMessage(authUser!!.displayName + ", are you sure you want to sign out?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     FirebaseAuth.getInstance().signOut()
                     getSharedPreferences("MySharedPref", Context.MODE_PRIVATE).edit().remove("Role").apply()
                     val intent = Intent(this, LaunchActivity::class.java)

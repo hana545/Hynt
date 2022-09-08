@@ -45,7 +45,7 @@ class AddressesAdapter(private val mList: List<Address>, private val mList_id: L
         holder.card!!.setOnClickListener{
             mItemClickListener.onItemClick(address, mList_id!!.get(position))
         }
-        holder.btnDeleteAddress!!.setOnClickListener{
+        holder.btnDeleteAddress.setOnClickListener{
             mItemClickListener.onBtnDelete(address, mList_id!!.get(position))
         }
         holder.addressName.text = address.name

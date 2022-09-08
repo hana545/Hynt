@@ -8,11 +8,5 @@
         android:id="@+id/id_fullscreen_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <!--on below line we are creating an image view
-    <ImageView
-        android:id="@+id/id_fullscreen_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true" />-->
 
 </RelativeLayout>

@@ -16,8 +16,7 @@
         android:text="@string/tags_title"
         android:textSize="25sp"
         android:textAlignment="center"
-        android:fontFamily="@font/auttera">
-    </TextView>
+        android:fontFamily="@font/auttera"/>
 
      <com.google.android.material.divider.MaterialDivider
          android:id="@+id/divider"
@@ -33,7 +32,7 @@
         android:id="@+id/fragment_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No tags created"
+        android:text="@string/no_tags_info"
         android:textSize="25sp"
         android:textStyle="italic"
         android:gravity="center"

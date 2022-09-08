@@ -17,13 +17,12 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_place_info_address"
-            android:tint="@color/white"
             android:layout_weight="0.1"
-            />
+            app:tint="@color/white" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add new Address"
+            android:text="@string/add_new_address_title"
             android:textColor="@color/text_light"
             android:textSize="20sp"
             android:fontFamily="@font/auttera"
@@ -60,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Name of the address"
+                    android:hint="@string/address_name"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/blue_dark"
                     android:background="@color/transparent"/>
@@ -79,8 +78,8 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:enabled="false"
-                    android:hint="Address"
-                    android:text="Select address with buttons below"
+                    android:hint="@string/address"
+                    android:text="@string/select_address"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/blue_dark"
                     android:background="@color/transparent"/>
@@ -89,10 +88,9 @@
                 android:id="@+id/address_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/add_place_address"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
-                android:layout_weight="0.1">
+                android:weightSum="0.2">
                 <ImageButton
                     android:id="@+id/btn_autocomplete_address"
                     android:layout_width="wrap_content"
@@ -130,7 +128,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
                         app:closeIconEnabled="false"
-                        android:text="Home"
+                        android:text="@string/addressType_home"
                         app:chipIcon="@drawable/ic_address_category_home"/>
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_address_work"
@@ -138,7 +136,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
                         app:closeIconEnabled="false"
-                        android:text="Work"
+                        android:text="@string/addressType_work"
                         app:chipIcon="@drawable/ic_address_category_work"/>
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_address_education"
@@ -146,7 +144,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
                         app:closeIconEnabled="false"
-                        android:text="Education"
+                        android:text="@string/addressType_education"
                         app:chipIcon="@drawable/ic_address_category_education"/>
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_address_other"
@@ -154,7 +152,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Entry"
                         app:closeIconEnabled="false"
-                        android:text="Other"
+                        android:text="@string/addressType_other"
                         app:chipIcon="@drawable/ic_address_category_other"/>
                 </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
@@ -166,11 +164,10 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black_blue"
             android:textColor="@color/text_light"
-            android:text="Add Address"
+            android:text="@string/btn_addAddress"
             android:letterSpacing="0.1"
             android:textAllCaps="false"
             android:fontFamily="@font/auttera"
-            android:layout_weight="0.8"
             android:layout_below="@+id/add_address_data"/>
 
     </RelativeLayout>

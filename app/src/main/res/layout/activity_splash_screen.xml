@@ -47,7 +47,7 @@ tools:context=".LaunchActivity">
             android:fontFamily="@font/auttera"
             android:textSize="22sp"
             android:textColor="@color/text_light"
-            android:text="Loading.."/>
+            android:text="@string/loading_title"/>
         <TextView
             android:id="@+id/splash_internet_conn"
             android:layout_width="wrap_content"
@@ -57,7 +57,7 @@ tools:context=".LaunchActivity">
             android:padding="10dp"
             android:textSize="15sp"
             android:textColor="@color/error_red"
-            android:text="No internet connection. Please check your internet connectivity!"/>
+            android:text="@string/loading_info_internet"/>
     </LinearLayout>
 
 

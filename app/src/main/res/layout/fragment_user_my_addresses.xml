@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:backgroundTint="@color/black_blue_low_opacity"
-        android:text="My Saved Addresses"
+        android:text="@string/my_addreses_title"
         android:textSize="25sp"
-        android:textAlignment="center"
+        android:gravity="center"
         android:fontFamily="@font/auttera">
     </TextView>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -42,7 +42,7 @@
         android:id="@+id/fragment_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No addresses saved"
+        android:text="@string/no_myAddresses_info"
         android:textSize="25sp"
         android:textStyle="italic"
         android:gravity="center"

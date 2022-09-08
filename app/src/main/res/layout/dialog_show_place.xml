@@ -7,7 +7,7 @@
     android:background="@color/blue_light">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/show_place_title"
@@ -560,7 +560,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_light"
-                    android:text="@string/reviews_title"
+                    android:text="@string/place_gReviews"
                     android:textSize="20sp"
                     android:fontFamily="@font/auttera"
                     android:textAlignment="center"
@@ -580,7 +580,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Review this place"
+                    android:text="@string/btn_review_place"
                     android:visibility="gone"
                     android:textColor="@color/text_light"
                     android:backgroundTint="@color/blue_dark"
@@ -607,7 +607,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="2dp"
-                        android:text="Tell us what you think:"
+                        android:text="@string/review_rating_title"
                         android:textAlignment="center"
                         android:textColor="@color/text_light"/>
                     <EditText
@@ -659,7 +659,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="2dp"
-                        android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/text_light"/>
                     <com.google.android.material.divider.MaterialDivider
@@ -680,7 +679,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/text_light"
                             android:backgroundTint="@color/blue_dark"
-                            android:text="Send review"
+                            android:text="@string/btn_send_review"
                             style="@style/Widget.Material3.Button.UnelevatedButton"
                             android:textAllCaps="false"
                             android:textSize="15sp"/>
@@ -690,7 +689,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="35dp"
                             android:textColor="@color/error_red"
-                            android:text="Cancel"
+                            android:text="@string/btn_cancel"
                             style="@style/Widget.AppCompat.Button.Borderless"
                             android:textAllCaps="false"
                             android:textSize="12sp"/>

@@ -32,7 +32,7 @@
                 android:layout_centerHorizontal="true"
                 android:background="@color/transparent"
                 android:ems="10"
-                android:hint="@string/login_email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -64,7 +64,7 @@
                 android:layout_centerVertical="true"
                 android:background="@color/transparent"
                 android:ems="10"
-                android:hint="@string/login_password"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:textColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/login_progress_bar"
-            android:text="Forgot password?"
+            android:text="@string/btn_forgotPassword"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:textAllCaps="false"
             android:textColor="@color/text_light"

@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/view_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="0.99"/>
 
@@ -21,6 +21,5 @@
         android:src="@drawable/ic_remove"
         android:padding="10dp"
         android:backgroundTint="@color/transparent"/>
-
 
 </LinearLayout>

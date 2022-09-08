@@ -7,7 +7,7 @@
     android:background="@color/blue_light">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/show_review_title"
             android:layout_width="match_parent"
@@ -84,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="2dp"
-                        android:text="Tell us what you think:"
+                        android:text="@string/review_rating_title"
                         android:textAlignment="center"
                         android:textColor="@color/text_light"/>
                     <EditText
@@ -136,7 +136,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="2dp"
-                        android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/text_light"/>
                     <com.google.android.material.divider.MaterialDivider
@@ -157,7 +156,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/text_light"
                             android:backgroundTint="@color/blue_dark"
-                            android:text="Update review"
+                            android:text="@string/btn_update_review"
                             style="@style/Widget.Material3.Button.UnelevatedButton"
                             android:textAllCaps="false"
                             android:textSize="15sp"/>
@@ -168,7 +167,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
                             android:backgroundTint="@color/error_red"
-                            android:text="Delete"
+                            android:text="@string/btn_delete"
                             style="@style/Widget.Material3.Button.UnelevatedButton"
                             android:textAllCaps="false"
                             android:textSize="12sp"/>

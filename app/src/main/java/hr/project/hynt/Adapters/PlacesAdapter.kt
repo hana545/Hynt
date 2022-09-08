@@ -85,6 +85,7 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         }
         if(place.rating > 0){
             holder.score.text = place.rating.toString()
+            holder.star.setImageResource(R.drawable.ic_star_review_on)
         } else {
             holder.score.text = ""
             holder.star.setImageResource(R.drawable.ic_star_review_off)
@@ -122,7 +123,7 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         val workhour: ImageView = itemView.findViewById(R.id.workhour_icon)
         val card: CardView = itemView.findViewById(R.id.place_card)
 
-        val star: ImageView = itemView.findViewById(R.id.star1)
+        val star: ImageView = itemView.findViewById(R.id.star)
         val score: TextView = itemView.findViewById(R.id.place_score)
     }
 

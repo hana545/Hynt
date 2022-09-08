@@ -97,7 +97,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         AlertDialog.Builder(activity)
                 .setTitle("Approve place")
                 .setMessage("Are you sure you want to approve this place: " + place.title + "?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     db.getReference("places").child(id).child("approved").setValue(true)
                     db.getReference("places").child(id).child("pending").setValue(false)
                 })
@@ -111,7 +111,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         AlertDialog.Builder(activity)
                 .setTitle("Reject place")
                 .setMessage("Are you sure you want to reject this place: " + placeName + "?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     db.getReference("places").child(id).child("approved").setValue(false)
                     db.getReference("places").child(id).child("pending").setValue(false)
                 })

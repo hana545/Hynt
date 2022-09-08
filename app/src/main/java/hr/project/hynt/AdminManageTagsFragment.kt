@@ -106,7 +106,7 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
         btn_add_tag.setOnClickListener {
             val tag_name_text = tag_name.text.toString()
             if (tag_name_text.isEmpty()) {
-                tag_name!!.requestFocus()
+                tag_name.requestFocus()
                 tag_name.error = "Name cannot be empty"
 
             } else {
@@ -122,7 +122,7 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
         AlertDialog.Builder(activity)
                 .setTitle("Delete tag")
                 .setMessage("Are you sure you want to delete this tag?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app").getReference("tags").child(id).removeValue()
                 })
                 .setNegativeButton(android.R.string.no, null)

@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginHorizontal="20dp">
     <ScrollView
         android:layout_width="match_parent"
@@ -27,7 +26,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_marginVertical="10dp"
-                    android:text="Sort by:"/>
+                    android:text="@string/filter_title_sort"/>
                 <Spinner
                     android:id="@+id/filter_sort_spinner"
                     android:layout_width="match_parent"
@@ -58,7 +57,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_margin="10dp"
-                    android:text="@string/filter_categories" />
+                    android:text="@string/filter_title_categories" />
                 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
@@ -75,7 +74,7 @@
                     android:id="@+id/filter_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select categories"
+                    android:text="@string/btn_select_categories"
                     android:textAllCaps="false"
                     style="@style/Widget.AppCompat.Button.Small"
                     android:textSize="11sp"/>
@@ -98,7 +97,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_margin="10dp"
-                    android:text="@string/filter_tags" />
+                    android:text="@string/filter_title_tags" />
                
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
@@ -115,7 +114,7 @@
                     android:id="@+id/filter_tag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select tags"
+                    android:text="@string/btn_select_tags"
                     android:textAllCaps="false"
                     style="@style/Widget.AppCompat.Button.Small"
                     android:textSize="11sp"/>
@@ -143,7 +142,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_margin="10dp"
-                    android:text="Location"/>
+                    android:text="@string/filter_title_location"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -152,7 +151,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Around:"/>
+                        android:text="@string/filter_location_label"/>
                     <Spinner
                         android:id="@+id/filter_address_spinner"
                         android:layout_width="match_parent"
@@ -185,7 +184,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_margin="10dp"
-                    android:text="@string/filter_range" />
+                    android:text="@string/filter_title_range" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -197,13 +196,13 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_rounded_border"
                         android:padding="10dp"
-                        android:text="10 km"
+                        android:text="@string/filter_range_default"
                         android:textStyle="italic|bold"/>
                     <Button
                         android:id="@+id/filter_range"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Change range"
+                        android:text="@string/btn_change_range"
                         android:textAllCaps="false"
                         style="@style/Widget.AppCompat.Button.Small"
                         android:textSize="11sp"/>
@@ -228,7 +227,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/black_blue"
                     android:layout_margin="10dp"
-                    android:text="Workhours" />
+                    android:text="@string/filter_title_workhours" />
                 <LinearLayout
                     android:id="@+id/filter_workhours"
                     android:layout_width="match_parent"
@@ -286,7 +285,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black_blue"
             android:textColor="@color/text_light"
-            android:text="@string/filter_search"
+            android:text="@string/btn_search"
             android:layout_weight="0.8"/>
         <Button
             android:id="@+id/filter_btn_clear_filter"
@@ -294,7 +293,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/blue_light"
             android:textColor="@color/text_light"
-            android:text="@string/filter_clear"
+            android:text="@string/btn_clear"
             style="@style/Widget.AppCompat.Button.Small"
             android:layout_weight="0.2"
             />

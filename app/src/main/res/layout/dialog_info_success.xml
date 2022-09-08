@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/black_blue"
                 android:textColor="@color/text_light"
-                android:text="Continue"
+                android:text="@string/btn_continue"
                 android:letterSpacing="0.1"
                 android:textAllCaps="false"
                 android:fontFamily="@font/auttera"/>

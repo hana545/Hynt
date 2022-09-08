@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:background="@color/black_blue_low_opacity"
-            android:text="Selected location: None"/>
+            android:text="@string/loc_picker_location_info"/>
     </LinearLayout>
 
     <LinearLayout
@@ -35,14 +35,14 @@
             android:layout_marginHorizontal="25dp"
             android:layout_marginVertical="5dp"
             android:background="@color/blue_light"
-            android:text="Select a location"
+            android:text="@string/btn_selectLocation"
             android:textColor="@android:color/white"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_continue"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@color/black_blue"
-            android:text="Continue"
+            android:text="@string/btn_continue"
             android:enabled="false"
             android:textColor="@android:color/white"/>
 

@@ -15,8 +15,8 @@
         android:backgroundTint="@color/black_blue_low_opacity"
         android:fontFamily="@font/auttera"
         android:text="@string/categories_title"
-        android:textAlignment="center"
-        android:textSize="25sp"></TextView>
+        android:gravity="center"
+        android:textSize="25sp" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -32,7 +32,7 @@
         android:id="@+id/fragment_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No categories created"
+        android:text="@string/no_categories_info"
         android:textSize="25sp"
         android:textStyle="italic"
         android:gravity="center"

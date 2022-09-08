@@ -31,7 +31,6 @@
     </LinearLayout>
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_tag_title"
@@ -55,7 +54,6 @@
             android:letterSpacing="0.1"
             android:textAllCaps="false"
             android:fontFamily="@font/auttera"
-            android:layout_weight="0.8"
             android:layout_below="@+id/add_tag_data"/>
 
     </RelativeLayout>

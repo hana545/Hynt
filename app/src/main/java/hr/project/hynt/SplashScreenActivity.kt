@@ -35,7 +35,7 @@ class SplashScreenActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
-            db.getReference("roles").child(authUser!!.uid).addValueEventListener(object:
+            db.getReference("roles").child(authUser.uid).addValueEventListener(object:
                 ValueEventListener {
                 @RequiresApi(Build.VERSION_CODES.R)
                 override fun onDataChange(snapshot: DataSnapshot) {

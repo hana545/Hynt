@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Hynt</string>
     <string name="database_url">https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app</string>
-    
+
+    <!--Lunch activity-->
 	<string name="btn_register">Register</string>
     <string name="btn_login">Login</string>
     <string name="btn_guest">Continue as guest</string>
@@ -9,31 +10,72 @@
     <string name="main_launch_subtitle">Find interesting places around you</string>
 
 
-    <!-- Basic -->
-    <string name="email">Email</string>
-    <string name="btn_save">Save</string>
-    <string name="closed">Closed</string>
-    <string name="phone">Phone</string>
-    <string name="address">Address</string>
-    <string name="name">Name</string>
-
     <string name="auth_txt_not_account">Don\'t have account?</string>
     <string name="auth_txt_already_account">Already have account?</string>
-    <string name="login_email">@string/email</string>
-    <string name="login_password">Password</string>
-    <string name="register_username">Username</string>
-    <string name="register_email">@string/email</string>
-    <string name="register_password">Password</string>
-    <string name="register_password_confirm">Confirm password</string>
+
+    <!--Loading dialog-->
+    <string name="loading_title">Loading..</string>
+    <string name="loading_info_internet">No internet connection. Please check your internet connectivity!</string>
 
 
-    <string name="filter_categories">Categories</string>
-    <string name="filter_tags">Tags</string>
-    <string name="filter_range">Range</string>
-    <string name="filter_random">Pick one random place with this settings</string>
-    <string name="filter_search">Search</string>
-    <string name="filter_clear">Clear filter</string>
+    <!-- Basic-->
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
 
+    <string name="name">Name</string>
+    <string name="address">Address</string>
+    <string name="select_address">Select address with buttons below</string>
+    <string name="description">Description</string>
+    <string name="phone">Phone</string>
+    <string name="website">Website URL</string>
+
+    <string name="places_title">Places</string>
+    <string name="place_title">Place</string>
+
+    <!--Buttons -->
+    <string name="btn_continue">Continue</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_sign_out">Sign out</string>
+    <string name="btn_send">Send</string>
+
+    <string name="btn_addImages">Add images</string>
+    <string name="btn_addPlace">Add place</string>
+    <string name="btn_addAddress">Add Address</string>
+
+    <string name="btn_selectLocation">Select a location</string>
+    <string name="btn_show_place">Show place</string>
+    <string name="btn_another_hint">Another hint</string>
+
+    <string name="btn_changePassword">Change password</string>
+    <string name="btn_forgotPassword">Forgot password?</string>
+
+    <string name="btn_update_review">Update review</string>
+    <string name="btn_review_place">Review this place</string>
+    <string name="btn_send_review">Send review</string>
+
+        <!--Filter buttons-->
+    <string name="btn_select_categories">Select categories</string>
+    <string name="btn_select_tags">Select tags</string>
+    <string name="btn_change_range">Change range</string>
+    <string name="btn_search">Search</string>
+    <string name="btn_clear">Clear filter</string>
+
+    <!--Filter-->
+    <string name="filter_title_sort">Sort by:</string>
+    <string name="filter_title_categories">Categories</string>
+    <string name="filter_title_tags">Tags</string>
+    <string name="filter_title_location">Location</string>
+    <string name="filter_title_range">Range</string>
+    <string name="filter_title_workhours">Workhours</string>
+    <string name="filter_location_label">Around:</string>
+    <string name="filter_range_default">10 km</string>
+
+    <!--Bottom sheet-->
+    <string name="bs_options_menu_homeMap">Back to home map</string>
     <string name="bs_options_menu_address">My addresses</string>
     <string name="bs_options_menu_reviews">My reviews</string>
     <string name="bs_options_menu_places">My places</string>
@@ -43,40 +85,36 @@
     <string name="bs_options_menu_addPlace">Add place</string>
     <string name="bs_options_menu_settings">Settings</string>
 
+
+    <!--Tags-->
     <string name="tags_title">Tags</string>
     <string name="tag_title">Tag</string>
     <string name="dialog_add_tag_title">Add new Tag</string>
     <string name="dialog_add_tag_name">Tag name</string>
     <string name="dialog_add_tag_button">Add Tag</string>
 
+    <!--Categories-->
     <string name="categories_title">Categories</string>
     <string name="category_title">Category</string>
     <string name="dialog_add_category_title">Add new Category</string>
     <string name="dialog_add_category_name">Category name</string>
     <string name="dialog_add_category_button">Add Category</string>
-	
-	
-    <string name="places_title">Places</string>
-    <string name="place_title">Place</string>
 
+    <!--Add place group titles-->
     <string name="add_place_title">Add place</string>
     <string name="place_gBasicInf">Basic informations</string>
     <string name="place_gContact">Contact</string>
     <string name="place_gWorkhours">Workhours</string>
     <string name="place_gImages">Images</string>
-    <string name="place_name">@string/name</string>
-    <string name="place_address">@string/address</string>
-    <string name="place_description">Description</string>
-    <string name="place_phone">@string/phone</string>
-    <string name="place_email">@string/email</string>
-    <string name="place_website">Website URL</string>
+    <string name="place_gReviews">Reviews</string>
 
     <!--Workhours-->
-
     <string name="workhours_title">Workhours</string>
     <string name="start_hour">Start</string>
     <string name="end_hour">End</string>
-
+    <string name="closed">Closed</string>
+    <string name="open24">Open 24h</string>
+    <string name="empty_workhours">--:-- – --:--</string>
 
     <string name="monday">Monday</string>
     <string name="tuesday">Tuesday</string>
@@ -85,8 +123,55 @@
     <string name="friday">Friday</string>
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
-    <string name="add_place_city">City-Country</string>
-    <string name="open24">Open 24h</string>
-    <string name="reviews_title">Reviews</string>
+
+
+    <!--User settings -->
+    <string name="uSettings_title">Update your informations</string>
+    <string name="uSettings_joined_info">You are with us since</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
+    <string name="repeat_new_password">Repeat new password</string>
+
+    <!--My addresses-->
+    <string name="my_addreses_title">My Saved Addresses</string>
+    <string name="add_new_address_title">Add new Address</string>
+    <string name="address_name">Name of the address</string>
+    <string name="addressType_home">Home</string>
+    <string name="addressType_work">Work</string>
+    <string name="addressType_education">Education</string>
+    <string name="addressType_other">Other</string>
+
+    <!--My reviews-->
+    <string name="reviews_title">All My Reviews</string>
+
+    <!--My places-->
+    <string name="myPlaces_title">My Places</string>
+    <string name="myPlaces_approved">Approved</string>
+    <string name="myPlaces_pending">Pending</string>
+    <string name="myPlaces_not_approved">Not approved</string>
+
+    <!--None found info-->
+    <string name="bs_no_places_info">There are no places near you</string>
+    <string name="no_adminPlaces">There is no place to manage</string>
+    <string name="no_categories_info">No categories created</string>
+    <string name="no_tags_info">No tags created</string>
+    <string name="no_myAddresses_info">No addresses saved</string>
+    <string name="no_myReviews_info">You have not reviewed any place</string>
+    <string name="no_myPlaces_info">No places created</string>
+
+    <!--Hint-->
+    <string name="your_hint_title">Your hint:</string>
+    <string name="your_hint_info">It is placed first in your list of places</string>
+
+    <!--Reset password-->
+    <string name="reset_password_title">Reset password</string>
+    <string name="your_email">Your email</string>
+
+    <!--Etc-->
+    <string name="loc_picker_location_info">Selected location: None</string>
+    <string name="review_rating_title">Tell us what you think:</string>
+    <string name="check_all">Check all</string>
+    <string name="uncheck_all">Uncheck all</string>
+
 
 </resources>

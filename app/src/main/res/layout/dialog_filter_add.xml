@@ -30,13 +30,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
-                android:text="Check all"/>
+                android:text="@string/check_all"/>
             <RadioButton
                 android:id="@+id/filter_btn_check_none"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
-                android:text="Uncheck all"/>
+                android:text="@string/uncheck_all"/>
         </RadioGroup>
 
         <com.google.android.material.divider.MaterialDivider
@@ -66,14 +66,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:backgroundTint="@color/black_blue"
-                android:text="Save"/>
+                android:text="@string/btn_save"/>
             <Button
                 android:id="@+id/filter_btn_cancel_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:backgroundTint="@color/error_red"
-                android:text="Cancel"/>
+                android:text="@string/btn_cancel"/>
 
 
         </LinearLayout>

@@ -22,7 +22,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Update your informations"
+                    android:text="@string/uSettings_title"
                     android:textAlignment="center"
                     android:textSize="25sp"
                     android:fontFamily="@font/auttera"/>
@@ -31,10 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_margin="15dp"
-                    app:dividerColor="@color/black_blue"
-                    android:layout_below="@id/user_settings_btn_change_password"/>
-
-
+                    app:dividerColor="@color/black_blue" />
             </LinearLayout>
 
 
@@ -49,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:hint="@string/register_username"
+                    android:hint="@string/username"
                     />
                 <EditText
                     android:id="@+id/user_settings_username"
@@ -91,7 +88,7 @@
                 android:gravity="left"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:fontFamily="sans-serif-medium"
-                android:text="Change password"/>
+                android:text="@string/btn_changePassword"/>
 
             <Button
                 android:id="@+id/btn_save_settings"
@@ -100,7 +97,7 @@
                 android:layout_below="@+id/user_settings_btn_change_password"
                 android:backgroundTint="@color/black_blue"
                 android:textColor="@color/text_light"
-                android:text="Save"
+                android:text="@string/btn_save"
                 android:fontFamily="@font/auttera"
                 android:textAllCaps="false"
                 android:padding="10dp"
@@ -125,7 +122,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="You are with us since"
+                    android:text="@string/uSettings_joined_info"
                     android:textAlignment="center"
                     android:textSize="18sp"
                     android:fontFamily="@font/auttera"/>
@@ -154,7 +151,7 @@
                 android:textAllCaps="false"
                 android:textSize="18sp"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:text="Sign out"/>
+                android:text="@string/btn_sign_out"/>
 
 
         </RelativeLayout>

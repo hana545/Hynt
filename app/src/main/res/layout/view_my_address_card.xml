@@ -30,7 +30,6 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:padding="10dp"
-            android:text="Tinova zgrada"
             android:layout_gravity="start|center_vertical"
             android:fontFamily="sans-serif-medium"
             android:textColor="@color/black_blue"
@@ -52,7 +51,5 @@
                 android:backgroundTint="@color/transparent"/>
 
         </LinearLayout>
-
     </LinearLayout>
-    
 </androidx.cardview.widget.CardView>

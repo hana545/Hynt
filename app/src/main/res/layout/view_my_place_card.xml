@@ -21,11 +21,10 @@
             android:padding="5dp"
             android:gravity="center_vertical"
             android:layout_marginBottom="2dp"
-            android:layout_weight="1"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/place_title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
                 android:textSize="18sp"
@@ -45,7 +44,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
                 android:orientation="horizontal">
@@ -125,6 +124,5 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
-
 
 </androidx.cardview.widget.CardView>

@@ -268,7 +268,7 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
         AlertDialog.Builder(activity)
                 .setTitle("Delete address")
                 .setMessage("Are you sure you want to delete this address: " + address.name + "?")
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
                     db.getReference("users").child(authUser!!.uid).child("addresses").child(addressId).removeValue()
                     show_info_dialog("Address deleted!", true)
 

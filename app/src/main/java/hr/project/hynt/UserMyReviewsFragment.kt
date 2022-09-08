@@ -126,7 +126,7 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
             AlertDialog.Builder(activity)
                     .setTitle("Delete review")
                     .setMessage("Are you sure you want to delete this review?")
-                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { delete_dialog, which ->
+                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { delete_dialog, _ ->
                         db.getReference("places").child(review.refId).child("reviews").child(authUser!!.uid).removeValue()
                         db.getReference("users").child(authUser.uid).child("reviews").child(review.refId).removeValue()
                         dialog.dismiss()
