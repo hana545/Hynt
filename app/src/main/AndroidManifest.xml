@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hynt" >
-        <activity android:name=".SplashScreenActivity">
+        <activity android:name=".SplashScreenActivity"
+            android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +35,7 @@
         <activity android:name=".UserOptionsActivity"/>
         <activity android:name=".AddNewPlaceActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".LocationPickerActivity"/>
-        <activity android:name=".UserSettingsActivity"/>
+        <activity android:name=".UserSettingsActivity" android:windowSoftInputMode="stateAlwaysHidden"/>
     </application>
 
 </manifest>

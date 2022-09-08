@@ -68,8 +68,7 @@ class UserSettingsActivity: AppCompatActivity() {
         username.setText(authUser.displayName.toString())
         email.setText(authUser.email.toString())
 
-        username.setOnFocusChangeListener(){ _, hasFocus ->
-            if (hasFocus) {
+        username.setOnClickListener {
                 username.clearFocus()
                 val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -93,34 +92,10 @@ class UserSettingsActivity: AppCompatActivity() {
 
                 }
                 dialog.show()
-            }
+
         }
         email.isEnabled = false
-        email.setOnFocusChangeListener(){ _, hasFocus ->
-            if (hasFocus) {
-                email.clearFocus()
-                val dialog = Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen)
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setContentView(R.layout.dialog_editable)
-                dialog.findViewById<TextInputLayout>(R.id.dialog_layout).hint = "Email"
-                val newData = dialog.findViewById<TextInputEditText>(R.id.dialog_data)
-                newData.setText(authUser.email.toString())
-                newData.requestFocus()
 
-                dialog.findViewById<ImageView>(R.id.dialog_cancel).setOnClickListener {
-                    dialog.dismiss()
-                }
-                dialog.findViewById<ImageView>(R.id.dialog_save).setOnClickListener {
-                    if (newData.text!!.isEmpty()){
-                        dialog.findViewById<TextInputLayout>(R.id.dialog_layout).setError("Email cannot be empty!")
-                    } else {
-                        email.setText(newData.text.toString())
-                        dialog.dismiss()
-                    }
-                }
-                dialog.show()
-            }
-        }
         password.setOnClickListener {
             val dialog = Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
