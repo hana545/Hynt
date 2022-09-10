@@ -158,8 +158,10 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     private fun refreshMyCoordinates(latitude: Double, longitude: Double) {
         myCords = LatLng(latitude, longitude)
         if (aroundMyLocation) {
-            if (getDistance(myCords, filterCoords) > 1) getAllPlaces()
-            filterCoords = myCords
+            if (getDistance(myCords, filterCoords) > 0.05) {
+                filterCoords = myCords
+                getAllPlaces()
+            }
         }
         if (allMyAddresses.isNotEmpty()) allMyAddressesCoordinates[0] = myCords
     }
@@ -406,7 +408,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             }
 
             override fun onDrawerOpened(view: View) {
-                allMyAddressesCoordinates[0] = myCords
                 findViewById<Button>(R.id.filter_btn_search).setOnClickListener {
                     hint = false
                     placesAdapter.setHint(false)
@@ -423,6 +424,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                         mapboxMap!!.addMarker(MarkerOptions().position(filterCoords)
                                 .title(addressSpinner.selectedItem.toString())
                                 .icon(IconFactory.getInstance(this@MainMapActivity).fromResource(R.drawable.map_default_map_marker)))
+                    } else {
+                        filterCoords = myCords
                     }
 
                     setFocusOnMap(filterCoords.latitude, filterCoords.longitude)
@@ -803,6 +806,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                     myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
                     myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
                     if (aroundMyLocation) filterCoords = LatLng(myLat, myLng)
+                    if (allMyAddressesCoordinates.isNotEmpty()) allMyAddressesCoordinates[0] = LatLng(myLat, myLng)
                     myCords = LatLng(myLat, myLng)
 
                     val position = CameraPosition.Builder()
@@ -1123,9 +1127,9 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                 place_web2.visibility = View.GONE
             } else {
                 place_web2.visibility = View.VISIBLE
-               /* place_web2.setOnClickListener{
+                place_web2.setOnClickListener{
                     openURL(place.website2)
-                }*/
+                }
             }
         }
 

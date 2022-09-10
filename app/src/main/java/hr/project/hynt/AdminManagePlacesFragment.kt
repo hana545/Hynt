@@ -3,6 +3,8 @@ package hr.project.hynt
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -158,33 +161,64 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
             dialog.findViewById<FlexboxLayout>(R.id.show_place_tags_chip_group).addView(chip)
         }
         //for Contacts
-        val place_phone: TextView = dialog.findViewById<TextView>(R.id.show_place_phone)
-        val place_email: TextView = dialog.findViewById<TextView>(R.id.show_place_email)
-        val place_web: TextView = dialog.findViewById<TextView>(R.id.show_place_web)
+        val place_phone1 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone1)
+        val place_email1 : TextView = dialog.findViewById<TextView>(R.id.show_place_email1)
+        val place_web1 : TextView = dialog.findViewById<TextView>(R.id.show_place_web1)
+        val place_phone2 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone2)
+        val place_email2 : TextView = dialog.findViewById<TextView>(R.id.show_place_email2)
+        val place_web2 : TextView = dialog.findViewById<TextView>(R.id.show_place_web2)
 
-        val phone_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        val phone_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        place_phone1.text = place.phone1
+        place_phone2.text = place.phone2
         if (!place.phone1.isEmpty() && !place.phone2.isEmpty()) {
-            place_phone.text = place.phone1 + '\n' + place.phone2
             phone_layout.visibility = View.VISIBLE
-        } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()) {
-            place_phone.text = place.phone1 + place.phone2
+        } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()){
             phone_layout.visibility = View.VISIBLE
+            if (place.phone1.isEmpty()) place_phone1.visibility = View.GONE else place_phone1.visibility = View.VISIBLE
+            if (place.phone2.isEmpty()) place_phone2.visibility = View.GONE else place_phone2.visibility = View.VISIBLE
         }
-        val email_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        val email_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        place_email1.text = place.email1
+        place_email2.text = place.email2
         if (!place.email1.isEmpty() && !place.email2.isEmpty()) {
-            place_email.text = place.email1 + '\n' + place.email2
             email_layout.visibility = View.VISIBLE
         } else if (!place.email1.isEmpty() || !place.email2.isEmpty()) {
-            place_email.text = place.email1 + place.email2
             email_layout.visibility = View.VISIBLE
+            if (place.email1.isEmpty()) place_email1.visibility = View.GONE else place_email1.visibility = View.VISIBLE
+            if (place.email2.isEmpty()) place_email2.visibility = View.GONE else place_email2.visibility = View.VISIBLE
         }
-        val web_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        val web_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        place_web1.text = place.website1
+        place_web2.text = place.website2
+        place_web1.setPaintFlags(place_web1.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+        place_web2.setPaintFlags(place_web2.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
         if (!place.website1.isEmpty() && !place.website2.isEmpty()) {
-            place_web.text = place.website1 + '\n' + place.website2
             web_layout.visibility = View.VISIBLE
-        } else if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
-            place_web.text = place.website1 + place.website2
+            place_web1.setOnClickListener{
+                openURL(place.website1)
+            }
+            place_web2.setOnClickListener{
+                openURL(place.website2)
+            }
+        } else  if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
             web_layout.visibility = View.VISIBLE
+            if (place.website1.isEmpty()) {
+                place_web1.visibility = View.GONE
+            } else {
+                place_web1.visibility = View.VISIBLE
+                place_web1.setOnClickListener{
+                    openURL(place.website1)
+                }
+            }
+            if (place.website2.isEmpty()) {
+                place_web2.visibility = View.GONE
+            } else {
+                place_web2.visibility = View.VISIBLE
+                place_web2.setOnClickListener{
+                    openURL(place.website2)
+                }
+            }
         }
         if (phone_layout.visibility.equals(View.VISIBLE) || email_layout.visibility.equals(View.VISIBLE) || web_layout.visibility.equals(View.VISIBLE)) {
             dialog.findViewById<LinearLayout>(R.id.show_place_contacts).visibility = View.VISIBLE
@@ -228,6 +262,21 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
             onNegativeButtonClick(placeId, place.title,)
         }
         dialog.show()
+    }
+    private fun openURL(uriString : String){
+        AlertDialog.Builder(requireActivity())
+            .setTitle("Open link")
+            .setMessage("Are you sure you want open this link: "+uriString +"?")
+            .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
+                var uri = uriString.toUri()
+                if (!uriString.startsWith("http://")) uri = ("http://"+uriString).toUri()
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+            })
+            .setNegativeButton(android.R.string.no, null)
+            .setIcon(R.drawable.ic_place_info_website_link)
+            .setCancelable(false)
+            .show()
     }
 
     override fun onItemLongClick(place: Place, placeId: String) {

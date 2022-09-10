@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -238,26 +240,32 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         val web_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
         place_web1.text = place.website1
         place_web2.text = place.website2
+        place_web1.setPaintFlags(place_web1.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+        place_web2.setPaintFlags(place_web2.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
         if (!place.website1.isEmpty() && !place.website2.isEmpty()) {
             web_layout.visibility = View.VISIBLE
+            place_web1.setOnClickListener{
+                openURL(place.website1)
+            }
+            place_web2.setOnClickListener{
+                openURL(place.website2)
+            }
         } else  if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
             web_layout.visibility = View.VISIBLE
             if (place.website1.isEmpty()) {
                 place_web1.visibility = View.GONE
             } else {
                 place_web1.visibility = View.VISIBLE
-                place_web1.setOnLongClickListener{
-                    openURL(Uri.parse(place.website1))
-                    true
+                place_web1.setOnClickListener{
+                    openURL(place.website1)
                 }
             }
             if (place.website2.isEmpty()) {
                 place_web2.visibility = View.GONE
             } else {
                 place_web2.visibility = View.VISIBLE
-                place_web2.setOnLongClickListener{
-                    openURL(Uri.parse(place.website2))
-                    true
+                place_web2.setOnClickListener{
+                    openURL(place.website2)
                 }
             }
         }
@@ -297,11 +305,13 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         }
         dialog.show()
     }
-    private fun openURL(uri : Uri){
-        AlertDialog.Builder(activity)
+    private fun openURL(uriString : String){
+        AlertDialog.Builder(requireActivity())
             .setTitle("Open link")
-            .setMessage("Are you sure you want to go to this link?")
+            .setMessage("Are you sure you want open this link: "+uriString +"?")
             .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
+                var uri = uriString.toUri()
+                if (!uriString.startsWith("http://")) uri = ("http://"+uriString).toUri()
                 val intent = Intent(Intent.ACTION_VIEW, uri)
                 startActivity(intent)
             })
