@@ -18,12 +18,7 @@
             android:paddingVertical="10dp"
             android:paddingHorizontal="10dp"
             android:weightSum="1">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_buildings_town"
-                android:layout_weight="0.1"
-                />
+
             <TextView
                 android:id="@+id/show_place_title_data"
                 android:layout_width="wrap_content"
@@ -31,7 +26,7 @@
                 android:textColor="@color/text_light"
                 android:textSize="35sp"
                 android:fontFamily="@font/auttera"
-                android:layout_weight="0.8"/>
+                android:layout_weight="0.9"/>
             <ImageView
                 android:id="@+id/close_dialog"
                 android:layout_width="24dp"
@@ -87,7 +82,7 @@
                     android:layout_height="46dp"
                     android:padding="10dp"
                     android:src="@drawable/ic_place_info_address"
-                    android:tint="@color/text_light" />
+                    app:tint="@color/text_light" />
 
                 <TextView
                     android:id="@+id/show_place_address_data"
@@ -209,7 +204,7 @@
                             android:layout_height="46dp"
                             android:padding="10dp"
                             android:src="@drawable/ic_place_info_phone"
-                            android:tint="@color/text_light" />
+                            app:tint="@color/text_light" />
 
                         <TextView
                             android:id="@+id/show_place_phone"
@@ -234,7 +229,7 @@
                             android:layout_height="46dp"
                             android:padding="10dp"
                             android:src="@drawable/ic_place_info_email"
-                            android:tint="@color/text_light" />
+                            app:tint="@color/text_light" />
 
                         <TextView
                             android:id="@+id/show_place_email"
@@ -258,7 +253,7 @@
                             android:layout_height="46dp"
                             android:padding="10dp"
                             android:src="@drawable/ic_place_info_website_link"
-                            android:tint="@color/text_light" />
+                            app:tint="@color/text_light" />
 
                         <TextView
                             android:id="@+id/show_place_web"
@@ -325,7 +320,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
 
                 </RelativeLayout>
@@ -354,7 +349,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
                 </RelativeLayout>
 
@@ -383,7 +378,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:gravity="center_vertical"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
                 </RelativeLayout>
 
@@ -412,7 +407,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:gravity="center_vertical"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
 
                 </RelativeLayout>
@@ -441,7 +436,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
 
                 </RelativeLayout>
@@ -470,7 +465,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
 
                 </RelativeLayout>
@@ -499,7 +494,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light" />
 
                 </RelativeLayout>

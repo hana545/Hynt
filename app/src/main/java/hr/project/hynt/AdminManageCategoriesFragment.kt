@@ -80,9 +80,8 @@ class AdminManageCategoriesFragment : Fragment(), TagCategoryAdapter.ItemClickLi
 
                         }
                     }
-                } else {
-                    text_info.visibility = View.VISIBLE
                 }
+                text_info.visibility = if (collectiveCategories.isEmpty()) View.VISIBLE else View.GONE
                 val result = collectiveCategories.toList().sortedBy { (_, value) -> value}.toMap()
                 allCategories.addAll(result.values)
                 allCategories_id.addAll(result.keys)

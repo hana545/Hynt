@@ -9,7 +9,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -34,7 +38,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.bumptech.glide.Glide
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.gms.common.util.CollectionUtils.listOf
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -68,9 +71,8 @@ import hr.project.hynt.FirebaseDatabase.Address
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import java.lang.Math.*
-import java.util.*
 import java.text.SimpleDateFormat
-import kotlin.collections.ArrayList
+import java.util.*
 
 
 class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, OnCameraTrackingChangedListener, PlacesAdapter.ItemClickListener, ReviewsAdapter.ItemClickListener, ImagesAdapter.ItemClickListener {
@@ -100,10 +102,12 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     var range = 10
     var workhourOptions = arrayOf(true, true, true)
     var filterCoords = LatLng(0.0,0.0)
+    var aroundMyLocation = true
 
     var allMyAddresses = ArrayList<String>()
     var allMyAddressesCoordinates = ArrayList<LatLng>()
 
+    private var locationManager : LocationManager? = null
     private val PERMISSION_REQUEST_CODE_LOCATION =  102
 
     @SuppressLint("WrongViewCast")
@@ -132,10 +136,32 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         addBottomSheet()
         ////map
         askLocationPermission()
+        // Create persistent LocationManager reference
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+
         mapView = findViewById(R.id.mapView) as MapView
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
 
+    }
+    //define the listener
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            refreshMyCoordinates(location.latitude,location.longitude)
+            Log.d("MapActivity", "New location: " + location.longitude + ":" + location.latitude)
+        }
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
+
+    private fun refreshMyCoordinates(latitude: Double, longitude: Double) {
+        myCords = LatLng(latitude, longitude)
+        if (aroundMyLocation) {
+            if (getDistance(myCords, filterCoords) > 1) getAllPlaces()
+            filterCoords = myCords
+        }
+        if (allMyAddresses.isNotEmpty()) allMyAddressesCoordinates[0] = myCords
     }
 
 
@@ -380,7 +406,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             }
 
             override fun onDrawerOpened(view: View) {
-                //supportActionBar!!.hide()
+                allMyAddressesCoordinates[0] = myCords
                 findViewById<Button>(R.id.filter_btn_search).setOnClickListener {
                     hint = false
                     placesAdapter.setHint(false)
@@ -393,6 +419,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                     getAllPlaces()
 
                     if (addressSpinner.selectedItemPosition > 0){
+                        aroundMyLocation = false
                         mapboxMap!!.addMarker(MarkerOptions().position(filterCoords)
                                 .title(addressSpinner.selectedItem.toString())
                                 .icon(IconFactory.getInstance(this@MainMapActivity).fromResource(R.drawable.map_default_map_marker)))
@@ -411,6 +438,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
                     allCheckedTags.clear()
                     addressSpinner.setSelection(0)
                     filterCoords = myCords
+                    aroundMyLocation = true
                     range = 10
                     findViewById<TextView>(R.id.filter_range_data_label).text = range.toString() + " km"
                     workhourOptions[0] = true
@@ -681,7 +709,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
         mapboxMap.setStyle(
                 Style.MAPBOX_STREETS
         ) { style -> enableLocationComponent(style) }
-
         ///recyler view for places
         placesRecyclerview = findViewById<RecyclerView>(R.id.places_recycler_view)
         // this creates a horizontal linear layout Manager
@@ -694,10 +721,8 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             addBottomSheet()
             placesRecyclerview.layoutManager?.scrollToPosition(0)
         })
-
-
-
     }
+
 
     private fun enableLocationComponent(loadedMapStyle: Style) {
         // Check if permissions are enabled and if not request
@@ -707,6 +732,7 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             // Create and customize the LocationComponent's options
             val customLocationComponentOptions =
                 LocationComponentOptions.builder(this)
+                    .trackingGesturesManagement(true)
                     .elevation(5f)
                     .accuracyAlpha(.6f)
                     .accuracyColor(Color.BLUE)
@@ -756,31 +782,42 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
             } else {
                 noLocation(true)
-            }
-            var myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
-            var myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
-            myCords = LatLng(myLat, myLng)
-            filterCoords = myCords
-            addDrawerFilter()
-            getAllPlaces()
-            setFocusOnMap(myCords.latitude, myCords.longitude)
-            //button to move back to location
-            findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
-                myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
-                myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
-                myCords = LatLng(myLat, myLng)
 
-                val position = CameraPosition.Builder()
+                Log.d("MapActivity", "getLocation")
+                var myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+                var myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+                myCords = LatLng(myLat, myLng)
+                filterCoords = myCords
+                addDrawerFilter()
+                getAllPlaces()
+                setFocusOnMap(myCords.latitude, myCords.longitude)
+                try {
+                    // Request location updates
+                    locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+                } catch(ex: SecurityException) {
+                    Log.d("MapActivity", "Security Exception, no location available")
+                }
+
+                //button to move back to location
+                findViewById<View>(R.id.float_btn_back_to_location).setOnClickListener {
+                    myLat = mapboxMap!!.locationComponent.lastKnownLocation!!.latitude
+                    myLng = mapboxMap!!.locationComponent.lastKnownLocation!!.longitude
+                    if (aroundMyLocation) filterCoords = LatLng(myLat, myLng)
+                    myCords = LatLng(myLat, myLng)
+
+                    val position = CameraPosition.Builder()
                         .target(myCords)
                         .zoom(15.0) // Sets the zoom
                         .build()
-                mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1500)
-                //delay tracking so it can zoom in location
-                Handler(Looper.getMainLooper()).postDelayed({
-                    locationComponent!!.cameraMode = CameraMode.TRACKING
-                }, 2000)
-                isInTrackingMode = true
+                    mapboxMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1500)
+                    //delay tracking so it can zoom in location
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        locationComponent!!.cameraMode = CameraMode.TRACKING
+                    }, 2000)
+                    isInTrackingMode = true
+                }
             }
+
         } else {
             noLocation(false)
         }
@@ -791,7 +828,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onCameraTrackingChanged(currentMode: Int) {
-        // Empty on purpose
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -850,7 +886,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     }
 
     override fun onResume() {
-
         Log.d("MapActivity", "onResume")
         setCustomActionBar()
         super.onResume()
@@ -860,11 +895,13 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
     override fun onPause() {
         super.onPause()
         mapView!!.onPause()
+
     }
 
     override fun onStop() {
         super.onStop()
         mapView!!.onStop()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -1032,34 +1069,66 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             dialog.findViewById<FlexboxLayout>(R.id.show_place_tags_chip_group).addView(chip)
         }
         //for Contacts
-        val place_phone : TextView = dialog.findViewById<TextView>(R.id.show_place_phone)
-        val place_email : TextView = dialog.findViewById<TextView>(R.id.show_place_email)
-        val place_web : TextView = dialog.findViewById<TextView>(R.id.show_place_web)
+        val place_phone1 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone1)
+        val place_email1 : TextView = dialog.findViewById<TextView>(R.id.show_place_email1)
+        val place_web1 : TextView = dialog.findViewById<TextView>(R.id.show_place_web1)
+        val place_phone2 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone2)
+        val place_email2 : TextView = dialog.findViewById<TextView>(R.id.show_place_email2)
+        val place_web2 : TextView = dialog.findViewById<TextView>(R.id.show_place_web2)
 
         val phone_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        place_phone1.text = place.phone1
+        place_phone2.text = place.phone2
         if (!place.phone1.isEmpty() && !place.phone2.isEmpty()) {
-            place_phone.text = place.phone1 + '\n' + place.phone2
             phone_layout.visibility = View.VISIBLE
         } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()){
-            place_phone.text = place.phone1 + place.phone2
             phone_layout.visibility = View.VISIBLE
+            if (place.phone1.isEmpty()) place_phone1.visibility = View.GONE else place_phone1.visibility = View.VISIBLE
+            if (place.phone2.isEmpty()) place_phone2.visibility = View.GONE else place_phone2.visibility = View.VISIBLE
         }
         val email_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        place_email1.text = place.email1
+        place_email2.text = place.email2
         if (!place.email1.isEmpty() && !place.email2.isEmpty()) {
-            place_email.text = place.email1 + '\n' + place.email2
             email_layout.visibility = View.VISIBLE
         } else if (!place.email1.isEmpty() || !place.email2.isEmpty()) {
-            place_email.text = place.email1 + place.email2
             email_layout.visibility = View.VISIBLE
+            if (place.email1.isEmpty()) place_email1.visibility = View.GONE else place_email1.visibility = View.VISIBLE
+            if (place.email2.isEmpty()) place_email2.visibility = View.GONE else place_email2.visibility = View.VISIBLE
         }
         val web_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        place_web1.text = place.website1
+        place_web2.text = place.website2
+        place_web1.setPaintFlags(place_web1.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+        place_web2.setPaintFlags(place_web2.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
         if (!place.website1.isEmpty() && !place.website2.isEmpty()) {
-            place_web.text = place.website1 + '\n' + place.website2
             web_layout.visibility = View.VISIBLE
+            place_web1.setOnClickListener{
+                openURL(place.website1)
+            }
+            place_web2.setOnClickListener{
+                openURL(place.website2)
+            }
         } else  if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
-            place_web.text = place.website1 + place.website2
             web_layout.visibility = View.VISIBLE
+            if (place.website1.isEmpty()) {
+                place_web1.visibility = View.GONE
+            } else {
+                place_web1.visibility = View.VISIBLE
+                place_web1.setOnClickListener{
+                    openURL(place.website1)
+                }
+            }
+            if (place.website2.isEmpty()) {
+                place_web2.visibility = View.GONE
+            } else {
+                place_web2.visibility = View.VISIBLE
+               /* place_web2.setOnClickListener{
+                    openURL(place.website2)
+                }*/
+            }
         }
+
         if (phone_layout.visibility.equals(View.VISIBLE) || email_layout.visibility.equals(View.VISIBLE) || web_layout.visibility.equals(View.VISIBLE)){
             dialog.findViewById<LinearLayout>(R.id.show_place_contacts).visibility = View.VISIBLE
         } else {
@@ -1089,7 +1158,6 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
             workhours_days.add(dialog.findViewById(R.id.friday))
             workhours_days.add(dialog.findViewById(R.id.saturday))
 
-            Log.d("MapActivity", "day "+Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
             workhours_days[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1].setBackgroundColor(Color.parseColor("#AD33689A"))
 
         }
@@ -1109,6 +1177,22 @@ class MainMapActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsList
 
 
         dialog.show()
+    }
+
+    private fun openURL(uriString : String){
+        AlertDialog.Builder(this)
+            .setTitle("Open link")
+            .setMessage("Are you sure you want open this link: "+uriString +"?")
+            .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
+                var uri = uriString.toUri()
+                if (!uriString.startsWith("http://")) uri = ("http://"+uriString).toUri()
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+            })
+            .setNegativeButton(android.R.string.no, null)
+            .setIcon(R.drawable.ic_place_info_website_link)
+            .setCancelable(false)
+            .show()
     }
 
     private fun setFocusOnMap(lat: Double, lng: Double) {

@@ -1,7 +1,6 @@
 package hr.project.hynt.Adapters
 
 import android.graphics.Color
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +8,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ListResult
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import hr.project.hynt.FirebaseDatabase.Workhour
@@ -61,12 +57,14 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         holder.address.text = place.address.substringBefore(',')
         holder.category.text = place.category
         val opened = checkWorkhour(place.workhours)
+
+        holder.workhour.visibility = View.INVISIBLE
         if (opened == 0) {
+            holder.workhour.visibility = View.VISIBLE
             holder.workhour.setImageResource(R.drawable.ic_closed_label)
         } else if (opened == 1) {
+            holder.workhour.visibility = View.VISIBLE
             holder.workhour.setImageResource(R.drawable.ic_open_label)
-        } else {
-            holder.workhour.visibility = View.INVISIBLE
         }
 
         hasRev[position] = false
@@ -137,6 +135,7 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
         } else if (current_workhours == "Open 24h") {
             return 1
         } else {
+            //17 : 40 - 17 : 40
             val range1 = current_workhours.substringBefore('\n')
             var start1 = range1.substring(0,2).toInt() * 100 + range1.substring(5,7).toInt()
             if(start1 == 0) start1 = 2400
@@ -157,7 +156,11 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
 
     private fun checkHours(start: Int, end: Int) : Boolean {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) * 100 + Calendar.getInstance().get(Calendar.MINUTE)
-        return start < hour && end > hour
+        if (end < start) {
+            return !(start > hour && end < hour)
+        } else {
+            return start < hour && end > hour
+        }
     }
 
 

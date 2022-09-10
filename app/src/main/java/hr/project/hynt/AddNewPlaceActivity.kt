@@ -68,6 +68,8 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
 
     private val REQUEST_CODE = 200
     private val PERMISSION_REQUEST_CODE_STORAGE =  102
+
+    val allReviews = HashMap<String, Review>()
     val allImages = ArrayList<String>()
     val existingImages = HashMap<String, String>()
     val storageReference = FirebaseStorage.getInstance().reference
@@ -281,7 +283,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                         existingImages.clear()
                         existingImages.putAll(place.images)
 
-
+                        if (!intent.getBooleanExtra("copy", false)) allReviews.putAll(place.reviews)
                         setContactButtonListeners(place_phone2.text.isNotEmpty(), place_email2.text.isNotEmpty(), place_web2.text.isNotEmpty())
                     }
                 }
@@ -869,7 +871,7 @@ class AddNewPlaceActivity: AppCompatActivity(), View.OnTouchListener,ViewTreeObs
                 key = db.getReference("places").push().key.toString()
             }
             val imageNames = HashMap<String, String>()
-            val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, HashMap<String, Review>(), imageNames, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
+            val nPlace = Place(key, Calendar.getInstance().time, place_name_text,place_address_text,coordinates.latitude, coordinates.longitude,  place_description_text.replace("\\s+".toRegex(), " ").trim(), place_phone1_text, place_phone2_text, place_email1_text, place_email2_text, place_website1_text, place_website2_text, place_workhours, category, selectedTags, allReviews, imageNames, FirebaseAuth.getInstance().currentUser?.uid.toString(), false)
             db.getReference("places").child(key).setValue(nPlace).addOnSuccessListener {
                 show_info_dialog("Successfully added place " + nPlace.title + "!", "It is waiting for approval but you can check it out in your list of places", true)
                 progressDialog.dismiss()

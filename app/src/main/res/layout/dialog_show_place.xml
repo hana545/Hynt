@@ -18,12 +18,7 @@
             android:paddingVertical="10dp"
             android:paddingHorizontal="10dp"
             android:weightSum="1">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_buildings_town"
-                android:layout_weight="0.1"
-                />
+
             <TextView
                 android:id="@+id/show_place_title_data"
                 android:layout_width="wrap_content"
@@ -31,7 +26,7 @@
                 android:textColor="@color/text_light"
                 android:textSize="35sp"
                 android:fontFamily="@font/auttera"
-                android:layout_weight="0.8"/>
+                android:layout_weight="0.9"/>
             <ImageView
                 android:id="@+id/close_dialog"
                 android:layout_width="24dp"
@@ -125,9 +120,8 @@
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:padding="10dp"
-                    android:tint="@color/text_light"
                     android:src="@drawable/ic_place_info_address"
-                    />
+                    app:tint="@color/text_light" />
 
                 <TextView
                     android:id="@+id/show_place_address_data"
@@ -229,16 +223,29 @@
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_phone"
-                            />
-                        <TextView
-                            android:id="@+id/show_place_phone"
-                            android:layout_width="wrap_content"
+                            app:tint="@color/text_light" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:textIsSelectable="true"
-                            android:paddingHorizontal="10dp"/>
+                            android:paddingVertical="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/show_place_phone1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:textIsSelectable="true"
+                                android:paddingHorizontal="10dp"/>
+                            <TextView
+                                android:id="@+id/show_place_phone2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:textIsSelectable="true"
+                                android:paddingHorizontal="10dp"/>
+                        </LinearLayout>
 
                     </LinearLayout>
                     <LinearLayout
@@ -253,16 +260,29 @@
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_email"
-                            />
-                        <TextView
-                            android:id="@+id/show_place_email"
-                            android:layout_width="wrap_content"
+                            app:tint="@color/text_light" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:textIsSelectable="true"
-                            android:paddingHorizontal="10dp" />
+                            android:paddingVertical="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/show_place_email1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:textIsSelectable="true"
+                                android:paddingHorizontal="10dp" />
+                            <TextView
+                                android:id="@+id/show_place_email2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:textIsSelectable="true"
+                                android:paddingHorizontal="10dp" />
+                        </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/show_place_contacts_web"
@@ -276,16 +296,33 @@
                             android:layout_width="46dp"
                             android:layout_height="46dp"
                             android:padding="10dp"
-                            android:tint="@color/text_light"
                             android:src="@drawable/ic_place_info_website_link"
-                            />
-                        <TextView
-                            android:id="@+id/show_place_web"
-                            android:layout_width="wrap_content"
+                            app:tint="@color/text_light" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_light"
-                            android:textIsSelectable="true"
-                            android:paddingHorizontal="10dp"/>
+                            android:paddingVertical="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/show_place_web1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:linksClickable="true"
+                                android:layout_marginVertical="2dp"
+                                android:paddingHorizontal="10dp"/>
+                            <TextView
+                                android:id="@+id/show_place_web2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_light"
+                                android:linksClickable="true"
+                                android:layout_marginVertical="2dp"
+                                android:paddingHorizontal="10dp"/>
+
+                        </LinearLayout>
+
                     </LinearLayout>
                 </LinearLayout>
 
@@ -321,14 +358,14 @@
                 <RelativeLayout
                     android:id="@+id/monday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/monday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/monday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -339,7 +376,7 @@
                         android:id="@+id/monday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
@@ -348,14 +385,14 @@
                 <RelativeLayout
                     android:id="@+id/tuesday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/tuesday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/tuesday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -366,7 +403,7 @@
                         android:id="@+id/tuesday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
@@ -374,14 +411,14 @@
                 <RelativeLayout
                     android:id="@+id/wednesday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/wednesday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/wednesday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -392,7 +429,7 @@
                         android:id="@+id/wednesday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:gravity="center_vertical"
                         android:layout_alignParentEnd="true"
@@ -401,14 +438,14 @@
                 <RelativeLayout
                     android:id="@+id/thursday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/thursday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/thursday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -419,7 +456,7 @@
                         android:id="@+id/thursday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:gravity="center_vertical"
                         android:layout_alignParentEnd="true"
@@ -429,14 +466,14 @@
                 <RelativeLayout
                     android:id="@+id/friday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/friday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/friday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -447,7 +484,7 @@
                         android:id="@+id/friday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
@@ -456,7 +493,8 @@
                 <RelativeLayout
                     android:id="@+id/saturday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
 
                     <TextView
                         android:id="@+id/saturday_label"
@@ -465,7 +503,6 @@
                         android:layout_alignParentStart="true"
                         android:fontFamily="@font/auttera"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:text="@string/saturday"
                         android:textColor="@color/text_light"
                         android:textSize="15sp"
@@ -474,7 +511,7 @@
                         android:id="@+id/saturday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
@@ -483,14 +520,14 @@
                 <RelativeLayout
                     android:id="@+id/sunday"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
                     <TextView
                         android:id="@+id/sunday_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sunday"
                         android:letterSpacing="0.15"
-                        android:padding="10dp"
                         android:textSize="15sp"
                         android:textColor="@color/text_light"
                         android:fontFamily="@font/auttera"
@@ -501,7 +538,7 @@
                         android:id="@+id/sunday_hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="--:--  –  --:--"
+                        android:hint="@string/empty_workhours"
                         android:textColor="@color/text_light"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>

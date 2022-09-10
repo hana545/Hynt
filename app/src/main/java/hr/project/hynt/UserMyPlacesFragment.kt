@@ -132,7 +132,7 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
                     allPlaces.reverse()
                     allPlacesId.reverse()
                 }
-                if (allPlaces.isEmpty()) text_info.visibility = View.VISIBLE
+                text_info.visibility = if (allPlaces.isEmpty()) View.VISIBLE else View.GONE
                 progressBar.visibility = View.GONE
                 adapter.notifyDataSetChanged()
             }
@@ -208,34 +208,60 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
             dialog.findViewById<FlexboxLayout>(R.id.show_place_tags_chip_group).addView(chip)
         }
         //for Contacts
-        val place_phone: TextView = dialog.findViewById<TextView>(R.id.show_place_phone)
-        val place_email: TextView = dialog.findViewById<TextView>(R.id.show_place_email)
-        val place_web: TextView = dialog.findViewById<TextView>(R.id.show_place_web)
+        val place_phone1 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone1)
+        val place_email1 : TextView = dialog.findViewById<TextView>(R.id.show_place_email1)
+        val place_web1 : TextView = dialog.findViewById<TextView>(R.id.show_place_web1)
+        val place_phone2 : TextView = dialog.findViewById<TextView>(R.id.show_place_phone2)
+        val place_email2 : TextView = dialog.findViewById<TextView>(R.id.show_place_email2)
+        val place_web2 : TextView = dialog.findViewById<TextView>(R.id.show_place_web2)
 
-        val phone_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        val phone_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_phone)
+        place_phone1.text = place.phone1
+        place_phone2.text = place.phone2
         if (!place.phone1.isEmpty() && !place.phone2.isEmpty()) {
-            place_phone.text = place.phone1 + '\n' + place.phone2
             phone_layout.visibility = View.VISIBLE
-        } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()) {
-            place_phone.text = place.phone1 + place.phone2
+        } else if (!place.phone1.isEmpty() || !place.phone2.isEmpty()){
             phone_layout.visibility = View.VISIBLE
+            if (place.phone1.isEmpty()) place_phone1.visibility = View.GONE else place_phone1.visibility = View.VISIBLE
+            if (place.phone2.isEmpty()) place_phone2.visibility = View.GONE else place_phone2.visibility = View.VISIBLE
         }
-        val email_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        val email_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_email)
+        place_email1.text = place.email1
+        place_email2.text = place.email2
         if (!place.email1.isEmpty() && !place.email2.isEmpty()) {
-            place_email.text = place.email1 + '\n' + place.email2
             email_layout.visibility = View.VISIBLE
         } else if (!place.email1.isEmpty() || !place.email2.isEmpty()) {
-            place_email.text = place.email1 + place.email2
             email_layout.visibility = View.VISIBLE
+            if (place.email1.isEmpty()) place_email1.visibility = View.GONE else place_email1.visibility = View.VISIBLE
+            if (place.email2.isEmpty()) place_email2.visibility = View.GONE else place_email2.visibility = View.VISIBLE
         }
-        val web_layout = dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        val web_layout =  dialog.findViewById<LinearLayout>(R.id.show_place_contacts_web)
+        place_web1.text = place.website1
+        place_web2.text = place.website2
         if (!place.website1.isEmpty() && !place.website2.isEmpty()) {
-            place_web.text = place.website1 + '\n' + place.website2
             web_layout.visibility = View.VISIBLE
-        } else if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
-            place_web.text = place.website1 + place.website2
+        } else  if (!place.website1.isEmpty() || !place.website2.isEmpty()) {
             web_layout.visibility = View.VISIBLE
+            if (place.website1.isEmpty()) {
+                place_web1.visibility = View.GONE
+            } else {
+                place_web1.visibility = View.VISIBLE
+                place_web1.setOnLongClickListener{
+                    openURL(Uri.parse(place.website1))
+                    true
+                }
+            }
+            if (place.website2.isEmpty()) {
+                place_web2.visibility = View.GONE
+            } else {
+                place_web2.visibility = View.VISIBLE
+                place_web2.setOnLongClickListener{
+                    openURL(Uri.parse(place.website2))
+                    true
+                }
+            }
         }
+
         if (phone_layout.visibility.equals(View.VISIBLE) || email_layout.visibility.equals(View.VISIBLE) || web_layout.visibility.equals(View.VISIBLE)) {
             dialog.findViewById<LinearLayout>(R.id.show_place_contacts).visibility = View.VISIBLE
         } else {
@@ -270,6 +296,19 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
             dialog.findViewById<LinearLayout>(R.id.show_place_reviews).visibility = View.GONE
         }
         dialog.show()
+    }
+    private fun openURL(uri : Uri){
+        AlertDialog.Builder(activity)
+            .setTitle("Open link")
+            .setMessage("Are you sure you want to go to this link?")
+            .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { _, _ ->
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+            })
+            .setNegativeButton(android.R.string.no, null)
+            .setIcon(R.drawable.ic_place_info_website_link)
+            .setCancelable(false)
+            .show()
     }
 
     override fun onItemLongClick(place: Place, placeId: String) {

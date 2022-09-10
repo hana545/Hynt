@@ -81,9 +81,8 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
                         }
                     }
                     adapter.notifyDataSetChanged()
-                } else {
-                    text_info.visibility = View.VISIBLE
                 }
+                text_info.visibility = if (allPlaces.isEmpty()) View.VISIBLE else View.GONE
             }
 
             override fun onCancelled(error: DatabaseError) {

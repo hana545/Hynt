@@ -32,11 +32,10 @@
                 android:paddingHorizontal="5dp"/>
             <ImageView
                 android:id="@+id/workhour_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="15dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_open_label" />
+                android:padding="2dp" />
         </LinearLayout>
 
         <com.google.android.material.divider.MaterialDivider
@@ -67,7 +66,8 @@
                 android:layout_weight="0.7"
                 android:gravity="left|center_vertical"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:paddingVertical="5dp"
+                android:paddingLeft="5dp">
 
                 <ImageView
                     android:id="@+id/category_icon"
@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
                 android:gravity="center_horizontal"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginHorizontal="5dp"
                 android:layout_weight="0.3">
 
                 <ImageView

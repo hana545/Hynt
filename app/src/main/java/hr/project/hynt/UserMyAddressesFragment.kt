@@ -16,6 +16,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -56,6 +58,7 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
 
     private var placeAddressAutocompleteResult : EditText? = null
     private var coordinates : LatLng = LatLng(0.0,0.0)
+    lateinit var resultLauncher : ActivityResultLauncher<Intent>
 
     lateinit var text_info : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +85,7 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
         recyclerview.adapter = adapter
         getAllAddreses(adapter)
 
-        var resultLauncher = registerForActivityResult(
+        resultLauncher = registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // parse result and perform action
@@ -234,18 +237,10 @@ class UserMyAddressesFragment : Fragment(), AddressesAdapter.ItemClickListener {
         }
         dialog.findViewById<ImageView>(R.id.btn_map_address).setOnClickListener {
             val intent = Intent(requireContext(), LocationPickerActivity::class.java)
+            coordinates = LatLng(address.lat,address.lng)
             intent.putExtra("coordinates", coordinates)
-            var resultLauncher = registerForActivityResult(
-                    ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    // parse result and perform action
-                    val lat = result.data!!.extras!!.get("Lat") as Double
-                    val lng = result.data!!.extras!!.get("Lng") as Double
-                    coordinates = LatLng(lat, lng)
-                    geocoderRev(lat, lng)
-                }
-            }
             resultLauncher.launch(intent)
+
         }
         dialog.findViewById<ImageView>(R.id.show_address_cancel).setOnClickListener {
             dialog.dismiss()

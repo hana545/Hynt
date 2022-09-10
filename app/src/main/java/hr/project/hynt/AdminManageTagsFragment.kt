@@ -78,9 +78,8 @@ class AdminManageTagsFragment : Fragment(), TagCategoryAdapter.ItemClickListener
                             collectiveTags.put(tag_id,tag)
                         }
                     }
-                } else {
-                    text_info.visibility = View.VISIBLE
                 }
+                text_info.visibility = if (collectiveTags.isEmpty()) View.VISIBLE else View.GONE
                 val result = collectiveTags.toList().sortedBy {  (_, value) -> value}.toMap()
                 allTags.addAll(result.values)
                 allTags_id.addAll(result.keys)
