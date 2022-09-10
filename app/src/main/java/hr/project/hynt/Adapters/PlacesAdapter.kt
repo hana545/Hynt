@@ -82,7 +82,7 @@ class PlacesAdapter (private val mList: List<Place>, val mItemClickListener: Ite
             }
         }
         if(place.rating > 0){
-            holder.score.text = place.rating.toString()
+            holder.score.text = String.format("%.1f", place.rating)
             holder.star.setImageResource(R.drawable.ic_star_review_on)
         } else {
             holder.score.text = ""
