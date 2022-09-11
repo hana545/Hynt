@@ -210,7 +210,7 @@ class UserSettingsActivity: AppCompatActivity() {
                         }
                     }
             db.getReference("users").child(authUser.uid).child("username").setValue(username_data)
-            db.getReference("users").child(authUser.uid).child("reviews").addValueEventListener(object : ValueEventListener {
+            db.getReference("users").child(authUser.uid).child("reviews").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (reviews: DataSnapshot in snapshot.children) {

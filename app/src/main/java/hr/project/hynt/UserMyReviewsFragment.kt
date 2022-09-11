@@ -22,7 +22,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.reddit.indicatorfastscroll.FastScrollItemIndicator
+import com.reddit.indicatorfastscroll.FastScrollerView
 import hr.project.hynt.Adapters.ReviewsAdapter
+import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.FirebaseDatabase.Review
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,6 +38,8 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
     val authUser = FirebaseAuth.getInstance().currentUser
 
     lateinit var text_info : TextView
+    lateinit var fastScrollerView : FastScrollerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +55,17 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
         val recyclerview = view.findViewById<RecyclerView>(R.id.review_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        fastScrollerView = view.findViewById<FastScrollerView>(R.id.fastscroller)
+        fastScrollerView.setupWithRecyclerView(
+            recyclerview,
+            { position ->
+                val item = allReviews[position] // Get your model object
+                // or fetch the section at [position] from your database
+                FastScrollItemIndicator.Text(
+                    item.refName.substring(0, 1).toUpperCase() // Grab the first letter and capitalize it
+                ) // Return a text indicator
+            }
+        )
 
         val adapter = ReviewsAdapter(allReviews, allReviewsId, "myReviews", this)
         recyclerview.adapter = adapter
@@ -166,10 +182,13 @@ class UserMyReviewsFragment : Fragment(), ReviewsAdapter.ItemClickListener {
                             allReviewsId.add(reviews.key.toString())
                         }
                     }
-                } else {
-                    text_info.visibility = View.VISIBLE
                 }
-                allReviews.reverse()
+                var tmpReviews = ArrayList<Review>()
+                tmpReviews = ArrayList(allReviews.sortedWith(compareBy({ it.refName })))
+                allReviews.clear()
+                allReviews.addAll(tmpReviews)
+                text_info.visibility = if (allReviews.isEmpty()) View.VISIBLE else View.GONE
+                fastScrollerView.visibility = if (allReviews.isNotEmpty()) View.VISIBLE else View.GONE
                 adapter.notifyDataSetChanged()
             }
 

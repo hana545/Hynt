@@ -1,23 +1,19 @@
 package hr.project.hynt.Adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.util.CollectionUtils.listOf
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider
 import hr.project.hynt.FirebaseDatabase.Place
-import hr.project.hynt.FirebaseDatabase.Workhour
 import hr.project.hynt.R
 import java.util.*
 
-class PlacesManageAdapter (private val mList: List<Place>, private val mList_id: List<String>, private val type : String, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesManageAdapter.ViewHolder>() {
+class PlacesManageAdapter (private val mList: List<Place>, private val type : String, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesManageAdapter.ViewHolder>(), SectionTitleProvider {
 
     interface ItemClickListener{
         fun onItemClick(place: Place, placeId : String)
@@ -46,19 +42,19 @@ class PlacesManageAdapter (private val mList: List<Place>, private val mList_id:
         val place = mList[position]
 
         holder.title.text = place.title
-        holder.address.text = place.address
+        holder.address.text = place.address.substringBefore(',')
         holder.category.text = place.category
         holder.btn_positive.setOnClickListener{
-            mItemClickListener.onPositiveButtonClick(mList_id[position], place)
+            mItemClickListener.onPositiveButtonClick(mList[position].id, place)
         }
         holder.btn_negative.setOnClickListener{
-            mItemClickListener.onNegativeButtonClick(mList_id[position], place.title)
+            mItemClickListener.onNegativeButtonClick(mList[position].id, place.title)
         }
         holder.card.setOnClickListener{
-            mItemClickListener.onItemClick(place, mList_id[position])
+            mItemClickListener.onItemClick(place, mList[position].id)
         }
         holder.card.setOnLongClickListener {
-            mItemClickListener.onItemLongClick(place, mList_id[position])
+            mItemClickListener.onItemLongClick(place, mList[position].id)
             true
         }
         if (type == "user"){
@@ -90,6 +86,11 @@ class PlacesManageAdapter (private val mList: List<Place>, private val mList_id:
         val btn_positive: ImageButton = itemView.findViewById(R.id.btn_positive)
         val btn_negative: ImageButton = itemView.findViewById(R.id.btn_negative)
 
+    }
+
+    override fun getSectionTitle(position: Int): String? {
+        //this String will be shown in a bubble for specified position
+        return mList[position].title.substring(0, 1)
     }
 
 

@@ -31,6 +31,9 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.reddit.indicatorfastscroll.FastScrollItemIndicator
+import com.reddit.indicatorfastscroll.FastScrollerThumbView
+import com.reddit.indicatorfastscroll.FastScrollerView
 import hr.project.hynt.Adapters.ImagesAdapter
 import hr.project.hynt.Adapters.PlacesAdapter
 import hr.project.hynt.Adapters.PlacesManageAdapter
@@ -44,13 +47,13 @@ import kotlin.collections.ArrayList
 
 class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, ImagesAdapter.ItemClickListener {
     var allPlaces = ArrayList<Place>()
-    var allPlacesId = ArrayList<String>()
 
     var filter = 0
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     val authUser = FirebaseAuth.getInstance().currentUser
 
     lateinit var text_info : TextView
+    lateinit var fastScrollerView : FastScrollerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +70,20 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         val recyclerview = view.findViewById<RecyclerView>(R.id.place_recyclerView)
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = GridLayoutManager(requireContext(), 2)
-
-        val adapter = PlacesManageAdapter(allPlaces, allPlacesId, "user",this)
+        fastScrollerView = view.findViewById<FastScrollerView>(R.id.fastscroller)
+        val fastScrollerThumbView =  view.findViewById<FastScrollerThumbView>(R.id.fastscroller_thumb)
+        fastScrollerThumbView.setupWithFastScroller(fastScrollerView)
+        fastScrollerView.setupWithRecyclerView(
+            recyclerview,
+            { position ->
+                val item = allPlaces[position] // Get your model object
+                // or fetch the section at [position] from your database
+                FastScrollItemIndicator.Text(
+                    item.title.substring(0, 1).toUpperCase() // Grab the first letter and capitalize it
+                ) // Return a text indicator
+            }
+        )
+        val adapter = PlacesManageAdapter(allPlaces, "user",this)
         recyclerview.adapter = adapter
         val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar_UserPlaces)
         getAllPlaces(adapter, progressBar)
@@ -100,7 +115,6 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
         places_query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
-                allPlacesId.clear()
                 if (snapshot.exists()) {
                     for (places: DataSnapshot in snapshot.children) {
                         val place: Place? = places.getValue<Place>()
@@ -108,33 +122,32 @@ class UserMyPlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, 
                             when (filter) {
                                 0 -> {
                                     allPlaces.add(place)
-                                    allPlacesId.add(places.key.toString())
                                 }
                                 1 -> {
                                     if (place.approved && !place.pending) {
                                         allPlaces.add(place)
-                                        allPlacesId.add(places.key.toString())
                                     }
                                 }
                                 2 -> {
                                     if (!place.approved && place.pending) {
                                         allPlaces.add(place)
-                                        allPlacesId.add(places.key.toString())
                                     }
                                 }
                                 3 -> {
                                     if (!place.approved && !place.pending) {
                                         allPlaces.add(place)
-                                        allPlacesId.add(places.key.toString())
                                     }
                                 }
                             }
                         }
                     }
-                    allPlaces.reverse()
-                    allPlacesId.reverse()
+                    var tmpPlaces = java.util.ArrayList<Place>()
+                    tmpPlaces = ArrayList(allPlaces.sortedWith(compareBy({ it.title })))
+                    allPlaces.clear()
+                    allPlaces.addAll(tmpPlaces)
                 }
                 text_info.visibility = if (allPlaces.isEmpty()) View.VISIBLE else View.GONE
+                fastScrollerView.visibility = if (allPlaces.isNotEmpty()) View.VISIBLE else View.GONE
                 progressBar.visibility = View.GONE
                 adapter.notifyDataSetChanged()
             }

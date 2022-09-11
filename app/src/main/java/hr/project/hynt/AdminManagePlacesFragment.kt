@@ -41,7 +41,6 @@ import kotlin.collections.ArrayList
 
 class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListener, ImagesAdapter.ItemClickListener {
     var allPlaces = ArrayList<Place>()
-    var allPlacesId = ArrayList<String>()
 
     val db = Firebase.database("https://hynt-cb624-default-rtdb.europe-west1.firebasedatabase.app")
     lateinit var text_info : TextView
@@ -62,7 +61,7 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         // this creates a horizontal linear layout Manager
         recyclerview.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        val adapter = PlacesManageAdapter(allPlaces, allPlacesId, "admin", this)
+        val adapter = PlacesManageAdapter(allPlaces, "admin", this)
         recyclerview.adapter = adapter
         getAllPlaces(adapter)
         // Inflate the layout for this fragment
@@ -74,13 +73,11 @@ class AdminManagePlacesFragment : Fragment(), PlacesManageAdapter.ItemClickListe
         places_query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 allPlaces.clear()
-                allPlacesId.clear()
                 if (snapshot.exists()) {
                     for (places: DataSnapshot in snapshot.children) {
                         val place: Place? = places.getValue<Place>()
                         if (place != null && !place.approved && place.pending) {
                             allPlaces.add(place)
-                            allPlacesId.add(places.key.toString())
                         }
                     }
                     adapter.notifyDataSetChanged()

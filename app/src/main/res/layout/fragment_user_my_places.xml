@@ -47,15 +47,16 @@
             android:padding="10dp"
             android:text="@string/myPlaces_not_approved"/>
     </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fragment_btn_add_new_place"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_input_add"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="20dp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:src="@android:drawable/ic_input_add" />
 
 
     <com.google.android.material.divider.MaterialDivider
@@ -95,9 +96,28 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/divider"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
         android:clipToPadding="false"
         android:paddingBottom="80dp"
-
+        />
+    <com.reddit.indicatorfastscroll.FastScrollerView
+        android:id="@+id/fastscroller"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/divider"
+        android:layout_marginTop="10dp"
+        android:background="@color/black_blue_low_opacity"
+        android:textColor="@color/blue_light"
+        android:layout_alignParentRight="true"
+        />
+    <com.reddit.indicatorfastscroll.FastScrollerThumbView
+        android:id="@+id/fastscroller_thumb"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/fastscroller"
+        android:layout_alignTop="@+id/fastscroller"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@+id/fastscroller"
         />
 
 </RelativeLayout>
