@@ -8,12 +8,11 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.futuremind.recyclerviewfastscroll.SectionTitleProvider
 import hr.project.hynt.FirebaseDatabase.Place
 import hr.project.hynt.R
 import java.util.*
 
-class PlacesManageAdapter (private val mList: List<Place>, private val type : String, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesManageAdapter.ViewHolder>(), SectionTitleProvider {
+class PlacesManageAdapter (private val mList: List<Place>, private val type : String, val mItemClickListener: ItemClickListener) : RecyclerView.Adapter<PlacesManageAdapter.ViewHolder>() {
 
     interface ItemClickListener{
         fun onItemClick(place: Place, placeId : String)
@@ -87,12 +86,4 @@ class PlacesManageAdapter (private val mList: List<Place>, private val type : St
         val btn_negative: ImageButton = itemView.findViewById(R.id.btn_negative)
 
     }
-
-    override fun getSectionTitle(position: Int): String? {
-        //this String will be shown in a bubble for specified position
-        return mList[position].title.substring(0, 1)
-    }
-
-
-
 }
